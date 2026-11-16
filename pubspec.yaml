@@ -1,0 +1,119 @@
+name: glaya
+version: 1.0.0+3
+publish_to: 'none'
+description: Glaya - A two-sided beauty marketplace for Android and iOS.
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.10.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  go_router: ^14.0.0
+  flutter_riverpod: ^2.5.0
+  hooks_riverpod: ^2.5.0
+  dio: ^5.4.0
+  socket_io_client: ^2.0.2
+  web_socket_channel: ^2.4.0
+  flutter_secure_storage: ^9.0.0
+  firebase_core: ^3.0.0
+  firebase_messaging: ^15.0.0
+  flutter_local_notifications: ^17.0.0
+  google_maps_flutter: ^2.5.0
+  geolocator: ^11.0.0
+  geocoding: ^5.0.0
+  image_picker: ^1.0.7
+  url_launcher: ^6.2.5
+  intl: ^0.20.2
+  flutter_stripe: ^11.5.0
+  shimmer: ^3.0.0
+  cached_network_image: ^3.3.1
+  google_fonts: ^8.1.0
+  flutter_animate: ^4.5.0
+  flutter_svg: ^2.0.9
+  video_player: ^2.8.0
+  shared_preferences: ^2.2.2
+  connectivity_plus: ^6.0.0
+  package_info_plus: ^8.0.0
+  sqflite: ^2.3.0
+  freezed_annotation: ^2.4.1
+  json_annotation: ^4.8.1
+  equatable: ^2.0.5
+  country_code_picker: ^3.0.0
+  get: ^4.6.6
+  http: ^1.2.0
+  carousel_slider: ^5.1.2
+  webview_flutter: ^4.4.2
+  share_plus: ^7.2.1
+
+  # The following adds the HTTP capability for testing
+  http_mock_adapter: ^0.4.4
+  audioplayers: ^6.8.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  build_runner: ^2.4.8
+  freezed: ^2.4.7
+  json_serializable: ^6.7.1
+  flutter_lints: ^3.0.2
+  mocktail: ^1.0.3
+
+
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/logo.png
+    - assets/splash_image.jpg
+    - assets/splash_1.jpg
+    - assets/splash_2.jpg
+    - assets/splash_3.jpg
+    - assets/splash_4.jpg
+    - assets/splash_5.jpg
+    - assets/splash_6.jpg
+    - assets/splash_7.jpg
+    - assets/splash_8.jpg
+    - assets/splash_9.jpg
+    - assets/splash_10.jpg
+    - assets/Splash_video.mp4
+    - assets/notification.mp3
+    - assets/pink_gradient_background.jpg
+    - assets/professional_signup_background.jpg
+    - assets/customer_signup_background.jpg
+    - assets/signup_customer.jpg
+    - assets/signup_professional.jpg
+    - assets/audio/
+
+  fonts:
+    - family: Chromes DEMO
+      fonts:
+        - asset: assets/fonts/ChronesDEMO-Regular.ttf
+    - family: Super Squad
+      fonts:
+        - asset: assets/fonts/SuperSquad.ttf
+        - asset: assets/fonts/SuperSquadItalic.otf
+          style: italic
+    - family: Fontzilla Comic
+      fonts:
+        - asset: assets/fonts/FontzillaComic.ttf
+    - family: Jember Sketch
+      fonts:
+        - asset: assets/fonts/JemberSketch.ttf
+    - family: Rained Personal
+      fonts:
+        - asset: assets/fonts/RainedPersonal.ttf
+    - family: PatchFun
+      fonts:
+        - asset: assets/fonts/PatchFun.ttf
+    - family: Palm Beach
+      fonts:
+        - asset: assets/fonts/PalmBeach.ttf

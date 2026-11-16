@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "437997007424",
+    "project_id": "glaya-e6969",
+    "storage_bucket": "glaya-e6969.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:437997007424:android:0ead9a2a1a74dcd4e1a5a5",
+        "android_client_info": {
+          "package_name": "com.glaya.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvxh-7P4ltiSc0HNKmGcLhiPO9KtGP4YY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
