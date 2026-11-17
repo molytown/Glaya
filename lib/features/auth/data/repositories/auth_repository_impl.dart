@@ -255,6 +255,31 @@ class AuthRepositoryImpl implements AuthRepository {
     return null;
   }
 
+  /// Fetches the latest profile from the API and updates the cached user
+  /// so auth state (header avatar, etc.) reflects server-side changes like
+  /// a newly uploaded photo. Returns null on failure — callers should fall
+  /// back to the cached user.
+  Future<User?> fetchCurrentUser() async {
+    final token = await StorageService.getToken();
+    if (token == null) return null;
+    try {
+      final response = await _dio.get('/users/me');
+      final data = response.data['data'] as Map<String, dynamic>?;
+      if (data == null) return null;
+      final json = Map<String, dynamic>.from(data);
+      // /users/me nests the professional under a relation, not a flat id
+      final professional = json['professional'] as Map<String, dynamic>?;
+      json['professionalId'] ??= professional?['id']?.toString();
+      final user = UserModel.fromJson(json);
+      await StorageService.setUserId(user.id);
+      await StorageService.setUserData(jsonEncode(user.toJson()));
+      return user;
+    } catch (e) {
+      print('[AUTH_REPO] fetchCurrentUser failed: $e');
+      return null;
+    }
+  }
+
   @override
   Future<bool> get isAuthenticated async {
     final token = await StorageService.getToken();

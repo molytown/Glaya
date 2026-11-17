@@ -114,7 +114,11 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
 
   Future<void> refreshUser() async {
     try {
-      final user = await _repository.getCurrentUser();
+      // getCurrentUser() is cache-only — it would return the stale user and
+      // never pick up server-side changes (e.g. a new profile photo). Fetch
+      // fresh data first, fall back to cache when offline.
+      final user = await _repository.fetchCurrentUser() ??
+          await _repository.getCurrentUser();
       state = AsyncValue.data(user);
     } catch (_) {}
   }
