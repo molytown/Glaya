@@ -92,3 +92,23 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging:23.4.1")
     implementation("com.facebook.android:facebook-android-sdk:latest.release")
 }
+
+configurations.all {
+    resolutionStrategy {
+        force("androidx.core:core:1.13.1")
+        force("androidx.core:core-ktx:1.13.1")
+        force("androidx.fragment:fragment:1.8.5")
+        force("androidx.activity:activity:1.9.3")
+        force("androidx.lifecycle:lifecycle-livedata:2.8.7")
+        force("androidx.lifecycle:lifecycle-livedata-core:2.8.7")
+        force("androidx.lifecycle:lifecycle-livedata-core-ktx:2.8.7")
+        force("androidx.lifecycle:lifecycle-viewmodel:2.8.7")
+        force("androidx.lifecycle:lifecycle-viewmodel-savedstate:2.8.7")
+        force("androidx.lifecycle:lifecycle-runtime:2.8.7")
+        force("androidx.lifecycle:lifecycle-process:2.8.7")
+        force("androidx.window:window:1.3.0")
+        force("androidx.window:window-java:1.3.0")
+        force("androidx.exifinterface:exifinterface:1.4.1")
+        force("androidx.annotation:annotation-experimental:1.4.1")
+    }
+}
