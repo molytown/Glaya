@@ -12,6 +12,11 @@ workflows:
         script: flutter pub get
       - name: Install CocoaPods
         script: |
+          if ! curl -sI --max-time 8 https://github.com >/dev/null 2>&1; then
+            echo "140.82.116.3 github.com" | sudo tee -a /etc/hosts
+            echo "140.82.113.3 github.com" | sudo tee -a /etc/hosts
+            echo "140.82.114.4 github.com" | sudo tee -a /etc/hosts
+          fi
           cd ios
           pod install --repo-update || pod install --repo-update || pod install --repo-update
       - name: Build iOS simulator app
@@ -45,6 +50,11 @@ workflows:
         script: flutter pub get
       - name: Install CocoaPods
         script: |
+          if ! curl -sI --max-time 8 https://github.com >/dev/null 2>&1; then
+            echo "140.82.116.3 github.com" | sudo tee -a /etc/hosts
+            echo "140.82.113.3 github.com" | sudo tee -a /etc/hosts
+            echo "140.82.114.4 github.com" | sudo tee -a /etc/hosts
+          fi
           cd ios
           pod install --repo-update || pod install --repo-update || pod install --repo-update
       - name: Build iOS IPA
