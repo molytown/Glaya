@@ -49,7 +49,7 @@ dependencies:
   http: ^1.2.0
   carousel_slider: ^5.1.2
   webview_flutter: ^4.4.2
-  share_plus: ^7.2.1
+  share_plus: ^10.1.4
 
   # The following adds the HTTP capability for testing
   http_mock_adapter: ^0.4.4
