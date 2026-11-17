@@ -490,8 +490,22 @@ class _JustFinishedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (upload.mediaItems.isNotEmpty) {
-          _showGalleryViewer(context, upload);
+        // Albums can have a cover image but an empty media list (cover set
+        // without media items) — fall back to the cover so the tap isn't dead.
+        final items = upload.mediaItems.isNotEmpty
+            ? upload.mediaItems
+            : (upload.coverMediaUrl.isNotEmpty
+                ? [
+                    GalleryMediaItem(
+                      id: upload.id,
+                      mediaUrl: upload.coverMediaUrl,
+                      mediaType: upload.coverMediaType,
+                      thumbnailUrl: upload.coverThumbnailUrl,
+                    ),
+                  ]
+                : const <GalleryMediaItem>[]);
+        if (items.isNotEmpty) {
+          _showGalleryViewer(context, upload, items);
         }
       },
       child: ClipRRect(
@@ -659,12 +673,16 @@ class _JustFinishedCard extends StatelessWidget {
     );
   }
 
-  void _showGalleryViewer(BuildContext context, JustFinishedCard upload) {
+  void _showGalleryViewer(
+    BuildContext context,
+    JustFinishedCard upload,
+    List<GalleryMediaItem> items,
+  ) {
     showDialog(
       context: context,
       barrierColor: Colors.black.withOpacity(0.9),
       builder: (context) => GalleryImageViewer(
-        mediaItems: upload.mediaItems,
+        mediaItems: items,
         professionalId: upload.professionalId,
         initialIndex: 0,
       ),
