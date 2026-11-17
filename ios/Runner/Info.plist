@@ -51,6 +51,12 @@
     <string>This app needs location access to find nearby professionals.</string>
     <key>NSContactsUsageDescription</key>
     <string>This app needs contacts access to help you invite friends.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>This app needs photo library access to select images for your profile and portfolio.</string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>This app needs permission to save images to your photo library.</string>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>This app does not access your music library.</string>
     <key>UIBackgroundModes</key>
     <array>
         <string>fetch</string>
