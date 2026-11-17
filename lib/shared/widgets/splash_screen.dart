@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/auth/presentation/providers/auth_notifier.dart';
 import '../../features/discovery/presentation/discovery_provider.dart';
-import '../../features/home/presentation/pages/home_page.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -86,24 +85,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('splash_shown', true);
     if (mounted) {
-      // Use Navigator.pushReplacement with custom slide transition
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) => const HomePage(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            const begin = Offset(1.0, 0.0);
-            const end = Offset.zero;
-            const curve = Curves.easeInOut;
-            var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-            var offsetAnimation = animation.drive(tween);
-            return SlideTransition(
-              position: offsetAnimation,
-              child: child,
-            );
-          },
-          transitionDuration: const Duration(milliseconds: 500),
-        ),
-      );
+      // Navigate through GoRouter — an imperative Navigator.pushReplacement
+      // leaves an unmanaged route on the stack that resurfaces later and
+      // bounces the user back to HomePage from other screens.
+      context.go('/');
     }
   }
 
