@@ -206,7 +206,8 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
     with SingleTickerProviderStateMixin {
   static const _moveMs = 600;
   static const _pauseMs = 2000;
-  static const _cardHeight = 200.0;
+  // Cards render at a 9:16 aspect ratio — height derives from slot width.
+  double _cardH = 0;
 
   late final Ticker _ticker;
   final ValueNotifier<double> _effNotifier = ValueNotifier<double>(0);
@@ -358,9 +359,9 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
           justFinishedAsync.when(
             data: (uploads) {
               if (uploads.isEmpty) {
-                return const SizedBox(
-                  height: 200,
-                  child: Center(
+                return SizedBox(
+                  height: _estimatedCardHeight(context),
+                  child: const Center(
                     child: Text(
                       'No recent uploads nearby',
                       style: TextStyle(color: Colors.grey),
@@ -370,13 +371,13 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
               }
               return _buildSlider(uploads);
             },
-            loading: () => const SizedBox(
-              height: 280,
-              child: Center(child: CircularProgressIndicator()),
+            loading: () => SizedBox(
+              height: _estimatedCardHeight(context),
+              child: const Center(child: CircularProgressIndicator()),
             ),
-            error: (_, __) => const SizedBox(
-              height: 280,
-              child: Center(
+            error: (_, __) => SizedBox(
+              height: _estimatedCardHeight(context),
+              child: const Center(
                 child: Text(
                   'Failed to load uploads',
                   style: TextStyle(color: Colors.grey),
@@ -387,6 +388,14 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
         ],
       ),
     );
+  }
+
+  // Matches the slider's 9:16 card height for pre-layout states
+  // (loading / error / empty) before LayoutBuilder has run.
+  double _estimatedCardHeight(BuildContext context) {
+    final vw = MediaQuery.of(context).size.width - 32; // 16px side margins
+    final slotW = vw / 3;
+    return (slotW - 8) * 16 / 9;
   }
 
   Widget _buildSlider(List<JustFinishedCard> uploads) {
@@ -404,11 +413,13 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
         final vw = constraints.maxWidth;
         _vw = vw;
         _slotW = vw / 3;
+        // 9:16 ratio: card width is the slot minus 4px horizontal padding per side
+        _cardH = (_slotW - 8) * 16 / 9;
         _halfW = _slotW * _halfItemCount;
 
         return ClipRect(
           child: SizedBox(
-            height: _cardHeight,
+            height: _cardH,
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onHorizontalDragStart: _onDragStart,
@@ -458,7 +469,7 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
 
     return SizedBox(
       width: _slotW,
-      height: _cardHeight,
+      height: _cardH,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 4),
         child: Transform.scale(
