@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../shared/services/api_service.dart';
-import '../../../../shared/theme/colors.dart';
+import '../../../../shared/services/config_service.dart';
 import '../../../../shared/providers/location_provider.dart';
 import '../../../../shared/services/location_service.dart';
 import '../../home/presentation/widgets/just_finished_section.dart';
@@ -132,25 +131,54 @@ class _AllGalleriesPageState extends ConsumerState<AllGalleriesPage> {
   }
 
   void _viewGallery(Map<String, dynamic> gallery) {
-    final mediaItems = (gallery['media'] as List<dynamic>?)
+    final configService = ConfigService();
+    String normalizeUrl(String? url) {
+      final u = url ?? '';
+      if (u.isNotEmpty && !u.startsWith('http')) {
+        return '${configService.socketUrl}$u';
+      }
+      return u;
+    }
+
+    var items = (gallery['media'] as List<dynamic>?)
             ?.map((item) => GalleryMediaItem(
-                  id: item['id'] as String,
-                  mediaUrl: item['mediaUrl'] as String,
-                  mediaType: item['mediaType'] as String? ?? 'photo',
-                  thumbnailUrl: item['thumbnailUrl'] as String?,
+                  id: item['id']?.toString() ?? '',
+                  mediaUrl: normalizeUrl(item['mediaUrl']?.toString()),
+                  mediaType: item['mediaType']?.toString() ?? 'photo',
+                  thumbnailUrl:
+                      normalizeUrl(item['thumbnailUrl']?.toString()),
                 ))
+            .where((i) => i.mediaUrl.isNotEmpty)
             .toList() ??
-        [];
+        <GalleryMediaItem>[];
 
-    final professionalId = gallery['professional']?['id'] as String?;
+    // Albums can have a cover image but an empty media list — fall back to
+    // the cover so single-image albums still open the viewer.
+    if (items.isEmpty) {
+      final cover = gallery['coverMedia'] as Map<String, dynamic>?;
+      final coverUrl = normalizeUrl(cover?['mediaUrl']?.toString());
+      if (coverUrl.isNotEmpty) {
+        items = [
+          GalleryMediaItem(
+            id: gallery['id']?.toString() ?? '',
+            mediaUrl: coverUrl,
+            mediaType: cover?['mediaType']?.toString() ?? 'photo',
+            thumbnailUrl:
+                normalizeUrl(cover?['thumbnailUrl']?.toString()),
+          ),
+        ];
+      }
+    }
 
-    if (mediaItems.isNotEmpty && professionalId != null) {
+    final professionalId = gallery['professional']?['id']?.toString();
+
+    if (items.isNotEmpty) {
       showDialog(
         context: context,
         barrierColor: Colors.black.withOpacity(0.9),
         builder: (context) => GalleryImageViewer(
-          mediaItems: mediaItems,
-          professionalId: professionalId,
+          mediaItems: items,
+          professionalId: professionalId ?? '',
           initialIndex: 0,
         ),
       );

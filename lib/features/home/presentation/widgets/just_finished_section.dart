@@ -97,11 +97,20 @@ class JustFinishedCard {
         }).toList() ??
         [];
 
+    // Albums without an explicit coverMedia still have media — use the
+    // first item so the card renders an image and taps open the viewer.
+    if (normalizedCoverUrl.isEmpty && mediaItems.isNotEmpty) {
+      normalizedCoverUrl = mediaItems.first.mediaUrl;
+      normalizedThumbnailUrl ??= mediaItems.first.thumbnailUrl;
+    }
+    final coverType = coverMedia?['mediaType']?.toString() ??
+        (mediaItems.isNotEmpty ? mediaItems.first.mediaType : 'photo');
+
     return JustFinishedCard(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString(),
       coverMediaUrl: normalizedCoverUrl,
-      coverMediaType: coverMedia?['mediaType']?.toString() ?? 'photo',
+      coverMediaType: coverType,
       coverThumbnailUrl: normalizedThumbnailUrl,
       mediaCount: (json['mediaCount'] as num?)?.toInt() ?? mediaItems.length,
       mediaItems: mediaItems,
