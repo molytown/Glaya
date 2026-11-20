@@ -86,8 +86,14 @@ Future<void> _setupFCM() async {
   final flutterLocalNotifications = FlutterLocalNotificationsPlugin();
 
   const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const iosSettings = DarwinInitializationSettings(
+    requestAlertPermission: true,
+    requestBadgePermission: true,
+    requestSoundPermission: true,
+  );
   final initializationSettings = InitializationSettings(
     android: androidSettings,
+    iOS: iosSettings,
   );
   await flutterLocalNotifications.initialize(initializationSettings);
 
@@ -173,6 +179,12 @@ Future<void> _setupFCM() async {
             priority: Priority.high,
             importance: Importance.high,
             showWhen: true,
+          ),
+          iOS: const DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+            sound: 'notification.mp3',
           ),
         ),
       );
