@@ -845,7 +845,7 @@ class _LoginButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           child: const Text(
-            'Sign In',
+            'Sign in / Sign Up',
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
