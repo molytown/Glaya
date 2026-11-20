@@ -10,6 +10,7 @@ import 'package:dio/dio.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../shared/data/location_data.dart';
 import '../../../../shared/services/api_service.dart';
+import '../../../../shared/utils/responsive_helper.dart';
 import '../../../home/presentation/screens/pick_map_screen.dart';
 import '../providers/auth_notifier.dart';
 
@@ -245,6 +246,7 @@ class _ProfessionalSignupScreenState
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = ResponsiveHelper.isDesktop(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -264,313 +266,327 @@ class _ProfessionalSignupScreenState
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // ── Header Content ──
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(0, 8, 0, 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Professional Sign Up',
-                        style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Join our community of beauty professionals',
-                        style: TextStyle(fontSize: 14, color: Colors.white70),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isDesktop ? 680.0 : double.infinity,
                 ),
-                const SizedBox(height: 20),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.4),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // ── Profile Photo Picker ──
-                      Column(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // ── Header Content ──
+                    const Padding(
+                      padding: EdgeInsets.fromLTRB(0, 8, 0, 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          GestureDetector(
-                            onTap: _pickPhoto,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  width: 88,
-                                  height: 88,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        color: const Color(0xFFD4AF37),
-                                        width: 3),
-                                    color: const Color(0xFFE0E0E0),
-                                  ),
-                                  child: _profilePhotoFile != null
-                                      ? ClipOval(
-                                          child: Image.file(
-                                            _profilePhotoFile!,
-                                            fit: BoxFit.cover,
-                                            width: 88,
-                                            height: 88,
-                                            cacheWidth: 176,
-                                          ),
-                                        )
-                                      : const Icon(Icons.person,
-                                          size: 32, color: Color(0xFF000000)),
-                                ),
-                                Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 26,
-                                    height: 26,
-                                    decoration: const BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Color(0xFFD4AF37),
-                                    ),
-                                    child: const Icon(Icons.add,
-                                        color: Colors.white, size: 14),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          const Text(
-                            'Add Profile Photo',
+                          Text(
+                            'Professional Sign Up',
                             style: TextStyle(
-                                fontSize: 12,
-                                color: Color(0xFFD4AF37),
-                                fontWeight: FontWeight.w600),
+                                fontSize: 28,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white),
+                            textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 2),
-                          const Text(
-                            'Tap to choose from gallery or camera',
-                            style: TextStyle(
-                                fontSize: 11, color: Color(0xFF999999)),
+                          SizedBox(height: 8),
+                          Text(
+                            'Join our community of beauty professionals',
+                            style:
+                                TextStyle(fontSize: 14, color: Colors.white70),
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 20),
-                      _buildTextField(
-                          _nameController, 'Full Name', Icons.person_outline),
-                      const SizedBox(height: 12),
-                      _buildTextField(_businessNameController,
-                          'Business Name (optional)', Icons.business_outlined),
-                      const SizedBox(height: 12),
-
-                      // ── Phone with country code ──
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          SizedBox(
-                            width: 110,
-                            child: _buildDropdown<String>(
-                              value: _phoneCountryIso,
-                              hint: 'Code',
-                              icon: Icons.phone_outlined,
-                              items: countries
-                                  .map((c) => DropdownMenuItem(
-                                        value: c.iso,
-                                        child: Text('${c.flag} ${c.code}',
-                                            style:
-                                                const TextStyle(fontSize: 13)),
-                                      ))
-                                  .toList(),
-                              onChanged: (v) =>
-                                  setState(() => _phoneCountryIso = v),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: _buildTextField(_phoneController,
-                                'Phone Number', Icons.phone_outlined,
-                                keyboardType: TextInputType.phone),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      _buildTextField(_emailController, 'Email Address',
-                          Icons.email_outlined,
-                          keyboardType: TextInputType.emailAddress),
-                      const SizedBox(height: 12),
-                      _buildTextField(
-                          _passwordController, 'Password', Icons.lock_outline,
-                          obscureText: true),
-                      const SizedBox(height: 20),
-
-                      // ── Categories Dropdown ──
-                      const Text('What Do You Do?',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF1A1A2E))),
-                      const SizedBox(height: 4),
-                      const Text(
-                          'Select all categories you offer (at least one)',
-                          style: TextStyle(
-                              fontSize: 12, color: Color(0xFF757575))),
-                      const SizedBox(height: 10),
-                      _buildCategoryDropdown(),
-                      const SizedBox(height: 20),
-
-                      // ── Location Fields ──
-                      const Text('Location',
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF1A1A2E))),
-                      const SizedBox(height: 10),
-                      _buildDropdown<String>(
-                        value: _locationCountryIso,
-                        hint: 'Select Country',
-                        icon: Icons.public,
-                        items: countries
-                            .map((c) => DropdownMenuItem(
-                                  value: c.iso,
-                                  child: Text('${c.flag} ${c.name}'),
-                                ))
-                            .toList(),
-                        onChanged: (v) => setState(() {
-                          _locationCountryIso = v;
-                          _selectedState = null;
-                          _selectedCity = null;
-                        }),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildDropdown<String>(
-                        value: _selectedState,
-                        hint: 'Select State / Region',
-                        icon: Icons.location_city,
-                        items: getStatesForCountry(_locationCountryIso)
-                            .map((s) => DropdownMenuItem(
-                                  value: s,
-                                  child: Text(s),
-                                ))
-                            .toList(),
-                        onChanged: _locationCountryIso == null
-                            ? null
-                            : (v) => setState(() {
-                                  _selectedState = v;
-                                  _selectedCity = null;
-                                }),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildDropdown<String>(
-                        value: _selectedCity,
-                        hint: 'Select City',
-                        icon: Icons.location_on_outlined,
-                        items: getCitiesForState(
-                                _locationCountryIso, _selectedState)
-                            .map((c) => DropdownMenuItem(
-                                  value: c,
-                                  child: Text(c),
-                                ))
-                            .toList(),
-                        onChanged: _selectedState == null
-                            ? null
-                            : (v) => setState(() {
-                                  _selectedCity = v;
-                                }),
-                      ),
-                      const SizedBox(height: 12),
-                      // Show dropdown for Cameroon neighborhoods, otherwise text field
-                      _locationCountryIso == 'CM' &&
-                              _selectedCity != null &&
-                              getNeighborhoodsForCity(_selectedCity).isNotEmpty
-                          ? _buildDropdown<String>(
-                              value: _selectedNeighborhood,
-                              hint: 'Select Neighborhood',
-                              icon: Icons.map_outlined,
-                              items: getNeighborhoodsForCity(_selectedCity)
-                                  .map((n) => DropdownMenuItem(
-                                        value: n,
-                                        child: Text(n),
-                                      ))
-                                  .toList(),
-                              onChanged: (v) => setState(() {
-                                _selectedNeighborhood = v;
-                                _neighborhoodController.text = v ?? '';
-                              }),
-                            )
-                          : _buildTextField(_neighborhoodController,
-                              'Neighborhood', Icons.map_outlined),
-                      const SizedBox(height: 12),
-
-                      // Location picker button
-                      GestureDetector(
-                        onTap: _openLocationPicker,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 14),
-                          decoration: BoxDecoration(
-                            color: _selectedLocation != null
-                                ? const Color(0xFFD4AF37).withValues(alpha: 0.1)
-                                : const Color(0xFFF9F9F9),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: _selectedLocation != null
-                                  ? const Color(0xFFD4AF37)
-                                  : const Color(0xFFE0E0E0),
-                            ),
-                          ),
-                          child: Row(
+                          // ── Profile Photo Picker ──
+                          Column(
                             children: [
-                              Icon(
-                                Icons.location_on_outlined,
-                                size: 20,
-                                color: _selectedLocation != null
-                                    ? const Color(0xFFD4AF37)
-                                    : const Color(0xFF757575),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  _selectedAddress ?? 'Pick location on map',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: _selectedLocation != null
-                                        ? const Color(0xFFD4AF37)
-                                        : Color(0xFF000000),
-                                  ),
+                              GestureDetector(
+                                onTap: _pickPhoto,
+                                child: Stack(
+                                  children: [
+                                    Container(
+                                      width: 88,
+                                      height: 88,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                            color: const Color(0xFFD4AF37),
+                                            width: 3),
+                                        color: const Color(0xFFE0E0E0),
+                                      ),
+                                      child: _profilePhotoFile != null
+                                          ? ClipOval(
+                                              child: Image.file(
+                                                _profilePhotoFile!,
+                                                fit: BoxFit.cover,
+                                                width: 88,
+                                                height: 88,
+                                                cacheWidth: 176,
+                                              ),
+                                            )
+                                          : const Icon(Icons.person,
+                                              size: 32,
+                                              color: Color(0xFF000000)),
+                                    ),
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child: Container(
+                                        width: 26,
+                                        height: 26,
+                                        decoration: const BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: Color(0xFFD4AF37),
+                                        ),
+                                        child: const Icon(Icons.add,
+                                            color: Colors.white, size: 14),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                              if (_selectedLocation != null)
-                                const Icon(
-                                  Icons.check_circle,
-                                  size: 20,
-                                  color: Color(0xFFD4AF37),
-                                )
-                              else
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 16,
-                                  color: Color(0xFF757575),
-                                ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Add Profile Photo',
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Color(0xFFD4AF37),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                              const SizedBox(height: 2),
+                              const Text(
+                                'Tap to choose from gallery or camera',
+                                style: TextStyle(
+                                    fontSize: 11, color: Color(0xFF999999)),
+                              ),
                             ],
                           ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
+                          const SizedBox(height: 20),
+                          _buildTextField(_nameController, 'Full Name',
+                              Icons.person_outline),
+                          const SizedBox(height: 12),
+                          _buildTextField(
+                              _businessNameController,
+                              'Business Name (optional)',
+                              Icons.business_outlined),
+                          const SizedBox(height: 12),
 
-                      // ── Submit Button ──
-                      _buildSubmitButton(),
-                    ],
-                  ),
+                          // ── Phone with country code ──
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: 110,
+                                child: _buildDropdown<String>(
+                                  value: _phoneCountryIso,
+                                  hint: 'Code',
+                                  icon: Icons.phone_outlined,
+                                  items: countries
+                                      .map((c) => DropdownMenuItem(
+                                            value: c.iso,
+                                            child: Text('${c.flag} ${c.code}',
+                                                style: const TextStyle(
+                                                    fontSize: 13)),
+                                          ))
+                                      .toList(),
+                                  onChanged: (v) =>
+                                      setState(() => _phoneCountryIso = v),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: _buildTextField(_phoneController,
+                                    'Phone Number', Icons.phone_outlined,
+                                    keyboardType: TextInputType.phone),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          _buildTextField(_emailController, 'Email Address',
+                              Icons.email_outlined,
+                              keyboardType: TextInputType.emailAddress),
+                          const SizedBox(height: 12),
+                          _buildTextField(_passwordController, 'Password',
+                              Icons.lock_outline,
+                              obscureText: true),
+                          const SizedBox(height: 20),
+
+                          // ── Categories Dropdown ──
+                          const Text('What Do You Do?',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF1A1A2E))),
+                          const SizedBox(height: 4),
+                          const Text(
+                              'Select all categories you offer (at least one)',
+                              style: TextStyle(
+                                  fontSize: 12, color: Color(0xFF757575))),
+                          const SizedBox(height: 10),
+                          _buildCategoryDropdown(),
+                          const SizedBox(height: 20),
+
+                          // ── Location Fields ──
+                          const Text('Location',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF1A1A2E))),
+                          const SizedBox(height: 10),
+                          _buildDropdown<String>(
+                            value: _locationCountryIso,
+                            hint: 'Select Country',
+                            icon: Icons.public,
+                            items: countries
+                                .map((c) => DropdownMenuItem(
+                                      value: c.iso,
+                                      child: Text('${c.flag} ${c.name}'),
+                                    ))
+                                .toList(),
+                            onChanged: (v) => setState(() {
+                              _locationCountryIso = v;
+                              _selectedState = null;
+                              _selectedCity = null;
+                            }),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildDropdown<String>(
+                            value: _selectedState,
+                            hint: 'Select State / Region',
+                            icon: Icons.location_city,
+                            items: getStatesForCountry(_locationCountryIso)
+                                .map((s) => DropdownMenuItem(
+                                      value: s,
+                                      child: Text(s),
+                                    ))
+                                .toList(),
+                            onChanged: _locationCountryIso == null
+                                ? null
+                                : (v) => setState(() {
+                                      _selectedState = v;
+                                      _selectedCity = null;
+                                    }),
+                          ),
+                          const SizedBox(height: 12),
+                          _buildDropdown<String>(
+                            value: _selectedCity,
+                            hint: 'Select City',
+                            icon: Icons.location_on_outlined,
+                            items: getCitiesForState(
+                                    _locationCountryIso, _selectedState)
+                                .map((c) => DropdownMenuItem(
+                                      value: c,
+                                      child: Text(c),
+                                    ))
+                                .toList(),
+                            onChanged: _selectedState == null
+                                ? null
+                                : (v) => setState(() {
+                                      _selectedCity = v;
+                                    }),
+                          ),
+                          const SizedBox(height: 12),
+                          // Show dropdown for Cameroon neighborhoods, otherwise text field
+                          _locationCountryIso == 'CM' &&
+                                  _selectedCity != null &&
+                                  getNeighborhoodsForCity(_selectedCity)
+                                      .isNotEmpty
+                              ? _buildDropdown<String>(
+                                  value: _selectedNeighborhood,
+                                  hint: 'Select Neighborhood',
+                                  icon: Icons.map_outlined,
+                                  items: getNeighborhoodsForCity(_selectedCity)
+                                      .map((n) => DropdownMenuItem(
+                                            value: n,
+                                            child: Text(n),
+                                          ))
+                                      .toList(),
+                                  onChanged: (v) => setState(() {
+                                    _selectedNeighborhood = v;
+                                    _neighborhoodController.text = v ?? '';
+                                  }),
+                                )
+                              : _buildTextField(_neighborhoodController,
+                                  'Neighborhood', Icons.map_outlined),
+                          const SizedBox(height: 12),
+
+                          // Location picker button
+                          GestureDetector(
+                            onTap: _openLocationPicker,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 14),
+                              decoration: BoxDecoration(
+                                color: _selectedLocation != null
+                                    ? const Color(0xFFD4AF37)
+                                        .withValues(alpha: 0.1)
+                                    : const Color(0xFFF9F9F9),
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: _selectedLocation != null
+                                      ? const Color(0xFFD4AF37)
+                                      : const Color(0xFFE0E0E0),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.location_on_outlined,
+                                    size: 20,
+                                    color: _selectedLocation != null
+                                        ? const Color(0xFFD4AF37)
+                                        : const Color(0xFF757575),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Text(
+                                      _selectedAddress ??
+                                          'Pick location on map',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: _selectedLocation != null
+                                            ? const Color(0xFFD4AF37)
+                                            : Color(0xFF000000),
+                                      ),
+                                    ),
+                                  ),
+                                  if (_selectedLocation != null)
+                                    const Icon(
+                                      Icons.check_circle,
+                                      size: 20,
+                                      color: Color(0xFFD4AF37),
+                                    )
+                                  else
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 16,
+                                      color: Color(0xFF757575),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // ── Submit Button ──
+                          _buildSubmitButton(),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
