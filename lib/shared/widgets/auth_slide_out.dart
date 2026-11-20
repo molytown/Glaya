@@ -6,6 +6,7 @@ import '../../../shared/providers/location_provider.dart';
 import '../../../shared/services/config_service.dart';
 import '../../../shared/theme/colors.dart';
 import '../../../shared/utils/responsive_helper.dart';
+import 'flowing_water_background.dart';
 
 class AuthSlideOut extends ConsumerStatefulWidget {
   final bool isOpen;
@@ -161,19 +162,6 @@ class _AuthSlideOutState extends ConsumerState<AuthSlideOut>
                   width: width,
                   height: double.infinity,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFFE91E8C),
-                        const Color(0xFFC2185B),
-                        const Color(0xFF7209B7),
-                        const Color(0xFFB5179E),
-                        const Color(0xFFFF006E),
-                        const Color(0xFF9C27B0),
-                      ],
-                      stops: const [0.0, 0.15, 0.4, 0.6, 0.8, 1.0],
-                    ),
                     boxShadow: [
                       BoxShadow(
                         color: Color(0xFF000000).withValues(alpha: 0.15),
@@ -182,204 +170,209 @@ class _AuthSlideOutState extends ConsumerState<AuthSlideOut>
                       ),
                     ],
                   ),
-                  child: SafeArea(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.all(32),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Close button
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: IconButton(
-                              onPressed: widget.onClose,
-                              icon: const Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                              style: IconButton.styleFrom(
-                                backgroundColor: Colors.white.withValues(alpha: 0.1),
-                                shape: const CircleBorder(),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          // Brand
-                          Row(
-                            children: [
-                              Image.asset(
-                                'assets/logo.png',
-                                height: 40,
-                                fit: BoxFit.contain,
-                              ),
-                              const SizedBox(width: 10),
-                              const Text(
-                                'Glaya',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w800,
-                                  fontStyle: FontStyle.italic,
+                  child: FlowingWaterBackground(
+                    child: SafeArea(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Close button
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: IconButton(
+                                onPressed: widget.onClose,
+                                icon: const Icon(
+                                  Icons.close,
                                   color: Colors.white,
+                                  size: 24,
+                                ),
+                                style: IconButton.styleFrom(
+                                  backgroundColor:
+                                      Colors.white.withValues(alpha: 0.1),
+                                  shape: const CircleBorder(),
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 32),
-                          // Title
-                          Text(
-                            _isRegister ? 'Create Account' : 'Welcome Back',
-                            style: const TextStyle(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            _isRegister
-                                ? 'Join Glaya to book beauty services'
-                                : 'Sign in to continue',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.white.withValues(alpha: 0.8),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          // Error message
-                          if (_error.isNotEmpty)
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.red.withValues(alpha: 0.2),
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(
-                                  color: Colors.red.withValues(alpha: 0.3),
-                                ),
-                              ),
-                              child: Text(
-                                _error,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  color: Color(0xFFFFCCCC),
-                                ),
-                              ),
-                            ),
-                          // Name field (register only)
-                          if (_isRegister) ...[
-                            _buildTextField(
-                              controller: _nameController,
-                              label: 'Full Name',
-                              icon: Icons.person_outline,
-                              keyboardType: TextInputType.name,
                             ),
                             const SizedBox(height: 16),
-                          ],
-                          // Phone field
-                          _buildTextField(
-                            controller: _phoneController,
-                            label: 'Phone Number',
-                            icon: Icons.phone_outlined,
-                            keyboardType: TextInputType.phone,
-                          ),
-                          const SizedBox(height: 16),
-                          // Password field
-                          _buildTextField(
-                            controller: _passwordController,
-                            label: 'Password',
-                            icon: Icons.lock_outline,
-                            obscureText: !_showPassword,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _showPassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: Colors.white70,
-                                size: 20,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _showPassword = !_showPassword;
-                                });
-                              },
-                            ),
-                          ),
-                          // Referral code (register only)
-                          if (_isRegister) ...[
-                            const SizedBox(height: 16),
-                            _buildTextField(
-                              controller: _referralController,
-                              label: 'Referral Code (Optional)',
-                              icon: Icons.card_giftcard_outlined,
-                            ),
-                          ],
-                          const SizedBox(height: 24),
-                          // Submit button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _handleSubmit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: const Color(0xFFE91E8C),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
+                            // Brand
+                            Row(
+                              children: [
+                                Image.asset(
+                                  'assets/logo.png',
+                                  height: 40,
+                                  fit: BoxFit.contain,
                                 ),
-                              ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Color(0xFFE91E8C),
-                                      ),
-                                    )
-                                  : Text(
-                                      _isRegister ? 'Create Account' : 'Sign In',
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          // Toggle register/login
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                _isRegister
-                                    ? 'Already have an account?'
-                                    : "Don't have an account?",
-                                style: TextStyle(
-                                  color: Colors.white.withValues(alpha: 0.8),
-                                  fontSize: 14,
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _isRegister = !_isRegister;
-                                    _error = '';
-                                  });
-                                },
-                                child: Text(
-                                  _isRegister ? 'Sign In' : 'Sign Up',
-                                  style: const TextStyle(
+                                const SizedBox(width: 10),
+                                const Text(
+                                  'Glaya',
+                                  style: TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w800,
+                                    fontStyle: FontStyle.italic,
                                     color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 32),
+                            // Title
+                            Text(
+                              _isRegister ? 'Create Account' : 'Welcome Back',
+                              style: const TextStyle(
+                                fontSize: 26,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              _isRegister
+                                  ? 'Join Glaya to book beauty services'
+                                  : 'Sign in to continue',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white.withValues(alpha: 0.8),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            // Error message
+                            if (_error.isNotEmpty)
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(12),
+                                margin: const EdgeInsets.only(bottom: 16),
+                                decoration: BoxDecoration(
+                                  color: Colors.red.withValues(alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: Colors.red.withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: Text(
+                                  _error,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Color(0xFFFFCCCC),
                                   ),
                                 ),
                               ),
+                            // Name field (register only)
+                            if (_isRegister) ...[
+                              _buildTextField(
+                                controller: _nameController,
+                                label: 'Full Name',
+                                icon: Icons.person_outline,
+                                keyboardType: TextInputType.name,
+                              ),
+                              const SizedBox(height: 16),
                             ],
-                          ),
-                        ],
+                            // Phone field
+                            _buildTextField(
+                              controller: _phoneController,
+                              label: 'Phone Number',
+                              icon: Icons.phone_outlined,
+                              keyboardType: TextInputType.phone,
+                            ),
+                            const SizedBox(height: 16),
+                            // Password field
+                            _buildTextField(
+                              controller: _passwordController,
+                              label: 'Password',
+                              icon: Icons.lock_outline,
+                              obscureText: !_showPassword,
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _showPassword
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
+                                  color: Colors.white70,
+                                  size: 20,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _showPassword = !_showPassword;
+                                  });
+                                },
+                              ),
+                            ),
+                            // Referral code (register only)
+                            if (_isRegister) ...[
+                              const SizedBox(height: 16),
+                              _buildTextField(
+                                controller: _referralController,
+                                label: 'Referral Code (Optional)',
+                                icon: Icons.card_giftcard_outlined,
+                              ),
+                            ],
+                            const SizedBox(height: 24),
+                            // Submit button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: _isLoading ? null : _handleSubmit,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xFFE91E8C),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                ),
+                                child: _isLoading
+                                    ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: Color(0xFFE91E8C),
+                                        ),
+                                      )
+                                    : Text(
+                                        _isRegister
+                                            ? 'Create Account'
+                                            : 'Sign In',
+                                        style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            // Toggle register/login
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  _isRegister
+                                      ? 'Already have an account?'
+                                      : "Don't have an account?",
+                                  style: TextStyle(
+                                    color: Colors.white.withValues(alpha: 0.8),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _isRegister = !_isRegister;
+                                      _error = '';
+                                    });
+                                  },
+                                  child: Text(
+                                    _isRegister ? 'Sign In' : 'Sign Up',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
