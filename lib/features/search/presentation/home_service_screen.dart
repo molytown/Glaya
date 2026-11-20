@@ -9,22 +9,25 @@ import '../../discovery/presentation/discovery_provider.dart';
 import '../../home/presentation/widgets/professional_card.dart';
 import '../../../../shared/providers/location_provider.dart';
 
-final homeServiceSearchProvider = FutureProvider.family<Map<String, dynamic>, ({double lat, double lng})>((ref, location) async {
+final homeServiceSearchProvider =
+    FutureProvider.family<Map<String, dynamic>, ({double lat, double lng})>(
+        (ref, location) async {
   final dio = ApiService.dio;
-  
+
   // Fetch professionals with home service
-  final professionalsResponse = await dio.get('/professionals', queryParameters: {
+  final professionalsResponse =
+      await dio.get('/professionals', queryParameters: {
     'lat': location.lat,
     'lng': location.lng,
     'radiusKm': 50,
     'homeService': true,
     'limit': 50,
   });
-  
+
   final professionals = (professionalsResponse.data['data'] as List<dynamic>)
       .map((e) => ProfessionalModel.fromJson(e as Map<String, dynamic>))
       .toList();
-  
+
   // Group professionals by category
   final Map<String, List<ProfessionalModel>> groupedByCategory = {};
   for (final pro in professionals) {
@@ -34,17 +37,17 @@ final homeServiceSearchProvider = FutureProvider.family<Map<String, dynamic>, ({
     }
     groupedByCategory[category]!.add(pro);
   }
-  
+
   // Fetch all services from home service professionals
   final servicesResponse = await dio.get('/services/public');
   final allServices = servicesResponse.data['data'] as List<dynamic>;
-  
+
   // Filter services that belong to home service professionals
-  final homeServiceProfessionalIds = professionals.map((p) => p.id!).toSet();
-  final services = (allServices as List<dynamic>)
+  final homeServiceProfessionalIds = professionals.map((p) => p.id).toSet();
+  final services = (allServices)
       .where((s) => homeServiceProfessionalIds.contains(s['professionalId']))
       .toList();
-  
+
   return {
     'professionals': professionals,
     'groupedByCategory': groupedByCategory,
@@ -69,7 +72,8 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
     final lat = locationState.hasLocation ? locationState.lat! : 3.848;
     final lng = locationState.hasLocation ? locationState.lng! : 11.502;
 
-    final resultsAsync = ref.watch(homeServiceSearchProvider((lat: lat, lng: lng)));
+    final resultsAsync =
+        ref.watch(homeServiceSearchProvider((lat: lat, lng: lng)));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -81,8 +85,11 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
       ),
       body: resultsAsync.when(
         data: (data) {
-          final professionals = data['professionals'] as List<ProfessionalModel>? ?? [];
-          final groupedByCategory = data['groupedByCategory'] as Map<String, List<ProfessionalModel>>? ?? {};
+          final professionals =
+              data['professionals'] as List<ProfessionalModel>? ?? [];
+          final groupedByCategory = data['groupedByCategory']
+                  as Map<String, List<ProfessionalModel>>? ??
+              {};
           final services = data['services'] as List<dynamic>? ?? [];
           final categories = data['categories'] as List<String>? ?? [];
 
@@ -145,7 +152,9 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
 
   Widget _buildProfessionalList(List<ProfessionalModel> professionals) {
     if (professionals.isEmpty) {
-      return const Center(child: Text('No home service professionals found', style: TextStyle(color: Colors.grey)));
+      return const Center(
+          child: Text('No home service professionals found',
+              style: TextStyle(color: Colors.grey)));
     }
     return GridView.builder(
       padding: const EdgeInsets.all(16),
@@ -162,17 +171,20 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
           professional: pro,
           rating: pro.avgRating ?? 0.0,
           priceLabel: '\$25+',
-          distanceLabel: (pro.distance ?? 0) > 0 
-              ? '${(pro.distance ?? 0).toStringAsFixed(1)} km away' 
+          distanceLabel: (pro.distance ?? 0) > 0
+              ? '${(pro.distance ?? 0).toStringAsFixed(1)} km away'
               : 'Nearby',
         );
       },
     );
   }
 
-  Widget _buildCategoryList(Map<String, List<ProfessionalModel>> groupedByCategory) {
+  Widget _buildCategoryList(
+      Map<String, List<ProfessionalModel>> groupedByCategory) {
     if (groupedByCategory.isEmpty) {
-      return const Center(child: Text('No categories found', style: TextStyle(color: Colors.grey)));
+      return const Center(
+          child: Text('No categories found',
+              style: TextStyle(color: Colors.grey)));
     }
     return ListView.separated(
       padding: const EdgeInsets.all(16),
@@ -186,14 +198,20 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
     );
   }
 
-  Widget _buildCategoryCard(String category, List<ProfessionalModel> professionals) {
+  Widget _buildCategoryCard(
+      String category, List<ProfessionalModel> professionals) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 2))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 6,
+              offset: const Offset(0, 2))
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,18 +220,22 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
             children: [
               Text(
                 _formatCategory(category),
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: GlayaColors.berry.withOpacity(0.1),
+                  color: GlayaColors.berry.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   '${professionals.length}',
-                  style: TextStyle(color: GlayaColors.berry, fontWeight: FontWeight.bold, fontSize: 12),
+                  style: const TextStyle(
+                      color: GlayaColors.berry,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12),
                 ),
               ),
             ],
@@ -230,11 +252,16 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
                   padding: const EdgeInsets.only(right: 12),
                   child: CircleAvatar(
                     radius: 28,
-                    backgroundColor: GlayaColors.berry.withOpacity(0.15),
-                    backgroundImage: pro.photoUrl != null ? NetworkImage(ConfigService().replaceLocalhost(pro.photoUrl!)) : null,
+                    backgroundColor: GlayaColors.berry.withValues(alpha: 0.15),
+                    backgroundImage: pro.photoUrl != null
+                        ? NetworkImage(
+                            ConfigService().replaceLocalhost(pro.photoUrl!))
+                        : null,
                     child: pro.photoUrl == null
                         ? Text((pro.name ?? '?')[0].toUpperCase(),
-                            style: TextStyle(color: GlayaColors.berry, fontWeight: FontWeight.bold))
+                            style: const TextStyle(
+                                color: GlayaColors.berry,
+                                fontWeight: FontWeight.bold))
                         : null,
                   ),
                 );
@@ -248,7 +275,9 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
 
   Widget _buildServiceList(List<dynamic> services) {
     if (services.isEmpty) {
-      return const Center(child: Text('No services found', style: TextStyle(color: Colors.grey)));
+      return const Center(
+          child:
+              Text('No services found', style: TextStyle(color: Colors.grey)));
     }
     return ListView.separated(
       padding: const EdgeInsets.all(16),
@@ -268,7 +297,12 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey.shade200),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 2))],
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2))
+              ],
             ),
             child: Row(
               children: [
@@ -276,10 +310,10 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: GlayaColors.berry.withOpacity(0.1),
+                    color: GlayaColors.berry.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.home, color: GlayaColors.berry),
+                  child: const Icon(Icons.home, color: GlayaColors.berry),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -287,9 +321,11 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(s['name'] as String? ?? '',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15)),
                       Text('by ${proUser?['name'] ?? 'Unknown'}',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                          style:
+                              TextStyle(fontSize: 12, color: Colors.grey[600])),
                       const SizedBox(height: 4),
                       Text(
                         '${s['durationMins'] ?? 60} min  •  \$${(s['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
@@ -300,7 +336,7 @@ class _HomeServiceScreenState extends ConsumerState<HomeServiceScreen> {
                 ),
                 Text(
                   '\$${(s['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: GlayaColors.berry,
                     fontSize: 16,

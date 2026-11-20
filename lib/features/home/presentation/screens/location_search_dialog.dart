@@ -10,7 +10,7 @@ import '../../models/prediction_model.dart';
 class LocationSearchDialog extends StatefulWidget {
   final GoogleMapController? mapController;
 
-  const LocationSearchDialog({Key? key, this.mapController}) : super(key: key);
+  const LocationSearchDialog({super.key, this.mapController});
 
   @override
   State<LocationSearchDialog> createState() => _LocationSearchDialogState();

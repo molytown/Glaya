@@ -42,8 +42,9 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   Future<void> _loadBooking() async {
     try {
       final res = await ApiService.dio.get('/bookings/${widget.bookingId}');
-      if (mounted)
+      if (mounted) {
         setState(() => _booking = res.data['data'] as Map<String, dynamic>);
+      }
     } catch (e) {
       if (mounted) _snack('Failed to load booking: $e', error: true);
     } finally {
@@ -102,14 +103,15 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   }
 
   double get _outstandingBalance {
-    final v = _booking?['outstandingBalance'] ?? _booking?['outstanding_balance'];
+    final v =
+        _booking?['outstandingBalance'] ?? _booking?['outstanding_balance'];
     if (v is num) return v.toDouble();
     if (v is String) return double.tryParse(v) ?? 0;
     return 0;
   }
 
-  bool get _codRequested => _booking?['codRequested'] == true ||
-      _booking?['cod_requested'] == true;
+  bool get _codRequested =>
+      _booking?['codRequested'] == true || _booking?['cod_requested'] == true;
 
   Future<void> _serviceDone() async {
     setState(() => _actionLoading = true);
@@ -301,17 +303,26 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
 
   bool get _canCancel {
     final s = _booking?['status'] as String? ?? '';
-    return s == 'requested' || s == 'accepted' || s == 'deposit_required' || s == 'confirmed';
+    return s == 'requested' ||
+        s == 'accepted' ||
+        s == 'deposit_required' ||
+        s == 'confirmed';
   }
 
   bool get _canEdit {
     final s = _booking?['status'] as String? ?? '';
-    return s == 'requested' || s == 'accepted' || s == 'deposit_required' || s == 'confirmed';
+    return s == 'requested' ||
+        s == 'accepted' ||
+        s == 'deposit_required' ||
+        s == 'confirmed';
   }
 
   bool get _canPostpone {
     final s = _booking?['status'] as String? ?? '';
-    return s == 'requested' || s == 'accepted' || s == 'deposit_required' || s == 'confirmed';
+    return s == 'requested' ||
+        s == 'accepted' ||
+        s == 'deposit_required' ||
+        s == 'confirmed';
   }
 
   bool get _canDelete {
@@ -371,11 +382,11 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
     final statusLabel = _statusLabels[status] ?? status.toUpperCase();
 
     final serviceName = b['service']?['name'] as String? ?? 'Service';
-    final agreedPrice =
-        _parsePrice(b['agreedAmount'] ?? b['agreed_amount']);
+    final agreedPrice = _parsePrice(b['agreedAmount'] ?? b['agreed_amount']);
     final rawPrice = agreedPrice > 0
         ? agreedPrice
-        : _parsePrice(b['service']?['price'] ?? b['service']?['basePrice'] ?? 0);
+        : _parsePrice(
+            b['service']?['price'] ?? b['service']?['basePrice'] ?? 0);
     final proName =
         b['professional']?['user']?['name'] as String? ?? 'Professional';
     final proCategory =
@@ -417,9 +428,9 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
+              color: statusColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: statusColor.withOpacity(0.25)),
+              border: Border.all(color: statusColor.withValues(alpha: 0.25)),
             ),
             child: Row(
               children: [
@@ -427,7 +438,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.15),
+                    color: statusColor.withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
                   child:
@@ -483,7 +494,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: GlayaColors.berry.withOpacity(0.15),
+                  backgroundColor: GlayaColors.berry.withValues(alpha: 0.15),
                   child: Text(proInitial,
                       style: const TextStyle(
                           fontWeight: FontWeight.w700,
@@ -632,9 +643,8 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 onTap: () => showBookingChatDialog(context, widget.bookingId)),
           ]);
         }
-        final customerCheckedIn =
-            _booking?['customerCheckedInAt'] != null ||
-                _booking?['customer_checked_in_at'] != null;
+        final customerCheckedIn = _booking?['customerCheckedInAt'] != null ||
+            _booking?['customer_checked_in_at'] != null;
         return Column(children: [
           if (customerCheckedIn)
             _actionBtn('Checked In', Icons.check_circle_outline,
@@ -647,7 +657,8 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             Expanded(
                 child: _actionBtn('Message', Icons.chat_bubble_outline,
                     outlined: true,
-                    onTap: () => showBookingChatDialog(context, widget.bookingId))),
+                    onTap: () =>
+                        showBookingChatDialog(context, widget.bookingId))),
             const SizedBox(width: 8),
             Expanded(
                 child: _actionBtn('Call', Icons.call_outlined,
@@ -711,7 +722,8 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)
           ],
         ),
         child: Column(
@@ -1058,7 +1070,8 @@ class _GlayaScoreDialogState extends State<_GlayaScoreDialog> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to submit score: $e'),
+          SnackBar(
+              content: Text('Failed to submit score: $e'),
               backgroundColor: GlayaColors.error),
         );
         setState(() => _submitting = false);
@@ -1104,9 +1117,11 @@ class _GlayaScoreDialogState extends State<_GlayaScoreDialog> {
       ),
       actions: [
         TextButton(
-          onPressed: _submitting ? null : () => Navigator.of(context).pop(false),
+          onPressed:
+              _submitting ? null : () => Navigator.of(context).pop(false),
           child: const Text('Skip',
-              style: TextStyle(color: Color(0xFF555555), fontWeight: FontWeight.w600)),
+              style: TextStyle(
+                  color: Color(0xFF555555), fontWeight: FontWeight.w600)),
         ),
         ElevatedButton(
           onPressed: _submitting ? null : _submit,
@@ -1114,15 +1129,18 @@ class _GlayaScoreDialogState extends State<_GlayaScoreDialog> {
             backgroundColor: GlayaColors.berry,
             foregroundColor: Colors.white,
             elevation: 0,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
           child: _submitting
               ? const SizedBox(
                   width: 18,
                   height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white),
                 )
-              : const Text('Submit', style: TextStyle(fontWeight: FontWeight.w700)),
+              : const Text('Submit',
+                  style: TextStyle(fontWeight: FontWeight.w700)),
         ),
       ],
     );

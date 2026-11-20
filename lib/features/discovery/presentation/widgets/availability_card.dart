@@ -20,16 +20,23 @@ class AvailabilityCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: const Color(0xFFEEEEEE))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Color(0xFFEEEEEE))),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Weekly Availability', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A))),
+              const Text('Weekly Availability',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1A1A1A))),
               const SizedBox(height: 12),
               if ((availability ?? []).isEmpty)
-                const Text('No schedule available', style: TextStyle(fontSize: 14, color: Color(0xFF888888)))
+                const Text('No schedule available',
+                    style: TextStyle(fontSize: 14, color: Color(0xFF888888)))
               else
                 GridView.builder(
                   shrinkWrap: true,
@@ -43,11 +50,18 @@ class AvailabilityCard extends StatelessWidget {
                   itemCount: 7,
                   itemBuilder: (_, i) {
                     final slots = slotsByDay[i] ?? const [];
-                    final hasOpen = slots.any((s) => !(s['isBlocked'] as bool? ?? s['is_blocked'] as bool? ?? false));
+                    final hasOpen = slots.any((s) =>
+                        !(s['isBlocked'] as bool? ??
+                            s['is_blocked'] as bool? ??
+                            false));
                     final isOff = slots.isEmpty;
                     return Column(
                       children: [
-                        Text(_days[i], style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF9E9E9E))),
+                        Text(_days[i],
+                            style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF9E9E9E))),
                         const SizedBox(height: 6),
                         Expanded(
                           child: Container(

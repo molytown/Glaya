@@ -116,10 +116,10 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                       color: GlayaColors.berry,
                       borderRadius: BorderRadius.circular(18),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text(
+                        Text(
                           'Search',
                           style: TextStyle(
                             fontSize: 13,
@@ -127,8 +127,8 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                             color: Colors.white,
                           ),
                         ),
-                        const SizedBox(width: 6),
-                        const Icon(
+                        SizedBox(width: 6),
+                        Icon(
                           Icons.search,
                           color: Colors.white,
                           size: 16,
@@ -172,16 +172,16 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                         width: 1,
                       ),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.filter_list,
                           color: GlayaColors.berry,
                           size: 16,
                         ),
-                        const SizedBox(width: 6),
-                        const Text(
+                        SizedBox(width: 6),
+                        Text(
                           'Filter',
                           style: TextStyle(
                             fontSize: 13,
@@ -303,8 +303,7 @@ class _DropdownSection extends StatelessWidget {
   final String title;
   final List<Widget> children;
 
-  const _DropdownSection(
-      {super.key, required this.title, required this.children});
+  const _DropdownSection({required this.title, required this.children});
 
   @override
   Widget build(BuildContext context) {
@@ -336,7 +335,6 @@ class _DropdownItem extends StatelessWidget {
   final VoidCallback? onTap;
 
   const _DropdownItem({
-    super.key,
     required this.name,
     required this.category,
     required this.icon,

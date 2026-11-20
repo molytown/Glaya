@@ -12,7 +12,8 @@ class CustomerSignupScreen extends ConsumerStatefulWidget {
   const CustomerSignupScreen({super.key});
 
   @override
-  ConsumerState<CustomerSignupScreen> createState() => _CustomerSignupScreenState();
+  ConsumerState<CustomerSignupScreen> createState() =>
+      _CustomerSignupScreenState();
 }
 
 class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
@@ -140,64 +141,62 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  // Back button
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      onPressed: () => context.go('/signup-selection'),
-                      icon: const Icon(
-                        Icons.arrow_back,
-                        color: Colors.white,
-                        size: 24,
+                    // Back button
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: IconButton(
+                        onPressed: () => context.go('/signup-selection'),
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                  // ── Branding ──────────────────────────────────────────
-                  Image.asset(
-                    'assets/logo.png',
-                    height: 80,
-                    fit: BoxFit.contain,
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Create your account',
-                    style:
-                        TextStyle(fontSize: 15, color: Colors.white70),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 36),
-
-                  // ── White form card ───────────────────────────────────
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          blurRadius: 24,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
+                    // ── Branding ──────────────────────────────────────────
+                    Image.asset(
+                      'assets/logo.png',
+                      height: 80,
+                      fit: BoxFit.contain,
                     ),
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // ── Name ────────────────────────────────────────
-                        TextField(
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Create your account',
+                      style: TextStyle(fontSize: 15, color: Colors.white70),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 36),
+
+                    // ── White form card ───────────────────────────────────
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.15),
+                            blurRadius: 24,
+                            offset: const Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          // ── Name ────────────────────────────────────────
+                          TextField(
                             controller: _nameController,
                             textCapitalization: TextCapitalization.words,
                             style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               labelText: 'Full Name',
                               hintText: 'Jane Doe',
-                              hintStyle:
-                                  const TextStyle(color: Colors.black87),
+                              hintStyle: const TextStyle(color: Colors.black87),
                               prefixIcon: const Icon(Icons.person_outline,
                                   color: GlayaColors.berry),
                               border: OutlineInputBorder(
@@ -259,7 +258,8 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8)),
                                   ),
-                                  barrierColor: Colors.black.withOpacity(0.5),
+                                  barrierColor:
+                                      Colors.black.withValues(alpha: 0.5),
                                   boxDecoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(12),
@@ -298,8 +298,7 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                             style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               hintText: 'Enter password',
-                              hintStyle:
-                                  const TextStyle(color: Colors.black87),
+                              hintStyle: const TextStyle(color: Colors.black87),
                               prefixIcon: const Icon(Icons.lock_outline,
                                   color: GlayaColors.berry),
                               suffixIcon: IconButton(
@@ -308,8 +307,8 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                                         ? Icons.visibility_outlined
                                         : Icons.visibility_off_outlined,
                                     color: GlayaColors.berry),
-                                onPressed: () => setState(() =>
-                                    _obscurePassword = !_obscurePassword),
+                                onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword),
                               ),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(12)),
@@ -328,8 +327,7 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                             style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
                               hintText: 'Enter referral code (optional)',
-                              hintStyle:
-                                  const TextStyle(color: Colors.black87),
+                              hintStyle: const TextStyle(color: Colors.black87),
                               prefixIcon: const Icon(
                                   Icons.card_giftcard_outlined,
                                   color: GlayaColors.berry),
@@ -352,7 +350,7 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                                   horizontal: 14, vertical: 14),
                               decoration: BoxDecoration(
                                 color: _selectedLocation != null
-                                    ? GlayaColors.berry.withOpacity(0.1)
+                                    ? GlayaColors.berry.withValues(alpha: 0.1)
                                     : Colors.grey.shade50,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
@@ -384,7 +382,7 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                                     ),
                                   ),
                                   if (_selectedLocation != null)
-                                    Icon(
+                                    const Icon(
                                       Icons.check_circle,
                                       size: 20,
                                       color: GlayaColors.berry,

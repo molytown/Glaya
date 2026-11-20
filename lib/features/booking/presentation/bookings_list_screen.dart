@@ -139,7 +139,7 @@ class _BookingsListScreenState extends ConsumerState<BookingsListScreen>
                     contentPadding:
                         const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                     leading: CircleAvatar(
-                      backgroundColor: color.withOpacity(0.12),
+                      backgroundColor: color.withValues(alpha: 0.12),
                       child: Icon(Icons.content_cut, color: color, size: 18),
                     ),
                     title: Text(
@@ -163,9 +163,10 @@ class _BookingsListScreenState extends ConsumerState<BookingsListScreen>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: color.withOpacity(0.1),
+                            color: color.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: color.withOpacity(0.3)),
+                            border:
+                                Border.all(color: color.withValues(alpha: 0.3)),
                           ),
                           child: Text(label,
                               style: TextStyle(

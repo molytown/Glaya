@@ -128,7 +128,7 @@ class _ServiceManagementScreenState
     setState(() => _isUploadingImage = true);
     try {
       final formData = FormData.fromMap({
-        'photo': await MultipartFile.fromBytes(
+        'photo': MultipartFile.fromBytes(
           _pickedImageBytes!,
           filename: _pickedImage!.name,
         ),
@@ -273,7 +273,7 @@ class _ServiceManagementScreenState
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: categoryId.isEmpty ? null : categoryId,
+                initialValue: categoryId.isEmpty ? null : categoryId,
                 decoration: InputDecoration(
                   labelText: 'Category',
                   labelStyle: const TextStyle(color: Colors.black87),
@@ -347,7 +347,7 @@ class _ServiceManagementScreenState
                               const BorderSide(color: Color(0xFFE0E0E0)))),
                   keyboardType: TextInputType.number),
               DropdownButtonFormField<String>(
-                value: locationType,
+                initialValue: locationType,
                 decoration: InputDecoration(
                   labelText: 'Location Type',
                   labelStyle: const TextStyle(color: Colors.black87),

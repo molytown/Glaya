@@ -27,7 +27,8 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
   Future<void> _loadBoostData() async {
     try {
       final response = await ApiService.dio.get('/professionals/me/boost');
-      setState(() => _boostData = response.data['data'] as Map<String, dynamic>);
+      setState(
+          () => _boostData = response.data['data'] as Map<String, dynamic>);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -63,7 +64,7 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authNotifierProvider).valueOrNull;
-    
+
     // Role check - only professionals can access
     if (user?.role != 'professional' && user?.role != 'both') {
       return Scaffold(
@@ -97,8 +98,8 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
 
     final currentBoost = _boostData?['currentBoost'] as Map<String, dynamic>?;
     final isBoosted = currentBoost != null;
-    final boostExpiry = currentBoost != null 
-        ? DateTime.tryParse(currentBoost['expiryDate'] as String? ?? '') 
+    final boostExpiry = currentBoost != null
+        ? DateTime.tryParse(currentBoost['expiryDate'] as String? ?? '')
         : null;
 
     return Scaffold(
@@ -126,7 +127,8 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
                       ),
                       child: Column(
                         children: [
-                          const Icon(Icons.rocket_launch, size: 48, color: Colors.white),
+                          const Icon(Icons.rocket_launch,
+                              size: 48, color: Colors.white),
                           const SizedBox(height: 12),
                           const Text(
                             'Your Profile is Boosted!',
@@ -149,9 +151,12 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              _boostStat('Profile Views', '+${currentBoost['profileViewsIncrease'] ?? 0}'),
-                              _boostStat('Bookings', '+${currentBoost['bookingsIncrease'] ?? 0}'),
-                              _boostStat('Rank', '#${currentBoost['rank'] ?? 0}'),
+                              _boostStat('Profile Views',
+                                  '+${currentBoost['profileViewsIncrease'] ?? 0}'),
+                              _boostStat('Bookings',
+                                  '+${currentBoost['bookingsIncrease'] ?? 0}'),
+                              _boostStat(
+                                  'Rank', '#${currentBoost['rank'] ?? 0}'),
                             ],
                           ),
                         ],
@@ -162,12 +167,13 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: Colors.grey.withOpacity(0.1),
+                        color: Colors.grey.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Column(
                         children: [
-                          Icon(Icons.trending_up, size: 48, color: Colors.grey.shade400),
+                          Icon(Icons.trending_up,
+                              size: 48, color: Colors.grey.shade400),
                           const SizedBox(height: 12),
                           const Text(
                             'Boost Your Profile',
@@ -241,8 +247,10 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
                   ),
                   const SizedBox(height: 16),
                   _benefitItem(Icons.visibility, 'Up to 3x more profile views'),
-                  _benefitItem(Icons.calendar_today, 'Up to 2x more booking requests'),
-                  _benefitItem(Icons.trending_up, 'Higher ranking in search results'),
+                  _benefitItem(
+                      Icons.calendar_today, 'Up to 2x more booking requests'),
+                  _benefitItem(
+                      Icons.trending_up, 'Higher ranking in search results'),
                   _benefitItem(Icons.star, 'Featured badge on your profile'),
                   _benefitItem(Icons.people, 'Increased customer trust'),
                   const SizedBox(height: 24),
@@ -251,7 +259,7 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
@@ -262,8 +270,8 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
                 ],
               ),
             ),
-      bottomNavigationBar: user?.role == 'customer' 
-          ? null 
+      bottomNavigationBar: user?.role == 'customer'
+          ? null
           : GlayaBottomNav(
               currentIndex: 0,
               userRole: user?.role,
@@ -315,7 +323,7 @@ class _BoostProfileScreenState extends ConsumerState<BoostProfileScreen> {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: GlayaColors.berry.withOpacity(0.1),
+                    color: GlayaColors.berry.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(icon, color: GlayaColors.berry),

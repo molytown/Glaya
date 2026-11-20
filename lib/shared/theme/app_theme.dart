@@ -15,11 +15,9 @@ class GlayaAppTheme {
         secondary: GlayaColors.vibrantPink,
         onSecondary: Colors.white,
         surface: GlayaColors.surface,
-        background: GlayaColors.background,
         error: GlayaColors.error,
         onError: Colors.white,
         onSurface: GlayaColors.textPrimary,
-        onBackground: GlayaColors.textPrimary,
       ),
       scaffoldBackgroundColor: GlayaColors.pinkBg,
       textTheme: TextTheme(
@@ -46,7 +44,8 @@ class GlayaAppTheme {
           foregroundColor: Colors.white,
           textStyle: GlayaTextStyles.button(),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           minimumSize: const Size.fromHeight(48),
         ),
       ),
@@ -56,7 +55,8 @@ class GlayaAppTheme {
           side: const BorderSide(color: GlayaColors.berry),
           textStyle: GlayaTextStyles.button(color: GlayaColors.berry),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           minimumSize: const Size.fromHeight(48),
         ),
       ),
@@ -85,7 +85,8 @@ class GlayaAppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: GlayaColors.error),
         ),
-        contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
@@ -120,11 +121,9 @@ class GlayaAppTheme {
         secondary: GlayaColors.accentPink,
         onSecondary: Colors.white,
         surface: Color(0xFF1E1E1E),
-        background: Color(0xFF121212),
         error: GlayaColors.error,
         onError: Colors.white,
         onSurface: Colors.white,
-        onBackground: Colors.white,
       ),
       scaffoldBackgroundColor: const Color(0xFF121212),
     );

@@ -152,8 +152,8 @@ class _WalletDialogState extends ConsumerState<WalletDialog> {
               decoration: InputDecoration(
                 labelText: 'Amount ($_currencyCode)',
                 prefixText: '$_currencySymbol ',
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               ),
             ),
             const SizedBox(height: 20),
@@ -168,8 +168,7 @@ class _WalletDialogState extends ConsumerState<WalletDialog> {
                       borderRadius: BorderRadius.circular(12)),
                 ),
                 onPressed: () {
-                  final amount =
-                      double.tryParse(controller.text.trim()) ?? 0;
+                  final amount = double.tryParse(controller.text.trim()) ?? 0;
                   if (amount <= 0) return;
                   Navigator.pop(sheetContext);
                   _topUp(amount);
@@ -187,19 +186,20 @@ class _WalletDialogState extends ConsumerState<WalletDialog> {
   @override
   Widget build(BuildContext context) {
     final balance = num.tryParse(
-            (_wallet?['balance'] ?? _wallet?['available'])?.toString() ?? '0')
-        ?.toDouble() ??
+                (_wallet?['balance'] ?? _wallet?['available'])?.toString() ??
+                    '0')
+            ?.toDouble() ??
         0;
     final pending = num.tryParse(
-            (_wallet?['pendingBalance'] ?? _wallet?['pending'])?.toString() ??
-                '0')
-        ?.toDouble() ??
+                (_wallet?['pendingBalance'] ?? _wallet?['pending'])
+                        ?.toString() ??
+                    '0')
+            ?.toDouble() ??
         0;
-    final transactions =
-        (_wallet?['transactions'] as List<dynamic>?)
-                ?.whereType<Map<String, dynamic>>()
-                .toList() ??
-            [];
+    final transactions = (_wallet?['transactions'] as List<dynamic>?)
+            ?.whereType<Map<String, dynamic>>()
+            .toList() ??
+        [];
 
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -244,7 +244,7 @@ class _WalletDialogState extends ConsumerState<WalletDialog> {
                   children: [
                     Text('Total Balance',
                         style: TextStyle(
-                            color: Colors.white.withOpacity(0.85),
+                            color: Colors.white.withValues(alpha: 0.85),
                             fontSize: 12,
                             fontWeight: FontWeight.w600)),
                     const SizedBox(height: 6),
@@ -259,11 +259,12 @@ class _WalletDialogState extends ConsumerState<WalletDialog> {
                     Row(
                       children: [
                         Icon(Icons.schedule,
-                            size: 14, color: Colors.white.withOpacity(0.8)),
+                            size: 14,
+                            color: Colors.white.withValues(alpha: 0.8)),
                         const SizedBox(width: 5),
                         Text('Pending: ${_money(pending)}',
                             style: TextStyle(
-                                color: Colors.white.withOpacity(0.85),
+                                color: Colors.white.withValues(alpha: 0.85),
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600)),
                       ],
@@ -356,18 +357,16 @@ class _WalletDialogState extends ConsumerState<WalletDialog> {
                               final type =
                                   (tx['type'] as String? ?? '').toLowerCase();
                               final isCredit = type == 'credit';
-                              final amount =
-                                  num.tryParse(tx['amount']?.toString() ??
-                                          '') ??
-                                      0;
+                              final amount = num.tryParse(
+                                      tx['amount']?.toString() ?? '') ??
+                                  0;
                               final reference =
                                   tx['reference'] as String? ?? 'Transaction';
-                              final createdAt = tx['createdAt'] ??
-                                  tx['created_at'];
+                              final createdAt =
+                                  tx['createdAt'] ?? tx['created_at'];
                               final dateText = createdAt != null
-                                  ? DateFormat('MMM d, yyyy • HH:mm')
-                                      .format(DateTime.tryParse(
-                                              createdAt.toString()) ??
+                                  ? DateFormat('MMM d, yyyy • HH:mm').format(
+                                      DateTime.tryParse(createdAt.toString()) ??
                                           DateTime.now())
                                   : '';
                               return ListTile(

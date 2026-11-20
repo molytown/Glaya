@@ -45,9 +45,9 @@ class HomeCategories extends ConsumerWidget {
     }
 
     // If no categories available in zone, show all with a warning
-    final showWarning = availableCategories != null && 
-                       availableCategories.isNotEmpty && 
-                       filteredCategories.isEmpty;
+    final showWarning = availableCategories != null &&
+        availableCategories.isNotEmpty &&
+        filteredCategories.isEmpty;
 
     return Column(
       children: [
@@ -63,7 +63,8 @@ class HomeCategories extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.orange.shade700, size: 20),
+                  Icon(Icons.info_outline,
+                      color: Colors.orange.shade700, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -109,21 +110,24 @@ class HomeCategories extends ConsumerWidget {
                         width: 64,
                         height: 64,
                         decoration: BoxDecoration(
-                          color: isSelected ? GlayaColors.berry : category.backgroundColor,
+                          color: isSelected
+                              ? GlayaColors.berry
+                              : category.backgroundColor,
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: isSelected
                               ? [
                                   BoxShadow(
-                                    color: GlayaColors.roseGold.withValues(alpha: 0.3),
+                                    color: GlayaColors.roseGold
+                                        .withValues(alpha: 0.3),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
                                 ]
                               : [
-                                  BoxShadow(
+                                  const BoxShadow(
                                     color: GlayaColors.softShadow,
                                     blurRadius: 6,
-                                    offset: const Offset(0, 2),
+                                    offset: Offset(0, 2),
                                   ),
                                 ],
                         ),
@@ -138,14 +142,20 @@ class HomeCategories extends ConsumerWidget {
                         category.label,
                         style: TextStyle(
                           fontSize: 12,
-                          color: isSelected ? GlayaColors.berry : GlayaColors.textPrimary,
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                          color: isSelected
+                              ? GlayaColors.berry
+                              : GlayaColors.textPrimary,
+                          fontWeight:
+                              isSelected ? FontWeight.w700 : FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ).animate(delay: (index * 60).ms).fadeIn().scale(begin: const Offset(0.9, 0.9));
+              )
+                  .animate(delay: (index * 60).ms)
+                  .fadeIn()
+                  .scale(begin: const Offset(0.9, 0.9));
             },
           ),
         ),

@@ -186,7 +186,12 @@ final justFinishedProvider = FutureProvider<List<JustFinishedCard>>((
   try {
     final response = await ApiService.dio.get(
       '/professionals/portfolio/recent',
-      queryParameters: {'lat': lat, 'lng': lng, 'limit': 9, ...zoneQueryParams(locationState)},
+      queryParameters: {
+        'lat': lat,
+        'lng': lng,
+        'limit': 9,
+        ...zoneQueryParams(locationState)
+      },
     );
     final data = response.data['data'] as List;
     final cards = data
@@ -216,6 +221,8 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
   static const _moveMs = 600;
   static const _pauseMs = 2000;
   // Cards render at a 9:16 aspect ratio — height derives from slot width.
+  // Cards are sized ~16% larger than their slot so neighbours overlap slightly.
+  double _cardW = 0;
   double _cardH = 0;
 
   late final Ticker _ticker;
@@ -277,8 +284,8 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
 
     if (!_dragging) {
       if (_phase == 1) {
-        final t = ((elapsed - _phaseStart).inMicroseconds / 1e6) /
-            (_moveMs / 1000);
+        final t =
+            ((elapsed - _phaseStart).inMicroseconds / 1e6) / (_moveMs / 1000);
         final clamped = t.clamp(0.0, 1.0);
         _pos = _moveFrom + (_target - _moveFrom) * _easeInOutCubic(clamped);
         if (clamped >= 1) {
@@ -351,8 +358,8 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
                   color: Color(0xFF1A1A1A),
                 ),
               ),
-              TextButton(
-                onPressed: () => context.push('/all-galleries'),
+              GestureDetector(
+                onTap: () => context.push('/all-galleries'),
                 child: const Text(
                   'See All',
                   style: TextStyle(
@@ -404,7 +411,7 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
   double _estimatedCardHeight(BuildContext context) {
     final vw = MediaQuery.of(context).size.width - 32; // 16px side margins
     final slotW = vw / 3;
-    return (slotW - 8) * 16 / 9;
+    return (slotW - 8) * 1.164 * 16 / 9;
   }
 
   Widget _buildSlider(List<JustFinishedCard> uploads) {
@@ -422,8 +429,10 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
         final vw = constraints.maxWidth;
         _vw = vw;
         _slotW = vw / 3;
-        // 9:16 ratio: card width is the slot minus 4px horizontal padding per side
-        _cardH = (_slotW - 8) * 16 / 9;
+        // 9:16 ratio, ~16% larger than the slot: card width is the slot minus
+        // 4px horizontal padding per side, scaled up.
+        _cardW = (_slotW - 8) * 1.164;
+        _cardH = _cardW * 16 / 9;
         _halfW = _slotW * _halfItemCount;
 
         return ClipRect(
@@ -441,13 +450,17 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
                   return Stack(
                     children: [
                       Positioned.fill(
-                        child: Transform.translate(
-                          offset: Offset(-eff, 0),
-                          child: Row(
-                            children: [
-                              for (var i = 0; i < items.length; i++)
-                                _buildCardSlot(items[i], i, eff),
-                            ],
+                        child: OverflowBox(
+                          maxWidth: double.infinity,
+                          alignment: Alignment.topLeft,
+                          child: Transform.translate(
+                            offset: Offset(-eff, 0),
+                            child: Row(
+                              children: [
+                                for (var i = 0; i < items.length; i++)
+                                  _buildCardSlot(items[i], i, eff),
+                              ],
+                            ),
                           ),
                         ),
                       ),
@@ -479,11 +492,14 @@ class _JustFinishedSectionState extends ConsumerState<JustFinishedSection>
     return SizedBox(
       width: _slotW,
       height: _cardH,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: Transform.scale(
-          scale: scale,
-          child: _JustFinishedCard(upload: upload),
+      child: Center(
+        child: SizedBox(
+          width: _cardW,
+          height: _cardH,
+          child: Transform.scale(
+            scale: scale,
+            child: _JustFinishedCard(upload: upload),
+          ),
         ),
       ),
     );
@@ -518,167 +534,166 @@ class _JustFinishedCard extends StatelessWidget {
         }
       },
       child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // Media (photo or video thumbnail)
-              upload.coverMediaType == 'video' &&
-                      upload.coverThumbnailUrl?.isNotEmpty == true
-                  ? CachedNetworkImage(
-                      imageUrl: upload.coverThumbnailUrl!,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.play_circle_outline, size: 48),
-                      ),
-                      errorWidget: (_, __, ___) => Container(
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.broken_image),
-                      ),
-                    )
-                  : upload.coverMediaUrl.isNotEmpty
-                      ? CachedNetworkImage(
-                      imageUrl: upload.coverMediaUrl,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) =>
-                          Container(color: Colors.grey[300]),
-                      errorWidget: (_, __, ___) => Container(
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.broken_image),
-                      ),
-                    )
-                      : Container(color: Colors.grey[300]),
-              // Video indicator
-              if (upload.coverMediaType == 'video')
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      shape: BoxShape.circle,
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // Media (photo or video thumbnail)
+            upload.coverMediaType == 'video' &&
+                    upload.coverThumbnailUrl?.isNotEmpty == true
+                ? CachedNetworkImage(
+                    imageUrl: upload.coverThumbnailUrl!,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.play_circle_outline, size: 48),
                     ),
-                    child: const Icon(
-                      Icons.play_arrow,
-                      color: Colors.white,
-                      size: 16,
+                    errorWidget: (_, __, ___) => Container(
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.broken_image),
                     ),
-                  ),
-                ),
-              // Media count badge
-              if (upload.mediaCount > 1)
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      '+${upload.mediaCount - 1}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              // Gradient overlay
+                  )
+                : upload.coverMediaUrl.isNotEmpty
+                    ? CachedNetworkImage(
+                        imageUrl: upload.coverMediaUrl,
+                        fit: BoxFit.cover,
+                        placeholder: (_, __) =>
+                            Container(color: Colors.grey[300]),
+                        errorWidget: (_, __, ___) => Container(
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.broken_image),
+                        ),
+                      )
+                    : Container(color: Colors.grey[300]),
+            // Video indicator
+            if (upload.coverMediaType == 'video')
               Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
+                top: 8,
+                right: 8,
                 child: Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.7),
-                      ],
-                    ),
+                    color: Colors.black.withValues(alpha: 0.6),
+                    shape: BoxShape.circle,
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (upload.title != null)
-                        Text(
-                          upload.title!,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      if (upload.category != null) ...[
-                        if (upload.title != null) const SizedBox(height: 2),
-                        Text(
-                          upload.category!,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                      if (upload.serviceName != null) ...[
-                        if (upload.title != null || upload.category != null)
-                          const SizedBox(height: 2),
-                        Text(
-                          upload.serviceName!,
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Text(
-                              upload.professionalName,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Colors.white70,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          VerificationBadge(
-                            subscriptionType:
-                                upload.professionalSubscriptionType,
-                            size: VerificationBadgeSize.small,
-                          ),
-                        ],
-                      ),
-                    ],
+                  child: const Icon(
+                    Icons.play_arrow,
+                    color: Colors.white,
+                    size: 16,
                   ),
                 ),
               ),
-            ],
-          ),
+            // Media count badge
+            if (upload.mediaCount > 1)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '+${upload.mediaCount - 1}',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            // Gradient overlay
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.7),
+                    ],
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (upload.title != null)
+                      Text(
+                        upload.title!,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    if (upload.category != null) ...[
+                      if (upload.title != null) const SizedBox(height: 2),
+                      Text(
+                        upload.category!,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    if (upload.serviceName != null) ...[
+                      if (upload.title != null || upload.category != null)
+                        const SizedBox(height: 2),
+                      Text(
+                        upload.serviceName!,
+                        style: const TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            upload.professionalName,
+                            style: const TextStyle(
+                              fontSize: 10,
+                              color: Colors.white70,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        VerificationBadge(
+                          subscriptionType: upload.professionalSubscriptionType,
+                          size: VerificationBadgeSize.small,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
+      ),
     );
   }
 
@@ -689,7 +704,7 @@ class _JustFinishedCard extends StatelessWidget {
   ) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.9),
+      barrierColor: Colors.black.withValues(alpha: 0.9),
       builder: (context) => GalleryImageViewer(
         mediaItems: items,
         professionalId: upload.professionalId,
@@ -738,12 +753,23 @@ class _GalleryImageViewerState extends State<GalleryImageViewer> {
       return const SizedBox.shrink();
     }
 
+    // 9:16 portrait frame — height ~88% of screen, width derived, capped
+    // so it never exceeds the screen width.
+    final screen = MediaQuery.of(context).size;
+    var dialogH = screen.height * 0.88;
+    var dialogW = dialogH * 9 / 16;
+    final maxW = screen.width * 0.92;
+    if (dialogW > maxW) {
+      dialogW = maxW;
+      dialogH = dialogW * 16 / 9;
+    }
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: EdgeInsets.zero,
       child: Container(
-        width: MediaQuery.of(context).size.width * 0.72,
-        height: MediaQuery.of(context).size.height * 0.68,
+        width: dialogW,
+        height: dialogH,
         decoration: BoxDecoration(
           color: Colors.black,
           borderRadius: BorderRadius.circular(16),
@@ -771,7 +797,7 @@ class _GalleryImageViewerState extends State<GalleryImageViewer> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Text(
@@ -861,15 +887,16 @@ class _ImagePlayerItem extends StatelessWidget {
       maxScale: 4.0,
       child: item.mediaUrl.isNotEmpty
           ? CachedNetworkImage(
-        imageUrl: item.mediaUrl,
-        fit: BoxFit.contain,
-        placeholder: (_, __) =>
-            const Center(child: CircularProgressIndicator(color: Colors.white)),
-        errorWidget: (_, __, ___) => const Center(
-          child: Icon(Icons.broken_image, color: Colors.white, size: 48),
-        ),
-      )
-          : const Center(child: Icon(Icons.broken_image, color: Colors.white, size: 48)),
+              imageUrl: item.mediaUrl,
+              fit: BoxFit.contain,
+              placeholder: (_, __) => const Center(
+                  child: CircularProgressIndicator(color: Colors.white)),
+              errorWidget: (_, __, ___) => const Center(
+                child: Icon(Icons.broken_image, color: Colors.white, size: 48),
+              ),
+            )
+          : const Center(
+              child: Icon(Icons.broken_image, color: Colors.white, size: 48)),
     );
   }
 }
@@ -883,9 +910,12 @@ class _VideoPlayerItem extends StatelessWidget {
   Widget build(BuildContext context) {
     // For now, show video thumbnail with play indicator
     // In a full implementation, you would use a video player package
-    final thumbUrl = item.thumbnailUrl?.isNotEmpty == true ? item.thumbnailUrl! : item.mediaUrl;
+    final thumbUrl = item.thumbnailUrl?.isNotEmpty == true
+        ? item.thumbnailUrl!
+        : item.mediaUrl;
     if (thumbUrl.isEmpty) {
-      return const Center(child: Icon(Icons.broken_image, color: Colors.white, size: 48));
+      return const Center(
+          child: Icon(Icons.broken_image, color: Colors.white, size: 48));
     }
     return Stack(
       alignment: Alignment.center,
@@ -902,7 +932,7 @@ class _VideoPlayerItem extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.play_arrow, color: Colors.white, size: 64),

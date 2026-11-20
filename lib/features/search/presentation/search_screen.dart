@@ -5,9 +5,11 @@ import '../../../../shared/services/api_service.dart';
 import '../../../../shared/services/config_service.dart';
 import '../../../../shared/theme/colors.dart';
 
-final searchResultsProvider = FutureProvider.family<Map<String, dynamic>, String>((ref, query) async {
+final searchResultsProvider =
+    FutureProvider.family<Map<String, dynamic>, String>((ref, query) async {
   if (query.isEmpty) return {'professionals': [], 'services': []};
-  final resp = await ApiService.dio.get('/search', queryParameters: {'q': query});
+  final resp =
+      await ApiService.dio.get('/search', queryParameters: {'q': query});
   return resp.data['data'] as Map<String, dynamic>;
 });
 
@@ -75,7 +77,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           ? _buildEmptyState()
           : resultsAsync.when(
               data: (data) {
-                final professionals = (data['professionals'] as List<dynamic>?) ?? [];
+                final professionals =
+                    (data['professionals'] as List<dynamic>?) ?? [];
                 final services = (data['services'] as List<dynamic>?) ?? [];
 
                 return Column(
@@ -84,7 +87,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                       color: Colors.grey[50],
                       child: Row(
                         children: [
-                          _buildTabChip('Professionals (${professionals.length})', 0),
+                          _buildTabChip(
+                              'Professionals (${professionals.length})', 0),
                           _buildTabChip('Services (${services.length})', 1),
                         ],
                       ),
@@ -148,7 +152,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Widget _buildProfessionalList(List<dynamic> professionals) {
     if (professionals.isEmpty) {
-      return const Center(child: Text('No professionals found', style: TextStyle(color: Colors.grey)));
+      return const Center(
+          child: Text('No professionals found',
+              style: TextStyle(color: Colors.grey)));
     }
     return ListView.separated(
       padding: const EdgeInsets.all(16),
@@ -165,17 +171,27 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey.shade200),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 2))],
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2))
+              ],
             ),
             child: Row(
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundColor: GlayaColors.berry.withOpacity(0.15),
-                  backgroundImage: user?['photoUrl'] != null ? NetworkImage(ConfigService().replaceLocalhost(user!['photoUrl'] as String)) : null,
+                  backgroundColor: GlayaColors.berry.withValues(alpha: 0.15),
+                  backgroundImage: user?['photoUrl'] != null
+                      ? NetworkImage(ConfigService()
+                          .replaceLocalhost(user!['photoUrl'] as String))
+                      : null,
                   child: user?['photoUrl'] == null
                       ? Text((user?['name'] as String? ?? '?')[0].toUpperCase(),
-                          style: TextStyle(color: GlayaColors.berry, fontWeight: FontWeight.bold))
+                          style: const TextStyle(
+                              color: GlayaColors.berry,
+                              fontWeight: FontWeight.bold))
                       : null,
                 ),
                 const SizedBox(width: 12),
@@ -184,20 +200,25 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(user?['name'] as String? ?? 'Unknown',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15)),
                       Text(p['category'] as String? ?? '',
-                          style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                          style:
+                              TextStyle(fontSize: 13, color: Colors.grey[600])),
                       const SizedBox(height: 4),
                       Row(
                         children: [
                           Icon(Icons.star, size: 14, color: Colors.amber[600]),
                           const SizedBox(width: 3),
                           Text(
-                            ((p['avgRating'] as num?)?.toStringAsFixed(1) ?? '5.0'),
-                            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                            ((p['avgRating'] as num?)?.toStringAsFixed(1) ??
+                                '5.0'),
+                            style: const TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.w600),
                           ),
                           Text('  •  ${p['totalReviews'] ?? 0} reviews',
-                              style: TextStyle(fontSize: 12, color: Colors.grey[500])),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.grey[500])),
                         ],
                       ),
                     ],
@@ -214,7 +235,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   Widget _buildServiceList(List<dynamic> services) {
     if (services.isEmpty) {
-      return const Center(child: Text('No services found', style: TextStyle(color: Colors.grey)));
+      return const Center(
+          child:
+              Text('No services found', style: TextStyle(color: Colors.grey)));
     }
     return ListView.separated(
       padding: const EdgeInsets.all(16),
@@ -234,7 +257,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: Colors.grey.shade200),
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 6, offset: const Offset(0, 2))],
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2))
+              ],
             ),
             child: Row(
               children: [
@@ -242,10 +270,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: GlayaColors.berry.withOpacity(0.1),
+                    color: GlayaColors.berry.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(Icons.content_cut, color: GlayaColors.berry),
+                  child:
+                      const Icon(Icons.content_cut, color: GlayaColors.berry),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -253,9 +282,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(s['name'] as String? ?? '',
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15)),
                       Text('by ${proUser?['name'] ?? 'Unknown'}',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                          style:
+                              TextStyle(fontSize: 12, color: Colors.grey[600])),
                       const SizedBox(height: 4),
                       Text(
                         '${s['durationMins'] ?? 60} min  •  \$${(s['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
@@ -266,7 +297,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 ),
                 Text(
                   '\$${(s['price'] as num?)?.toStringAsFixed(0) ?? '0'}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     color: GlayaColors.berry,
                     fontSize: 16,

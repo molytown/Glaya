@@ -73,7 +73,12 @@ class _ZoneContext {
   final String? currency;
   final List<String>? categories;
   final String? country;
-  const _ZoneContext({this.zoneId, this.zoneName, this.currency, this.categories, this.country});
+  const _ZoneContext(
+      {this.zoneId,
+      this.zoneName,
+      this.currency,
+      this.categories,
+      this.country});
 }
 
 const _locationCacheKey = 'glaya_cached_location';
@@ -135,17 +140,19 @@ class LocationNotifier extends StateNotifier<LocationState> {
     try {
       if (s.lat == null || s.lng == null) return;
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_locationCacheKey, jsonEncode({
-        'lat': s.lat,
-        'lng': s.lng,
-        'locationName': s.locationName,
-        'countryCode': s.countryCode,
-        'currency': s.currency,
-        'zoneId': s.zoneId,
-        'zoneName': s.zoneName,
-        'categories': s.availableCategories,
-        'inServiceZone': s.inServiceZone,
-      }));
+      await prefs.setString(
+          _locationCacheKey,
+          jsonEncode({
+            'lat': s.lat,
+            'lng': s.lng,
+            'locationName': s.locationName,
+            'countryCode': s.countryCode,
+            'currency': s.currency,
+            'zoneId': s.zoneId,
+            'zoneName': s.zoneName,
+            'categories': s.availableCategories,
+            'inServiceZone': s.inServiceZone,
+          }));
     } catch (_) {}
   }
 
@@ -167,7 +174,8 @@ class LocationNotifier extends StateNotifier<LocationState> {
       }
 
       if (permission == LocationPermission.deniedForever) {
-        state = const LocationState(error: 'Location permission permanently denied');
+        state = const LocationState(
+            error: 'Location permission permanently denied');
         return;
       }
 
@@ -179,13 +187,17 @@ class LocationNotifier extends StateNotifier<LocationState> {
       // Resolve zone context, location name and country code in parallel,
       // then emit state ONCE — every emission rebuilds all providers that
       // watch locationProvider, so intermediate states cause full reloads.
-      final zoneFuture = _loadZoneContext(position.latitude, position.longitude);
-      final nameFuture = _getLocationName(position.latitude, position.longitude);
-      final countryFuture = _getCountryCode(position.latitude, position.longitude);
+      final zoneFuture =
+          _loadZoneContext(position.latitude, position.longitude);
+      final nameFuture =
+          _getLocationName(position.latitude, position.longitude);
+      final countryFuture =
+          _getCountryCode(position.latitude, position.longitude);
       final zone = await zoneFuture;
       final locationName = await nameFuture;
       final countryCode = await countryFuture;
-      final currency = countryCode != null ? _countryToCurrency[countryCode] : null;
+      final currency =
+          countryCode != null ? _countryToCurrency[countryCode] : null;
 
       final next = state.copyWith(
         lat: position.latitude,
@@ -203,14 +215,22 @@ class LocationNotifier extends StateNotifier<LocationState> {
       // Only emit if something meaningful changed — GPS jitter of a few
       // meters shouldn't trigger a full provider reload cycle.
       final prev = state;
-      final moved = prev.lat == null || prev.lng == null ||
-          Geolocator.distanceBetween(prev.lat!, prev.lng!, position.latitude, position.longitude) > 500;
-      final zoneChanged = prev.zoneId != next.zoneId || prev.currency != next.currency;
-      if (moved || zoneChanged || prev.locationName != next.locationName || prev.hasLocation == false) {
+      final moved = prev.lat == null ||
+          prev.lng == null ||
+          Geolocator.distanceBetween(
+                  prev.lat!, prev.lng!, position.latitude, position.longitude) >
+              500;
+      final zoneChanged =
+          prev.zoneId != next.zoneId || prev.currency != next.currency;
+      if (moved ||
+          zoneChanged ||
+          prev.locationName != next.locationName ||
+          prev.hasLocation == false) {
         state = next;
       }
       await _saveCachedLocation(next);
-      print('Location state updated: lat=${position.latitude}, lng=${position.longitude}, name=$locationName, country=$countryCode, currency=$currency');
+      print(
+          'Location state updated: lat=${position.latitude}, lng=${position.longitude}, name=$locationName, country=$countryCode, currency=$currency');
     } catch (e) {
       print('Failed to fetch location: $e');
       state = LocationState(error: e.toString());
@@ -223,29 +243,30 @@ class LocationNotifier extends StateNotifier<LocationState> {
       try {
         final placemarks = await _geocoding!.placemarkFromCoordinates(lat, lng);
         if (placemarks.isNotEmpty) {
-          final place = placemarks.first as geocoding.Placemark;
-        final parts = <String>[];
-        
-        // Add street address if available
-        if (place.street != null && place.street!.isNotEmpty) {
-          parts.add(place.street!);
-        }
-        // Add postal code if available
-        if (place.postalCode != null && place.postalCode!.isNotEmpty) {
-          parts.add(place.postalCode!);
-        }
-        if (place.locality != null && place.locality!.isNotEmpty) {
-          parts.add(place.locality!);
-        }
-        if (place.administrativeArea != null && place.administrativeArea!.isNotEmpty) {
-          parts.add(place.administrativeArea!);
-        }
-        if (place.country != null && place.country!.isNotEmpty) {
-          parts.add(place.country!);
-        }
-        final locationName = parts.join(', ');
-        print('Location name resolved via native geocoding: $locationName');
-        return locationName;
+          final place = placemarks.first;
+          final parts = <String>[];
+
+          // Add street address if available
+          if (place.street != null && place.street!.isNotEmpty) {
+            parts.add(place.street!);
+          }
+          // Add postal code if available
+          if (place.postalCode != null && place.postalCode!.isNotEmpty) {
+            parts.add(place.postalCode!);
+          }
+          if (place.locality != null && place.locality!.isNotEmpty) {
+            parts.add(place.locality!);
+          }
+          if (place.administrativeArea != null &&
+              place.administrativeArea!.isNotEmpty) {
+            parts.add(place.administrativeArea!);
+          }
+          if (place.country != null && place.country!.isNotEmpty) {
+            parts.add(place.country!);
+          }
+          final locationName = parts.join(', ');
+          print('Location name resolved via native geocoding: $locationName');
+          return locationName;
         }
       } catch (e) {
         print('Native geocoding failed: $e');
@@ -267,7 +288,7 @@ class LocationNotifier extends StateNotifier<LocationState> {
       if (response.data != null && response.data['address'] != null) {
         final address = response.data['address'] as Map<String, dynamic>;
         final parts = <String>[];
-        
+
         // Add street address if available
         if (address['road'] != null) {
           parts.add(address['road']);
@@ -275,7 +296,8 @@ class LocationNotifier extends StateNotifier<LocationState> {
         // Add house number if available
         if (address['house_number'] != null) {
           if (parts.isNotEmpty) {
-            parts[parts.length - 1] = '${address['house_number']} ${parts.last}';
+            parts[parts.length - 1] =
+                '${address['house_number']} ${parts.last}';
           } else {
             parts.add(address['house_number']);
           }
@@ -294,19 +316,19 @@ class LocationNotifier extends StateNotifier<LocationState> {
         } else if (address['locality'] != null) {
           parts.add(address['locality']);
         }
-        
+
         // Add state/province if available
         if (address['state'] != null) {
           parts.add(address['state']);
         } else if (address['province'] != null) {
           parts.add(address['province']);
         }
-        
+
         // Add country
         if (address['country'] != null) {
           parts.add(address['country']);
         }
-        
+
         final locationName = parts.join(', ');
         print('Location name resolved via Nominatim: $locationName');
         return locationName.isNotEmpty ? locationName : null;
@@ -325,10 +347,12 @@ class LocationNotifier extends StateNotifier<LocationState> {
       try {
         final placemarks = await _geocoding!.placemarkFromCoordinates(lat, lng);
         if (placemarks.isNotEmpty) {
-          final place = placemarks.first as geocoding.Placemark;
-        if (place.isoCountryCode != null && place.isoCountryCode!.isNotEmpty) {
-          print('Country code resolved via native geocoding: ${place.isoCountryCode}');
-          return place.isoCountryCode;
+          final place = placemarks.first;
+          if (place.isoCountryCode != null &&
+              place.isoCountryCode!.isNotEmpty) {
+            print(
+                'Country code resolved via native geocoding: ${place.isoCountryCode}');
+            return place.isoCountryCode;
           }
         }
       } catch (e) {
@@ -352,7 +376,8 @@ class LocationNotifier extends StateNotifier<LocationState> {
         final address = response.data['address'] as Map<String, dynamic>;
         final countryCode = address['country_code'] as String?;
         if (countryCode != null && countryCode.isNotEmpty) {
-          print('Country code resolved via Nominatim: ${countryCode.toUpperCase()}');
+          print(
+              'Country code resolved via Nominatim: ${countryCode.toUpperCase()}');
           return countryCode.toUpperCase();
         }
       }
@@ -366,7 +391,8 @@ class LocationNotifier extends StateNotifier<LocationState> {
   /// Fetch zone context without touching state. Returns null on failure.
   Future<_ZoneContext?> _loadZoneContext(double lat, double lng) async {
     try {
-      final response = await ApiService.dio.get('/config/context', queryParameters: {
+      final response =
+          await ApiService.dio.get('/config/context', queryParameters: {
         'lat': lat,
         'lng': lng,
       });
@@ -376,11 +402,15 @@ class LocationNotifier extends StateNotifier<LocationState> {
         if (data == null) return null;
         final zone = data['zone'] as Map<String, dynamic>?;
         final zones = data['zones'] as List?;
-        final firstZone = zone ?? (zones != null && zones.isNotEmpty ? zones.first as Map<String, dynamic> : null);
+        final firstZone = zone ??
+            (zones != null && zones.isNotEmpty
+                ? zones.first as Map<String, dynamic>
+                : null);
         final serviceAvailability = firstZone?['service_availability'] as Map?;
         final categories = serviceAvailability?['categories'] as List<String>?;
 
-        final zoneId = data['zoneId'] as String? ?? firstZone?['id']?.toString();
+        final zoneId =
+            data['zoneId'] as String? ?? firstZone?['id']?.toString();
 
         // Zone changed → drop cached zone content so fresh items load
         if (zoneId != null && zoneId != ApiService.zoneKey) {
@@ -434,7 +464,8 @@ class LocationNotifier extends StateNotifier<LocationState> {
 
     // Get country code and derive currency FIRST (this is the authoritative source)
     String? countryCode = await _getCountryCode(lat, lng);
-    String? currency = countryCode != null ? _countryToCurrency[countryCode] : null;
+    String? currency =
+        countryCode != null ? _countryToCurrency[countryCode] : null;
 
     print('Location: lat=$lat, lng=$lng');
     print('Country code: $countryCode');
@@ -487,16 +518,42 @@ final locationProvider = StateNotifierProvider<LocationNotifier, LocationState>(
 
 // ISO 3166-1 country code -> ISO 4217 currency code
 const _countryToCurrency = <String, String>{
-  'NG': 'NGN', 'GH': 'GHS', 'KE': 'KES', 'ZA': 'ZAR', 'EG': 'EGP',
-  'MA': 'MAD', 'ET': 'ETB', 'TZ': 'TZS', 'UG': 'UGX', 'SN': 'XOF',
-  'CI': 'XOF', 'CM': 'XAF', 'GA': 'XAF', 'CG': 'XAF', 'CD': 'CDF',
-  'US': 'USD', 'GB': 'GBP', 'EU': 'EUR', 'CA': 'CAD', 'FR': 'EUR',
-  'DE': 'EUR', 'IT': 'EUR', 'ES': 'EUR', 'NL': 'EUR', 'BE': 'EUR',
-  'AE': 'AED', 'SA': 'SAR', 'IN': 'INR', 'CN': 'CNY', 'JP': 'JPY',
+  'NG': 'NGN',
+  'GH': 'GHS',
+  'KE': 'KES',
+  'ZA': 'ZAR',
+  'EG': 'EGP',
+  'MA': 'MAD',
+  'ET': 'ETB',
+  'TZ': 'TZS',
+  'UG': 'UGX',
+  'SN': 'XOF',
+  'CI': 'XOF',
+  'CM': 'XAF',
+  'GA': 'XAF',
+  'CG': 'XAF',
+  'CD': 'CDF',
+  'US': 'USD',
+  'GB': 'GBP',
+  'EU': 'EUR',
+  'CA': 'CAD',
+  'FR': 'EUR',
+  'DE': 'EUR',
+  'IT': 'EUR',
+  'ES': 'EUR',
+  'NL': 'EUR',
+  'BE': 'EUR',
+  'AE': 'AED',
+  'SA': 'SAR',
+  'IN': 'INR',
+  'CN': 'CNY',
+  'JP': 'JPY',
 };
 
 String _defaultCurrencyForLocale(String locale) {
-  final country = locale.length >= 2 ? locale.substring(locale.length - 2).toUpperCase() : '';
+  final country = locale.length >= 2
+      ? locale.substring(locale.length - 2).toUpperCase()
+      : '';
   return _countryToCurrency[country] ?? 'XAF';
 }
 
@@ -505,15 +562,19 @@ final userCurrencyProvider = Provider<String?>((ref) {
   return locationState.currency;
 });
 
-final convertedPriceProvider = FutureProvider.family<double, ({double amount, String fromCurrency})>((ref, params) async {
+final convertedPriceProvider =
+    FutureProvider.family<double, ({double amount, String fromCurrency})>(
+        (ref, params) async {
   final currency = ref.watch(userCurrencyProvider);
   if (currency == params.fromCurrency) return params.amount;
   try {
-    final response = await ApiService.dio.get('/currencies/exchange-rate', queryParameters: {
+    final response =
+        await ApiService.dio.get('/currencies/exchange-rate', queryParameters: {
       'from': params.fromCurrency,
       'to': currency,
     });
-    final rate = (response.data['data']?['rate'] ?? response.data['rate']) as num?;
+    final rate =
+        (response.data['data']?['rate'] ?? response.data['rate']) as num?;
     if (rate == null) return params.amount;
     return params.amount * rate.toDouble();
   } catch (_) {

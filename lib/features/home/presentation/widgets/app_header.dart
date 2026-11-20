@@ -39,12 +39,12 @@ class HomeAppHeader extends ConsumerWidget {
           end: Alignment.bottomRight,
           colors: [
             GlayaColors.surface,
-            GlayaColors.vibrantPink.withOpacity(0.03),
+            GlayaColors.vibrantPink.withValues(alpha: 0.03),
           ],
         ),
         border: Border(
           bottom: BorderSide(
-            color: GlayaColors.vibrantPink.withOpacity(0.1),
+            color: GlayaColors.vibrantPink.withValues(alpha: 0.1),
             width: 1,
           ),
         ),
@@ -70,10 +70,10 @@ class HomeAppHeader extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration: BoxDecoration(
-                color: GlayaColors.vibrantPink.withOpacity(0.08),
+                color: GlayaColors.vibrantPink.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: GlayaColors.vibrantPink.withOpacity(0.2),
+                  color: GlayaColors.vibrantPink.withValues(alpha: 0.2),
                   width: 1,
                 ),
               ),
@@ -162,7 +162,8 @@ class HomeAppHeader extends ConsumerWidget {
             GestureDetector(
               onTap: () => context.push('/login'),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
                   color: GlayaColors.berry,
                   borderRadius: BorderRadius.circular(20),
@@ -182,10 +183,13 @@ class HomeAppHeader extends ConsumerWidget {
               onTap: () => context.push('/profile'),
               child: CircleAvatar(
                 radius: 20,
-                backgroundColor: GlayaColors.vibrantPink.withOpacity(0.2),
-                backgroundImage: photoUrl != null ? NetworkImage(ConfigService().replaceLocalhost(photoUrl!)) : null,
+                backgroundColor: GlayaColors.vibrantPink.withValues(alpha: 0.2),
+                backgroundImage: photoUrl != null
+                    ? NetworkImage(ConfigService().replaceLocalhost(photoUrl!))
+                    : null,
                 child: photoUrl == null
-                    ? const Icon(Icons.person, color: GlayaColors.berry, size: 22)
+                    ? const Icon(Icons.person,
+                        color: GlayaColors.berry, size: 22)
                     : null,
               ),
             ),
@@ -214,10 +218,12 @@ class LocationPickerDialogContent extends ConsumerStatefulWidget {
   const LocationPickerDialogContent({super.key});
 
   @override
-  ConsumerState<LocationPickerDialogContent> createState() => _LocationPickerDialogContentState();
+  ConsumerState<LocationPickerDialogContent> createState() =>
+      _LocationPickerDialogContentState();
 }
 
-class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDialogContent> {
+class _LocationPickerDialogContentState
+    extends ConsumerState<LocationPickerDialogContent> {
   bool _isLoading = false;
   String? _error;
 
@@ -231,7 +237,8 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         setState(() {
-          _error = 'Location services are disabled. Please enable them in settings.';
+          _error =
+              'Location services are disabled. Please enable them in settings.';
           _isLoading = false;
         });
         return;
@@ -242,7 +249,8 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           setState(() {
-            _error = 'Location permission denied. Please enable it in settings.';
+            _error =
+                'Location permission denied. Please enable it in settings.';
             _isLoading = false;
           });
           return;
@@ -251,7 +259,8 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
 
       if (permission == LocationPermission.deniedForever) {
         setState(() {
-          _error = 'Location permission permanently denied. Please enable it in settings.';
+          _error =
+              'Location permission permanently denied. Please enable it in settings.';
           _isLoading = false;
         });
         return;
@@ -264,9 +273,9 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
 
       // Update location provider
       await ref.read(locationProvider.notifier).setLocation(
-        position.latitude,
-        position.longitude,
-      );
+            position.latitude,
+            position.longitude,
+          );
 
       if (mounted) {
         Navigator.pop(context);
@@ -319,7 +328,7 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
               ),
               border: Border(
                 bottom: BorderSide(
-                  color: GlayaColors.vibrantPink.withOpacity(0.1),
+                  color: GlayaColors.vibrantPink.withValues(alpha: 0.1),
                   width: 1,
                 ),
               ),
@@ -371,17 +380,17 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: GlayaColors.softShadow,
                           blurRadius: 10,
-                          offset: const Offset(0, 4),
+                          offset: Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Column(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.my_location,
                           size: 48,
                           color: GlayaColors.berry,
@@ -423,7 +432,8 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
                                     ),
                                   )
                                 : const Text(
@@ -450,7 +460,8 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_outline, color: Colors.red.shade700, size: 20),
+                          Icon(Icons.error_outline,
+                              color: Colors.red.shade700, size: 20),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -475,17 +486,17 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: GlayaColors.softShadow,
                           blurRadius: 10,
-                          offset: const Offset(0, 4),
+                          offset: Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Column(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.map_outlined,
                           size: 48,
                           color: GlayaColors.berry,
@@ -515,7 +526,7 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
                             onPressed: _openMapPicker,
                             style: OutlinedButton.styleFrom(
                               foregroundColor: GlayaColors.berry,
-                              side: BorderSide(color: GlayaColors.berry),
+                              side: const BorderSide(color: GlayaColors.berry),
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
@@ -561,7 +572,8 @@ class _LocationPickerDialogContentState extends ConsumerState<LocationPickerDial
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.check_circle, color: GlayaColors.berry, size: 20),
+                          const Icon(Icons.check_circle,
+                              color: GlayaColors.berry, size: 20),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
@@ -602,10 +614,12 @@ class MapPickerDialogContent extends ConsumerStatefulWidget {
   const MapPickerDialogContent({super.key});
 
   @override
-  ConsumerState<MapPickerDialogContent> createState() => _MapPickerDialogContentState();
+  ConsumerState<MapPickerDialogContent> createState() =>
+      _MapPickerDialogContentState();
 }
 
-class _MapPickerDialogContentState extends ConsumerState<MapPickerDialogContent> {
+class _MapPickerDialogContentState
+    extends ConsumerState<MapPickerDialogContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -620,9 +634,9 @@ class _MapPickerDialogContentState extends ConsumerState<MapPickerDialogContent>
             // Header
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(20),
                   topRight: Radius.circular(20),
                 ),
@@ -631,7 +645,8 @@ class _MapPickerDialogContentState extends ConsumerState<MapPickerDialogContent>
                 children: [
                   IconButton(
                     onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.arrow_back, color: GlayaColors.textPrimary),
+                    icon: const Icon(Icons.arrow_back,
+                        color: GlayaColors.textPrimary),
                   ),
                   const SizedBox(width: 12),
                   const Expanded(
@@ -650,7 +665,9 @@ class _MapPickerDialogContentState extends ConsumerState<MapPickerDialogContent>
             Expanded(
               child: SimpleMapPicker(
                 onLocationSelected: (lat, lng) async {
-                  await ref.read(locationProvider.notifier).setLocation(lat, lng);
+                  await ref
+                      .read(locationProvider.notifier)
+                      .setLocation(lat, lng);
                   if (mounted) {
                     Navigator.pop(context); // Close map picker
                     Navigator.pop(context); // Close location picker dialog
@@ -724,7 +741,8 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
               _selectedLocation = LatLng(position.latitude, position.longitude);
               _isLoading = false;
             });
-            await _getAddressFromCoordinates(position.latitude, position.longitude);
+            await _getAddressFromCoordinates(
+                position.latitude, position.longitude);
             return;
           }
         }
@@ -768,14 +786,18 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
         // Build a readable address
         if (address['road'] != null) parts.add(address['road']);
         if (address['suburb'] != null) parts.add(address['suburb']);
-        if (address['neighbourhood'] != null) parts.add(address['neighbourhood']);
-        if (address['city'] != null || address['town'] != null || address['village'] != null) {
+        if (address['neighbourhood'] != null)
+          parts.add(address['neighbourhood']);
+        if (address['city'] != null ||
+            address['town'] != null ||
+            address['village'] != null) {
           parts.add(address['city'] ?? address['town'] ?? address['village']);
         }
 
         if (mounted) {
           setState(() {
-            _selectedAddress = parts.isNotEmpty ? parts.join(', ') : 'Unknown location';
+            _selectedAddress =
+                parts.isNotEmpty ? parts.join(', ') : 'Unknown location';
           });
         }
       }
@@ -803,7 +825,9 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
         ),
       );
 
-      if (response.data != null && response.data is List && response.data.isNotEmpty) {
+      if (response.data != null &&
+          response.data is List &&
+          response.data.isNotEmpty) {
         final result = response.data[0] as Map<String, dynamic>;
         final lat = double.tryParse(result['lat'] as String? ?? '');
         final lon = double.tryParse(result['lon'] as String? ?? '');
@@ -851,7 +875,8 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
           },
           onCameraIdle: () {
             if (_selectedLocation != null) {
-              _getAddressFromCoordinates(_selectedLocation!.latitude, _selectedLocation!.longitude);
+              _getAddressFromCoordinates(
+                  _selectedLocation!.latitude, _selectedLocation!.longitude);
             }
           },
           myLocationEnabled: true,
@@ -865,7 +890,7 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   spreadRadius: 2,
                   blurRadius: 5,
                 ),
@@ -890,7 +915,7 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
+                  color: Colors.black.withValues(alpha: 0.2),
                   spreadRadius: 1,
                   blurRadius: 3,
                 ),
@@ -940,7 +965,7 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -949,9 +974,9 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Selected Location',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: GlayaColors.textSecondary,
                     fontWeight: FontWeight.w500,
@@ -970,7 +995,7 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
                 const SizedBox(height: 4),
                 Text(
                   '${_selectedLocation!.latitude.toStringAsFixed(6)}, ${_selectedLocation!.longitude.toStringAsFixed(6)}',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 12,
                     color: GlayaColors.textSecondary,
                   ),

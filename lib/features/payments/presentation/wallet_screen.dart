@@ -29,12 +29,14 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
 
   String _currencyCode = 'XAF';
 
-  Map<String, dynamic>? get _currentAccount =>
-      _accounts.isEmpty ? null : _accounts[_accountIndex.clamp(0, _accounts.length - 1)];
+  Map<String, dynamic>? get _currentAccount => _accounts.isEmpty
+      ? null
+      : _accounts[_accountIndex.clamp(0, _accounts.length - 1)];
 
   double get _currentBalance =>
       num.tryParse(_currentAccount?['balance']?.toString() ?? '')?.toDouble() ??
-      num.tryParse(_wallet?['balance']?.toString() ?? '')?.toDouble() ?? 0;
+      num.tryParse(_wallet?['balance']?.toString() ?? '')?.toDouble() ??
+      0;
 
   String get _currentCurrency =>
       (_currentAccount?['currency'] as String?)?.toUpperCase() ?? _currencyCode;
@@ -116,8 +118,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   String _money(num? value, {int digits = 0, String? currency}) {
     final code = (currency ?? _currentCurrency).toUpperCase();
     final v = value ?? 0;
-    final formatted = NumberFormat('#,##0${digits > 0 ? '.${'0' * digits}' : ''}', 'en_US')
-        .format(v);
+    final formatted =
+        NumberFormat('#,##0${digits > 0 ? '.${'0' * digits}' : ''}', 'en_US')
+            .format(v);
     return '${CurrencyService.getCurrencySymbol(code)}$formatted $code';
   }
 
@@ -137,7 +140,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authNotifierProvider).valueOrNull;
-    final transactions = (_wallet?['transactions'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+    final transactions = (_wallet?['transactions'] as List<dynamic>?)
+            ?.cast<Map<String, dynamic>>() ??
+        [];
     final canWithdraw = user?.role == 'professional' || user?.role == 'both';
     final hasAccounts = _accounts.isNotEmpty;
     final pages = hasAccounts ? _accounts : [_wallet ?? {}];
@@ -155,15 +160,27 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               onPageChanged: (i) => setState(() => _accountIndex = i),
               itemBuilder: (context, i) {
                 final acct = pages[i];
-                final cur = (acct['currency'] as String? ?? _currencyCode).toUpperCase();
-                final avail = num.tryParse(acct['balance']?.toString() ?? '')?.toDouble() ?? 0;
-                final pend = num.tryParse(acct['pendingBalance']?.toString() ?? '')?.toDouble() ?? 0;
-                final isPrimary = acct['isPrimary'] == true || acct['is_primary'] == true || i == 0;
+                final cur = (acct['currency'] as String? ?? _currencyCode)
+                    .toUpperCase();
+                final avail = num.tryParse(acct['balance']?.toString() ?? '')
+                        ?.toDouble() ??
+                    0;
+                final pend =
+                    num.tryParse(acct['pendingBalance']?.toString() ?? '')
+                            ?.toDouble() ??
+                        0;
+                final isPrimary = acct['isPrimary'] == true ||
+                    acct['is_primary'] == true ||
+                    i == 0;
                 return Row(
                   children: [
-                    Expanded(child: _buildBalanceCard('Available • $cur', avail, currency: cur, subtitle: isPrimary ? 'Home' : '')),
+                    Expanded(
+                        child: _buildBalanceCard('Available • $cur', avail,
+                            currency: cur, subtitle: isPrimary ? 'Home' : '')),
                     const SizedBox(width: 16),
-                    Expanded(child: _buildBalanceCard('Pending • $cur', pend, currency: cur)),
+                    Expanded(
+                        child: _buildBalanceCard('Pending • $cur', pend,
+                            currency: cur)),
                   ],
                 );
               },
@@ -175,14 +192,17 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: List.generate(pages.length, (i) {
-                  final cur = (pages[i]['currency'] as String? ?? '').toUpperCase();
+                  final cur =
+                      (pages[i]['currency'] as String? ?? '').toUpperCase();
                   return AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     margin: const EdgeInsets.symmetric(horizontal: 3),
                     width: _accountIndex == i ? 18 : 6,
                     height: 6,
                     decoration: BoxDecoration(
-                      color: _accountIndex == i ? GlayaColors.berry : GlayaColors.textSecondary.withOpacity(0.3),
+                      color: _accountIndex == i
+                          ? GlayaColors.berry
+                          : GlayaColors.textSecondary.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(3),
                     ),
                     child: cur.isEmpty ? null : null,
@@ -217,7 +237,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton.icon(
-                    onPressed: _currentBalance > 0 ? () => _openWithdrawSheet(_currentBalance) : null,
+                    onPressed: _currentBalance > 0
+                        ? () => _openWithdrawSheet(_currentBalance)
+                        : null,
                     icon: const Icon(Icons.payments_outlined, size: 18),
                     label: const Text('Withdraw'),
                     style: OutlinedButton.styleFrom(
@@ -249,20 +271,22 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             )
           else
             ...transactions.map((tx) {
-              final isCredit = (tx['type'] as String? ?? '').toLowerCase() == 'credit';
+              final isCredit =
+                  (tx['type'] as String? ?? '').toLowerCase() == 'credit';
               final amount = num.tryParse(tx['amount']?.toString() ?? '') ?? 0;
               final reference = tx['reference'] as String? ?? 'Transaction';
               final createdAt = tx['createdAt'] ?? tx['created_at'];
               final dateText = createdAt != null
-                  ? DateFormat('MMM d, yyyy • HH:mm')
-                      .format(DateTime.tryParse(createdAt.toString()) ?? DateTime.now())
+                  ? DateFormat('MMM d, yyyy • HH:mm').format(
+                      DateTime.tryParse(createdAt.toString()) ?? DateTime.now())
                   : '';
               return ListTile(
                 leading: Icon(
                   isCredit ? Icons.arrow_downward : Icons.arrow_upward,
                   color: isCredit ? GlayaColors.success : GlayaColors.error,
                 ),
-                title: Text(reference, maxLines: 1, overflow: TextOverflow.ellipsis),
+                title: Text(reference,
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
                 subtitle: Text(dateText),
                 trailing: Text(
                   '${isCredit ? '+' : '−'}${_money(amount)}',
@@ -287,7 +311,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     if (_loadingPayouts) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: 16),
-        child: Center(child: CircularProgressIndicator(color: GlayaColors.berry)),
+        child:
+            Center(child: CircularProgressIndicator(color: GlayaColors.berry)),
       );
     }
     if (_payouts.isEmpty) {
@@ -326,14 +351,12 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             trailing: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.12),
+                color: color.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(label,
                   style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: color)),
+                      fontSize: 11, fontWeight: FontWeight.w700, color: color)),
             ),
           ),
         );
@@ -341,24 +364,26 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
     );
   }
 
-  Widget _buildBalanceCard(String label, double amount, {String? currency, String subtitle = ''}) {
+  Widget _buildBalanceCard(String label, double amount,
+      {String? currency, String subtitle = ''}) {
     final cur = (currency ?? _currentCurrency).toUpperCase();
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: GlayaColors.surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: GlayaColors.shadow,
             blurRadius: 8,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         children: [
-          Text(label, style: GlayaTextStyles.bodyMedium(), textAlign: TextAlign.center),
+          Text(label,
+              style: GlayaTextStyles.bodyMedium(), textAlign: TextAlign.center),
           const SizedBox(height: 8),
           Text(
             _money(amount, currency: cur),
@@ -398,7 +423,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           final toAcct = _accounts[toIdx];
           final fromCur = (fromAcct['currency'] as String? ?? '').toUpperCase();
           final toCur = (toAcct['currency'] as String? ?? '').toUpperCase();
-          final fromBal = num.tryParse(fromAcct['balance']?.toString() ?? '') ?? 0;
+          final fromBal =
+              num.tryParse(fromAcct['balance']?.toString() ?? '') ?? 0;
 
           Future<void> submit() async {
             final amt = double.tryParse(fromCtrl.text) ?? 0;
@@ -410,7 +436,10 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               setSheetState(() => error = 'Insufficient $fromCur balance');
               return;
             }
-            setSheetState(() { loading = true; error = null; });
+            setSheetState(() {
+              loading = true;
+              error = null;
+            });
             try {
               await ApiService.dio.post('/payments/wallets/me/convert', data: {
                 'fromCurrency': fromCur,
@@ -435,7 +464,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
 
           return Padding(
             padding: EdgeInsets.only(
-              left: 20, right: 20, top: 8,
+              left: 20,
+              right: 20,
+              top: 8,
               bottom: MediaQuery.of(context).viewInsets.bottom + 20,
             ),
             child: Column(
@@ -448,12 +479,14 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 const SizedBox(height: 6),
                 DropdownButtonFormField<int>(
                   initialValue: fromIdx,
-                  decoration: const InputDecoration(border: OutlineInputBorder()),
+                  decoration:
+                      const InputDecoration(border: OutlineInputBorder()),
                   items: [
                     for (var i = 0; i < _accounts.length; i++)
                       DropdownMenuItem(
                         value: i,
-                        child: Text('${_accounts[i]['currency']} — ${_money(num.tryParse(_accounts[i]['balance']?.toString() ?? '') ?? 0, currency: (_accounts[i]['currency'] as String? ?? '').toUpperCase())}'),
+                        child: Text(
+                            '${_accounts[i]['currency']} — ${_money(num.tryParse(_accounts[i]['balance']?.toString() ?? '') ?? 0, currency: (_accounts[i]['currency'] as String? ?? '').toUpperCase())}'),
                       ),
                   ],
                   onChanged: (v) => setSheetState(() {
@@ -466,7 +499,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 const SizedBox(height: 12),
                 TextField(
                   controller: fromCtrl,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
                     labelText: 'Amount ($fromCur)',
                     border: const OutlineInputBorder(),
@@ -477,12 +511,14 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 const SizedBox(height: 6),
                 DropdownButtonFormField<int>(
                   initialValue: toIdx,
-                  decoration: const InputDecoration(border: OutlineInputBorder()),
+                  decoration:
+                      const InputDecoration(border: OutlineInputBorder()),
                   items: [
                     for (var i = 0; i < _accounts.length; i++)
                       DropdownMenuItem(
                         value: i,
-                        child: Text('${_accounts[i]['currency']} — balance ${_money(num.tryParse(_accounts[i]['balance']?.toString() ?? '') ?? 0, currency: (_accounts[i]['currency'] as String? ?? '').toUpperCase())}'),
+                        child: Text(
+                            '${_accounts[i]['currency']} — balance ${_money(num.tryParse(_accounts[i]['balance']?.toString() ?? '') ?? 0, currency: (_accounts[i]['currency'] as String? ?? '').toUpperCase())}'),
                       ),
                   ],
                   onChanged: (v) => setSheetState(() {
@@ -494,7 +530,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                 ),
                 if (error != null) ...[
                   const SizedBox(height: 10),
-                  Text(error!, style: const TextStyle(color: Colors.red, fontSize: 13)),
+                  Text(error!,
+                      style: const TextStyle(color: Colors.red, fontSize: 13)),
                 ],
                 const SizedBox(height: 16),
                 SizedBox(
@@ -507,7 +544,11 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     child: loading
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white))
                         : Text('Convert to $toCur'),
                   ),
                 ),
@@ -538,7 +579,8 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
         }
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Complete the payment in the browser. Your wallet updates automatically once confirmed.'),
+            content: Text(
+                'Complete the payment in the browser. Your wallet updates automatically once confirmed.'),
             duration: Duration(seconds: 6),
           ));
         }
@@ -546,14 +588,16 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
         await Future.delayed(const Duration(seconds: 8));
         if (reference != null) {
           try {
-            await ApiService.dio.post('/payments/wallet/topup/complete', data: {'reference': reference});
+            await ApiService.dio.post('/payments/wallet/topup/complete',
+                data: {'reference': reference});
           } catch (_) {}
         }
         await _loadWallet();
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not start top-up. Please try again.')),
+            const SnackBar(
+                content: Text('Could not start top-up. Please try again.')),
           );
         }
       }
@@ -578,8 +622,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
           controller: amountController,
           keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: InputDecoration(
-            labelText: 'Amount (${_currentCurrency})',
-            prefixText: '${CurrencyService.getCurrencySymbol(_currentCurrency)} ',
+            labelText: 'Amount ($_currentCurrency)',
+            prefixText:
+                '${CurrencyService.getCurrencySymbol(_currentCurrency)} ',
           ),
         ),
         actions: [

@@ -26,13 +26,13 @@ class PortfolioUploadDialog extends ConsumerStatefulWidget {
 
 class _PortfolioUploadDialogState extends ConsumerState<PortfolioUploadDialog> {
   final ImagePicker _picker = ImagePicker();
-  List<XFile> _pickedFiles = [];
-  List<Uint8List> _pickedFileBytes = [];
-  List<VideoPlayerController?> _videoControllers = [];
-  List<bool> _isVideoInitialized = [];
+  final List<XFile> _pickedFiles = [];
+  final List<Uint8List> _pickedFileBytes = [];
+  final List<VideoPlayerController?> _videoControllers = [];
+  final List<bool> _isVideoInitialized = [];
   String? _selectedCategory;
   bool _categoryDropdownOpen = false;
-  List<Map<String, dynamic>> _selectedCustomers = [];
+  final List<Map<String, dynamic>> _selectedCustomers = [];
   List<Map<String, dynamic>> _searchResults = [];
   bool _isUploading = false;
   double _uploadProgress = 0;
@@ -78,8 +78,9 @@ class _PortfolioUploadDialogState extends ConsumerState<PortfolioUploadDialog> {
     final newInitialized = <bool>[];
 
     for (var file in picked) {
-      if (_pickedFiles.length + newFiles.length >= 6)
+      if (_pickedFiles.length + newFiles.length >= 6) {
         break; // Max 6 files total
+      }
 
       final bytes = await file.readAsBytes();
       final isVideo = file.mimeType?.startsWith('video/') ?? false;
@@ -208,7 +209,7 @@ class _PortfolioUploadDialogState extends ConsumerState<PortfolioUploadDialog> {
             child: Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
+                color: Colors.black.withValues(alpha: 0.7),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.close, color: Colors.white, size: 16),

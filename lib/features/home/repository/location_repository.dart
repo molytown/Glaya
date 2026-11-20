@@ -46,9 +46,9 @@ class LocationRepository {
   Future<ZoneResponseModel?> getCachedZone(String lat, String long) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final cacheKey = 'zone_cache_${lat}_${long}';
+      final cacheKey = 'zone_cache_${lat}_$long';
       final cachedData = prefs.getString(cacheKey);
-      
+
       if (cachedData != null) {
         final Map<String, dynamic> jsonData = jsonDecode(cachedData);
         return ZoneResponseModel(
@@ -56,8 +56,9 @@ class LocationRepository {
           jsonData['message'] ?? '',
           List<int>.from(jsonData['zoneIds'] ?? []),
           (jsonData['zoneData'] as List<dynamic>?)
-              ?.map((x) => ZoneData.fromJson(x as Map<String, dynamic>))
-              .toList() ?? [],
+                  ?.map((x) => ZoneData.fromJson(x as Map<String, dynamic>))
+                  .toList() ??
+              [],
         );
       }
     } catch (e) {
@@ -66,15 +67,19 @@ class LocationRepository {
     return null;
   }
 
-  Future<void> saveZoneToCache(String lat, String long, ZoneResponseModel zoneData) async {
+  Future<void> saveZoneToCache(
+      String lat, String long, ZoneResponseModel zoneData) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final cacheKey = 'zone_cache_${lat}_${long}';
+      final cacheKey = 'zone_cache_${lat}_$long';
       final cacheData = {
         'isSuccess': zoneData.isSuccess,
         'message': zoneData.message,
         'zoneIds': zoneData.zoneIds,
-        'zoneData': zoneData.zoneData.map<ZoneData>((x) => x).map((x) => x.toJson()).toList(),
+        'zoneData': zoneData.zoneData
+            .map<ZoneData>((x) => x)
+            .map((x) => x.toJson())
+            .toList(),
       };
       await prefs.setString(cacheKey, jsonEncode(cacheData));
     } catch (e) {
@@ -91,12 +96,14 @@ class LocationRepository {
     }
   }
 
-  Future<bool> saveUserAddress(String address, List<int>? zoneIds, String? lat, String? long) async {
+  Future<bool> saveUserAddress(
+      String address, List<int>? zoneIds, String? lat, String? long) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user_address', address);
       if (zoneIds != null) {
-        await prefs.setStringList('zone_ids', zoneIds.map((e) => e.toString()).toList());
+        await prefs.setStringList(
+            'zone_ids', zoneIds.map((e) => e.toString()).toList());
       }
       if (lat != null) {
         await prefs.setString('user_latitude', lat);
@@ -114,8 +121,7 @@ class LocationRepository {
     try {
       final response = await http.get(
         Uri.parse(
-          'https://maps.googleapis.com/maps/api/geocode/json?latlng=${latLng.latitude},${latLng.longitude}&key=$googleMapApiKey'
-        ),
+            'https://maps.googleapis.com/maps/api/geocode/json?latlng=${latLng.latitude},${latLng.longitude}&key=$googleMapApiKey'),
       );
       return response;
     } catch (e) {
@@ -127,8 +133,7 @@ class LocationRepository {
     try {
       final response = await http.get(
         Uri.parse(
-          'https://maps.googleapis.com/maps/api/place/autocomplete/json?searchtext=$text&key=$googleMapApiKey'
-        ),
+            'https://maps.googleapis.com/maps/api/place/autocomplete/json?searchtext=$text&key=$googleMapApiKey'),
       );
       return response;
     } catch (e) {
@@ -140,8 +145,7 @@ class LocationRepository {
     try {
       final response = await http.get(
         Uri.parse(
-          'https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeID&key=$googleMapApiKey'
-        ),
+            'https://maps.googleapis.com/maps/api/place/details/json?placeid=$placeID&key=$googleMapApiKey'),
       );
       return response;
     } catch (e) {
@@ -153,7 +157,7 @@ class LocationRepository {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      
+
       final response = await http.get(
         Uri.parse('$baseUrl/address'),
         headers: {
@@ -171,7 +175,7 @@ class LocationRepository {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      
+
       final response = await http.post(
         Uri.parse('$baseUrl/address'),
         headers: {
@@ -186,11 +190,12 @@ class LocationRepository {
     }
   }
 
-  Future<http.Response> updateAddress(AddressModel addressModel, int addressId) async {
+  Future<http.Response> updateAddress(
+      AddressModel addressModel, int addressId) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      
+
       final response = await http.put(
         Uri.parse('$baseUrl/address/$addressId'),
         headers: {
@@ -209,7 +214,7 @@ class LocationRepository {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('auth_token');
-      
+
       final response = await http.delete(
         Uri.parse('$baseUrl/address/$id'),
         headers: {

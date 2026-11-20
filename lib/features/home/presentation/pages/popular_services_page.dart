@@ -49,15 +49,15 @@ class PopularServicesPage extends ConsumerWidget {
             ),
           );
         },
-        loading: () =>
-            const Center(child: CircularProgressIndicator(color: GlayaColors.berry)),
-        error: (_, __) => Center(
+        loading: () => const Center(
+            child: CircularProgressIndicator(color: GlayaColors.berry)),
+        error: (_, __) => const Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             child: Text(
               'Could not load services. Pull down to retry.',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: GlayaColors.textSecondary),
+              style: TextStyle(color: GlayaColors.textSecondary),
             ),
           ),
         ),
@@ -77,10 +77,12 @@ class _ServiceTile extends StatelessWidget {
     final name = (service['name'] ?? service['title'] ?? 'Service').toString();
     final pro = service['professional'] as Map<String, dynamic>?;
     final proId = pro?['id']?.toString();
-    final proName = (pro?['user'] as Map<String, dynamic>?)?['name']?.toString() ??
-        pro?['businessName']?.toString() ?? 'Professional';
-    final proPhoto = (pro?['user'] as Map<String, dynamic>?)?['photoUrl']
-        ?.toString();
+    final proName =
+        (pro?['user'] as Map<String, dynamic>?)?['name']?.toString() ??
+            pro?['businessName']?.toString() ??
+            'Professional';
+    final proPhoto =
+        (pro?['user'] as Map<String, dynamic>?)?['photoUrl']?.toString();
     final imageUrl = service['imageUrl'] as String?;
     final price = service['price'] ?? service['priceFrom'];
     final currency = service['currency']?.toString() ?? 'XAF';

@@ -21,7 +21,9 @@ String _currencySym() {
     if (locale.startsWith('fr_') ||
         locale.startsWith('de_') ||
         locale.startsWith('es_') ||
-        locale.startsWith('it_')) return '€';
+        locale.startsWith('it_')) {
+      return '€';
+    }
     if (locale.startsWith('en_KE')) return 'KSh ';
     if (locale.startsWith('en_GH')) return 'GH₵ ';
     if (locale.startsWith('en_ZA')) return 'R ';
@@ -63,7 +65,7 @@ String _getCurrencySymbol(String currencyCode) {
     case 'MXN':
       return 'MX\$';
     default:
-      return currencyCode + ' ';
+      return '$currencyCode ';
   }
 }
 
@@ -90,9 +92,9 @@ final professionalDashboardProvider = FutureProvider<Map<String, dynamic>>((
       ApiService.dio
           .get('/professionals/me/analytics?period=month')
           .catchError((e) {
-            print('[DEBUG] Analytics failed, using dashboard instead: $e');
-            return ApiService.dio.get('/professionals/me/dashboard');
-          }),
+        print('[DEBUG] Analytics failed, using dashboard instead: $e');
+        return ApiService.dio.get('/professionals/me/dashboard');
+      }),
     ]);
     print('[DEBUG] Dashboard API calls completed');
     print('[DEBUG] Dashboard response: ${results[0].data}');
@@ -226,10 +228,11 @@ class _ProfessionalDashboardScreenState
       await ApiService.dio.put('/bookings/$bookingId/$action');
       ref.invalidate(professionalDashboardProvider);
     } catch (e) {
-      if (mounted)
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Action failed: $e'), backgroundColor: _pink),
         );
+      }
     }
   }
 
@@ -273,8 +276,7 @@ class _ProfessionalDashboardScreenState
     final trustScore = (pro['trustScore'] as num?)?.toInt() ?? 0;
     final businessName =
         pro['businessName'] as String? ?? user?.name ?? 'My Business';
-    final portfolioUrls =
-        (pro['portfolioUrls'] as List<dynamic>?) ??
+    final portfolioUrls = (pro['portfolioUrls'] as List<dynamic>?) ??
         (pro['portfolioGalleries'] as List<dynamic>?) ??
         const [];
     final todaySchedule = (data['todayAppointments'] as List<dynamic>?) ?? [];
@@ -284,9 +286,10 @@ class _ProfessionalDashboardScreenState
     if (!_availabilitySynced) {
       _availabilitySynced = true;
       final status = pro['onlineStatus']?.toString().toLowerCase();
-      _isAvailable = status != 'offline' && status != 'away' && status != 'busy';
+      _isAvailable =
+          status != 'offline' && status != 'away' && status != 'busy';
     }
-    
+
     // Get professional's currency
     final currency = pro['currency'] as String? ?? 'XAF';
     setState(() => _professionalCurrency = currency);
@@ -425,7 +428,7 @@ class _ProfessionalDashboardScreenState
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Row(
@@ -471,7 +474,7 @@ class _ProfessionalDashboardScreenState
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: Colors.white.withOpacity(0.2),
+                    backgroundColor: Colors.white.withValues(alpha: 0.2),
                     backgroundImage: user?.photoUrl != null
                         ? NetworkImage(
                             ConfigService().replaceLocalhost(user!.photoUrl!),
@@ -496,8 +499,8 @@ class _ProfessionalDashboardScreenState
                       ),
                       decoration: BoxDecoration(
                         color: _isAvailable
-                            ? _green.withOpacity(0.9)
-                            : Colors.white.withOpacity(0.2),
+                            ? _green.withValues(alpha: 0.9)
+                            : Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Row(
@@ -532,10 +535,10 @@ class _ProfessionalDashboardScreenState
 
   // ── KPI strip ────────────────────────────────────────────────────────────────
   Widget _buildKpiStrip(double earnings, int appts, int pending) {
-    final symbol = _professionalCurrency != null 
+    final symbol = _professionalCurrency != null
         ? _getCurrencySymbol(_professionalCurrency!)
         : _currencySym();
-    
+
     return Row(
       children: [
         Expanded(
@@ -575,7 +578,7 @@ class _ProfessionalDashboardScreenState
         color: _surface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8),
+          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8),
         ],
       ),
       child: Column(
@@ -602,8 +605,7 @@ class _ProfessionalDashboardScreenState
     );
   }
 
-  double _rate(dynamic v) =>
-      double.tryParse(v?.toString() ?? '') ?? 0.0;
+  double _rate(dynamic v) => double.tryParse(v?.toString() ?? '') ?? 0.0;
 
   // ── Performance ───────────────────────────────────────────────────────────────
   Widget _buildPerformance(
@@ -636,9 +638,11 @@ class _ProfessionalDashboardScreenState
               Colors.redAccent,
             ),
             _divider(),
-            _perfRow('Active', '$active', Icons.pending_actions_outlined, _blue),
+            _perfRow(
+                'Active', '$active', Icons.pending_actions_outlined, _blue),
             _divider(),
-            _perfRow('On-time Rate', '$onTimePct%', Icons.timer_outlined, _blue),
+            _perfRow(
+                'On-time Rate', '$onTimePct%', Icons.timer_outlined, _blue),
             _divider(),
             _perfRow(
               'Trust Score',
@@ -689,7 +693,8 @@ class _ProfessionalDashboardScreenState
 
   // ── Revenue Analytics ─────────────────────────────────────────────────────────
   Widget _buildRevenueAnalytics() {
-    final analyticsAsync = ref.watch(dashboardAnalyticsProvider(_analyticsPeriod));
+    final analyticsAsync =
+        ref.watch(dashboardAnalyticsProvider(_analyticsPeriod));
     final symbol = _professionalCurrency != null
         ? _getCurrencySymbol(_professionalCurrency!)
         : _currencySym();
@@ -747,7 +752,8 @@ class _ProfessionalDashboardScreenState
           Widget stat(String label, String value, Color color, IconData icon) {
             return Expanded(
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
                 decoration: BoxDecoration(
                   color: _bg,
                   borderRadius: BorderRadius.circular(12),
@@ -782,9 +788,11 @@ class _ProfessionalDashboardScreenState
             height: 96,
             child: Row(
               children: [
-                stat('Earnings',
+                stat(
+                    'Earnings',
                     '$symbol${NumberFormat('#,##0').format(earnings)}',
-                    _green, Icons.payments_outlined),
+                    _green,
+                    Icons.payments_outlined),
                 const SizedBox(width: 8),
                 stat('Completed', '$completed', _blue,
                     Icons.check_circle_outline),
@@ -812,7 +820,7 @@ class _ProfessionalDashboardScreenState
               children: schedule.map((b) {
                 final booking = b as Map<String, dynamic>?;
                 if (booking == null) return const SizedBox.shrink();
-                
+
                 final dt = DateTime.tryParse(
                   booking['scheduled_at']?.toString() ?? '',
                 );
@@ -829,9 +837,11 @@ class _ProfessionalDashboardScreenState
                         ? _purple
                         : _amber;
                 final bookingId = booking['id']?.toString();
-                
+
                 return GestureDetector(
-                  onTap: bookingId != null ? () => context.push('/bookings/$bookingId') : null,
+                  onTap: bookingId != null
+                      ? () => context.push('/bookings/$bookingId')
+                      : null,
                   child: Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     padding: const EdgeInsets.all(12),
@@ -845,7 +855,7 @@ class _ProfessionalDashboardScreenState
                           width: 52,
                           height: 52,
                           decoration: BoxDecoration(
-                            color: _pink.withOpacity(0.1),
+                            color: _pink.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Center(
@@ -889,7 +899,7 @@ class _ProfessionalDashboardScreenState
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: statusColor.withOpacity(0.1),
+                            color: statusColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -932,7 +942,7 @@ class _ProfessionalDashboardScreenState
           children: bookings.map((b) {
             final booking = b as Map<String, dynamic>?;
             if (booking == null) return const SizedBox.shrink();
-            
+
             final dt = DateTime.tryParse(
               booking['scheduled_at']?.toString() ?? '',
             );
@@ -948,9 +958,11 @@ class _ProfessionalDashboardScreenState
                     ? _purple
                     : _amber;
             final bookingId = booking['id']?.toString();
-            
+
             return GestureDetector(
-              onTap: bookingId != null ? () => context.push('/bookings/$bookingId') : null,
+              onTap: bookingId != null
+                  ? () => context.push('/bookings/$bookingId')
+                  : null,
               child: Container(
                 margin: const EdgeInsets.only(bottom: 10),
                 padding: const EdgeInsets.all(12),
@@ -964,7 +976,7 @@ class _ProfessionalDashboardScreenState
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: _pink.withOpacity(0.1),
+                        color: _pink.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Center(
@@ -1005,7 +1017,7 @@ class _ProfessionalDashboardScreenState
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: statusColor.withOpacity(0.1),
+                        color: statusColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -1038,7 +1050,7 @@ class _ProfessionalDashboardScreenState
           children: reqs.map((b) {
             final booking = b as Map<String, dynamic>?;
             if (booking == null) return const SizedBox.shrink();
-            
+
             final dt = DateTime.tryParse(
               booking['scheduled_at']?.toString() ?? '',
             );
@@ -1048,18 +1060,18 @@ class _ProfessionalDashboardScreenState
             final customer = booking['customer_name'] as String? ?? 'Customer';
             final service = booking['service_name'] as String? ?? 'Service';
             final id = booking['id']?.toString();
-            
+
             if (id == null || id.isEmpty) {
               return const SizedBox.shrink();
             }
-            
+
             return Container(
               margin: const EdgeInsets.only(bottom: 10),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: _amber.withOpacity(0.06),
+                color: _amber.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: _amber.withOpacity(0.3)),
+                border: Border.all(color: _amber.withValues(alpha: 0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1182,7 +1194,7 @@ class _ProfessionalDashboardScreenState
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: _pink.withOpacity(0.08),
+                      color: _pink.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(a.$1, color: _pink, size: 20),
@@ -1225,17 +1237,27 @@ class _ProfessionalDashboardScreenState
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: isElite
-                  ? [_gold.withOpacity(0.1), _gold.withOpacity(0.05)]
+                  ? [
+                      _gold.withValues(alpha: 0.1),
+                      _gold.withValues(alpha: 0.05)
+                    ]
                   : isFlex
-                      ? [_pink.withOpacity(0.1), _pink.withOpacity(0.05)]
-                      : [_text2.withOpacity(0.05), _text2.withOpacity(0.02)],
+                      ? [
+                          _pink.withValues(alpha: 0.1),
+                          _pink.withValues(alpha: 0.05)
+                        ]
+                      : [
+                          _text2.withValues(alpha: 0.05),
+                          _text2.withValues(alpha: 0.02)
+                        ],
             ),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: badgeColor,
                   borderRadius: BorderRadius.circular(20),
@@ -1263,7 +1285,7 @@ class _ProfessionalDashboardScreenState
                   ),
                 ),
               ),
-              Icon(
+              const Icon(
                 Icons.chevron_right,
                 color: _text2,
                 size: 20,
@@ -1289,7 +1311,11 @@ class _ProfessionalDashboardScreenState
 
     final metrics = [
       ('Completion Rate', '$completionPct%', _green),
-      ('Late Arrivals', '$latePct%', latePct > 10 ? Colors.redAccent : Colors.orangeAccent),
+      (
+        'Late Arrivals',
+        '$latePct%',
+        latePct > 10 ? Colors.redAccent : Colors.orangeAccent
+      ),
       ('Customer Satisfaction', '$satisfactionPct%', _green),
       ('Avg Rating', rating > 0 ? rating.toStringAsFixed(1) : '—', _amber),
       ('Total Reviews', '${a['totalReviews'] ?? 0}', _blue),
@@ -1400,19 +1426,19 @@ class _ProfessionalDashboardScreenState
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               decoration: BoxDecoration(
-                color: _pink.withOpacity(0.1),
+                color: _pink.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: _pink.withOpacity(0.3)),
+                border: Border.all(color: _pink.withValues(alpha: 0.3)),
               ),
-              child: Row(
+              child: const Row(
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.edit_location_outlined,
                     size: 18,
                     color: _pink,
                   ),
-                  const SizedBox(width: 10),
-                  const Text(
+                  SizedBox(width: 10),
+                  Text(
                     'Update Location on Map',
                     style: TextStyle(
                       fontSize: 13,
@@ -1420,8 +1446,8 @@ class _ProfessionalDashboardScreenState
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const Spacer(),
-                  const Icon(Icons.arrow_forward_ios, size: 14, color: _pink),
+                  Spacer(),
+                  Icon(Icons.arrow_forward_ios, size: 14, color: _pink),
                 ],
               ),
             ),
@@ -1574,7 +1600,9 @@ class _ProfessionalDashboardScreenState
     }).toList();
 
     // Pad with empty strings to show 8 grid items
-    while (displayUrls.length < 8) displayUrls.add('');
+    while (displayUrls.length < 8) {
+      displayUrls.add('');
+    }
 
     return _card(
       title: 'Recent Work',
@@ -1606,7 +1634,7 @@ class _ProfessionalDashboardScreenState
                   color: _bg,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: _pink.withOpacity(0.2),
+                    color: _pink.withValues(alpha: 0.2),
                     style: BorderStyle.solid,
                   ),
                 ),
@@ -1624,7 +1652,7 @@ class _ProfessionalDashboardScreenState
               ConfigService().replaceLocalhost(url),
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
-                color: _pink.withOpacity(0.08),
+                color: _pink.withValues(alpha: 0.08),
                 child: const Icon(Icons.image_outlined, color: _pink),
               ),
             ),
@@ -1643,9 +1671,8 @@ class _ProfessionalDashboardScreenState
     final portfolioCount =
         (pro['portfolioUrls'] as List<dynamic>?)?.length ?? 0;
     final totalBookings = (pro['totalBookings'] as num?)?.toInt() ?? 0;
-    final monthBookings =
-        ((a['completedBookings'] as num?)?.toInt() ?? 0) +
-            ((a['cancelledBookings'] as num?)?.toInt() ?? 0);
+    final monthBookings = ((a['completedBookings'] as num?)?.toInt() ?? 0) +
+        ((a['cancelledBookings'] as num?)?.toInt() ?? 0);
     final rating = num.tryParse(pro['avgRating']?.toString() ?? '') ?? 0;
 
     return _card(
@@ -1661,11 +1688,8 @@ class _ProfessionalDashboardScreenState
                 Icons.bookmark_outline, _blue),
             _growthStat('This Month', '$monthBookings',
                 Icons.calendar_today_outlined, _green),
-            _growthStat(
-                'Rating',
-                rating > 0 ? rating.toStringAsFixed(1) : '—',
-                Icons.star_outline,
-                _amber),
+            _growthStat('Rating', rating > 0 ? rating.toStringAsFixed(1) : '—',
+                Icons.star_outline, _amber),
           ],
         ),
       ),
@@ -1727,7 +1751,7 @@ class _ProfessionalDashboardScreenState
                           width: 44,
                           height: 44,
                           decoration: BoxDecoration(
-                            color: _purple.withOpacity(0.08),
+                            color: _purple.withValues(alpha: 0.08),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(o.$1, color: _purple, size: 20),
@@ -1760,8 +1784,9 @@ class _ProfessionalDashboardScreenState
     final a = data['analytics'] is Map<String, dynamic>
         ? data['analytics'] as Map<String, dynamic>
         : const {};
-    final monthEarnings =
-        (a['earnings'] is num ? a['earnings'] as num : num.tryParse('${a['earnings']}'))
+    final monthEarnings = (a['earnings'] is num
+                ? a['earnings'] as num
+                : num.tryParse('${a['earnings']}'))
             ?.toDouble() ??
         0;
 
@@ -1786,16 +1811,13 @@ class _ProfessionalDashboardScreenState
                 ),
               );
             }
-            final currency = (wallet['currency'] as String? ?? 'XAF')
-                .toUpperCase();
+            final currency =
+                (wallet['currency'] as String? ?? 'XAF').toUpperCase();
             final sym = _getCurrencySymbol(currency);
-            num? toNum(dynamic v) =>
-                v is num ? v : num.tryParse('$v');
+            num? toNum(dynamic v) => v is num ? v : num.tryParse('$v');
             final balance = toNum(wallet['balance'])?.toDouble() ?? 0;
-            final pending =
-                toNum(wallet['pendingBalance'])?.toDouble() ?? 0;
-            String fmt(num v) =>
-                '$sym${NumberFormat('#,##0').format(v)}';
+            final pending = toNum(wallet['pendingBalance'])?.toDouble() ?? 0;
+            String fmt(num v) => '$sym${NumberFormat('#,##0').format(v)}';
 
             return SizedBox(
               height: 80,
@@ -1916,7 +1938,7 @@ class _ProfessionalDashboardScreenState
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

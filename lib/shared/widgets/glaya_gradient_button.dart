@@ -54,7 +54,8 @@ class GlayaGradientButton extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: GlayaColors.berryGradient,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: GlayaColors.wineDeep.withOpacity(0.4)),
+            border:
+                Border.all(color: GlayaColors.wineDeep.withValues(alpha: 0.4)),
           ),
           child: InkWell(
             onTap: onPressed,

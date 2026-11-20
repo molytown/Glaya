@@ -9,7 +9,8 @@ class AdminDashboardScreen extends ConsumerStatefulWidget {
   const AdminDashboardScreen({super.key});
 
   @override
-  ConsumerState<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
+  ConsumerState<AdminDashboardScreen> createState() =>
+      _AdminDashboardScreenState();
 }
 
 class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
@@ -32,7 +33,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
       );
       setState(() {
         _analytics = analyticsResponse.data['data'] as Map<String, dynamic>;
-        _pendingProfessionals = (professionalsResponse.data['data'] as List).cast<Map<String, dynamic>>();
+        _pendingProfessionals = (professionalsResponse.data['data'] as List)
+            .cast<Map<String, dynamic>>();
       });
     } catch (e) {
       if (mounted) {
@@ -47,7 +49,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
 
   Future<void> _verifyProfessional(String id, String status) async {
     try {
-      await ApiService.dio.put('/admin/professionals/$id/verify', data: {'status': status});
+      await ApiService.dio
+          .put('/admin/professionals/$id/verify', data: {'status': status});
       await _loadData();
     } catch (e) {
       if (mounted) {
@@ -84,17 +87,22 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     spacing: 16,
                     runSpacing: 16,
                     children: [
-                      _buildMetricCard('Users', _analytics?['totalUsers']?.toString() ?? '0'),
-                      _buildMetricCard('Professionals', _analytics?['totalProfessionals']?.toString() ?? '0'),
-                      _buildMetricCard('Bookings', _analytics?['totalBookings']?.toString() ?? '0'),
-                      _buildMetricCard('Revenue', '\$${_analytics?['totalRevenue']?.toString() ?? '0'}'),
+                      _buildMetricCard('Users',
+                          _analytics?['totalUsers']?.toString() ?? '0'),
+                      _buildMetricCard('Professionals',
+                          _analytics?['totalProfessionals']?.toString() ?? '0'),
+                      _buildMetricCard('Bookings',
+                          _analytics?['totalBookings']?.toString() ?? '0'),
+                      _buildMetricCard('Revenue',
+                          '\$${_analytics?['totalRevenue']?.toString() ?? '0'}'),
                     ],
                   ),
                   const SizedBox(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Pending Verifications', style: GlayaTextStyles.titleLarge()),
+                      Text('Pending Verifications',
+                          style: GlayaTextStyles.titleLarge()),
                       TextButton.icon(
                         onPressed: () => context.push('/admin/professionals'),
                         icon: const Icon(Icons.arrow_forward, size: 16),
@@ -114,18 +122,22 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.check, color: GlayaColors.success),
-                              onPressed: () => _verifyProfessional(p['id'] as String, 'approved'),
+                              icon: const Icon(Icons.check,
+                                  color: GlayaColors.success),
+                              onPressed: () => _verifyProfessional(
+                                  p['id'] as String, 'approved'),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.close, color: GlayaColors.error),
-                              onPressed: () => _verifyProfessional(p['id'] as String, 'rejected'),
+                              icon: const Icon(Icons.close,
+                                  color: GlayaColors.error),
+                              onPressed: () => _verifyProfessional(
+                                  p['id'] as String, 'rejected'),
                             ),
                           ],
                         ),
                       ),
                     );
-                  }).toList(),
+                  }),
                 ],
               ),
             ),
@@ -139,17 +151,18 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
       decoration: BoxDecoration(
         color: GlayaColors.surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             color: GlayaColors.shadow,
             blurRadius: 8,
-            offset: const Offset(0, 4),
+            offset: Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         children: [
-          Text(value, style: GlayaTextStyles.headlineMedium(color: GlayaColors.berry)),
+          Text(value,
+              style: GlayaTextStyles.headlineMedium(color: GlayaColors.berry)),
           const SizedBox(height: 4),
           Text(label, style: GlayaTextStyles.bodySmall()),
         ],

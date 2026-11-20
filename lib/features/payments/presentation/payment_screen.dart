@@ -47,7 +47,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
   Future<void> _loadBooking() async {
     try {
-      final response = await ApiService.dio.get('/bookings/${widget.bookingId}');
+      final response =
+          await ApiService.dio.get('/bookings/${widget.bookingId}');
       if (mounted) {
         setState(() {
           _booking = response.data['data'] as Map<String, dynamic>;
@@ -79,16 +80,18 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   }
 
   double get _agreedAmount {
-    final v = _toDouble(
-        _booking?['agreedAmount'] ?? _booking?['agreed_amount']);
+    final v =
+        _toDouble(_booking?['agreedAmount'] ?? _booking?['agreed_amount']);
     return v > 0 ? v : 0;
   }
 
   double get _servicePrice => _agreedAmount > 0
       ? _agreedAmount
-      : _toDouble(_booking?['service']?['price'] ?? _booking?['service']?['basePrice']);
-  double get _depositAmount =>
-      _toDouble(_booking?['depositAmount'] ?? _booking?['deposit_amount'] ?? _booking?['deposit']);
+      : _toDouble(
+          _booking?['service']?['price'] ?? _booking?['service']?['basePrice']);
+  double get _depositAmount => _toDouble(_booking?['depositAmount'] ??
+      _booking?['deposit_amount'] ??
+      _booking?['deposit']);
   double get _payAmount => _payType == 'full' ? _servicePrice : _depositAmount;
   String get _payLabel => _payType == 'full' ? 'Pay Booking' : 'Pay Deposit';
 
@@ -131,7 +134,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
       }
     } on DioException catch (e) {
       final serverMsg = e.response?.data is Map
-          ? (e.response!.data['error'] ?? e.response!.data['message'])?.toString()
+          ? (e.response!.data['error'] ?? e.response!.data['message'])
+              ?.toString()
           : null;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -214,10 +218,16 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
     return Column(
       children: [
-        option('deposit', 'Pay Deposit', 'Secure your booking now, pay the rest at your appointment',
+        option(
+            'deposit',
+            'Pay Deposit',
+            'Secure your booking now, pay the rest at your appointment',
             Icons.hourglass_top_outlined),
         const SizedBox(height: 12),
-        option('full', 'Pay Full Booking', 'Pay the entire amount now — nothing due later',
+        option(
+            'full',
+            'Pay Full Booking',
+            'Pay the entire amount now — nothing due later',
             Icons.check_circle_outline),
       ],
     );
@@ -274,10 +284,16 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
     return Column(
       children: [
-        option('mobile_money', 'Mobile Money', 'MTN, Airtel, Orange — secure checkout',
+        option(
+            'mobile_money',
+            'Mobile Money',
+            'MTN, Airtel, Orange — secure checkout',
             Icons.phone_android_outlined),
         const SizedBox(height: 12),
-        option('wallet', 'Glaya Wallet', 'Pay instantly from your wallet balance',
+        option(
+            'wallet',
+            'Glaya Wallet',
+            'Pay instantly from your wallet balance',
             Icons.account_balance_wallet_outlined),
         if (_walletBalance != null) ...[
           const SizedBox(height: 8),
@@ -323,7 +339,8 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                 color: Color(0xFF1A1A1A))),
       ),
       body: _bookingLoading
-          ? const Center(child: CircularProgressIndicator(color: GlayaColors.berry))
+          ? const Center(
+              child: CircularProgressIndicator(color: GlayaColors.berry))
           : Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -338,25 +355,30 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                           Container(
                             padding: const EdgeInsets.all(24),
                             decoration: BoxDecoration(
-                              color: GlayaColors.berry.withOpacity(0.08),
+                              color: GlayaColors.berry.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(16),
                             ),
                             child: Column(
                               children: [
                                 Text(
-                                  _payType == 'full' ? 'Full Booking Amount' : 'Deposit Amount',
+                                  _payType == 'full'
+                                      ? 'Full Booking Amount'
+                                      : 'Deposit Amount',
                                   style: GlayaTextStyles.bodyLarge(),
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
                                   '$symbol${_payAmount.toStringAsFixed(_payAmount.truncateToDouble() == _payAmount ? 0 : 2)} $currency',
-                                  style: GlayaTextStyles.headlineLarge(color: GlayaColors.berry),
+                                  style: GlayaTextStyles.headlineLarge(
+                                      color: GlayaColors.berry),
                                 ),
-                                if (_payType == 'deposit' && _servicePrice > _depositAmount) ...[
+                                if (_payType == 'deposit' &&
+                                    _servicePrice > _depositAmount) ...[
                                   const SizedBox(height: 6),
                                   Text(
                                     'Remaining ${_formatAmount(_servicePrice - _depositAmount)} due at your appointment',
-                                    style: const TextStyle(fontSize: 12, color: Color(0xFF888888)),
+                                    style: const TextStyle(
+                                        fontSize: 12, color: Color(0xFF888888)),
                                   ),
                                 ],
                               ],
@@ -412,14 +434,14 @@ class NotchPayCheckoutDialog extends StatefulWidget {
   final String bookingId;
 
   const NotchPayCheckoutDialog({
+    super.key,
     required this.authorizationUrl,
     required this.reference,
     required this.bookingId,
   });
 
   @override
-  State<NotchPayCheckoutDialog> createState() =>
-      NotchPayCheckoutDialogState();
+  State<NotchPayCheckoutDialog> createState() => NotchPayCheckoutDialogState();
 }
 
 class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
@@ -439,8 +461,8 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
             // Payment finished when NotchPay redirects off its own domain
             // (return/callback URL points back to Glaya).
             final host = Uri.tryParse(url)?.host ?? '';
-            final isNotchpay = host.contains('notchpay') ||
-                host.contains('notch');
+            final isNotchpay =
+                host.contains('notchpay') || host.contains('notch');
             if (!isNotchpay &&
                 (host.contains('glaya') ||
                     url.contains('payment') ||
@@ -467,10 +489,11 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
         );
         final data = res.data['data'] ?? res.data;
         final tx = data is Map ? (data['transaction'] ?? data) : null;
-        final status = tx is Map
-            ? (tx['status'] ?? data?['status'])?.toString()
-            : null;
-        if (status == 'complete' || status == 'completed' || status == 'success') {
+        final status =
+            tx is Map ? (tx['status'] ?? data?['status'])?.toString() : null;
+        if (status == 'complete' ||
+            status == 'completed' ||
+            status == 'success') {
           _finished = true;
           if (mounted) Navigator.of(context).pop(true);
           return;
@@ -501,7 +524,8 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content: Text('Could not verify payment yet. Please try again in a moment.')),
+              content: Text(
+                  'Could not verify payment yet. Please try again in a moment.')),
         );
       }
     } finally {
@@ -563,7 +587,7 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
                     const BorderRadius.vertical(bottom: Radius.circular(20)),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha: 0.05),
                       blurRadius: 8,
                       offset: const Offset(0, -2))
                 ],
@@ -598,7 +622,8 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
                               child: CircularProgressIndicator(
                                   strokeWidth: 2, color: Colors.white))
                           : const Icon(Icons.verified_outlined, size: 18),
-                      label: Text(_verifying ? 'Verifying…' : "I've Completed Payment",
+                      label: Text(
+                          _verifying ? 'Verifying…' : "I've Completed Payment",
                           style: const TextStyle(
                               fontWeight: FontWeight.w700, fontSize: 14)),
                       style: ElevatedButton.styleFrom(
@@ -638,7 +663,7 @@ class _BookingConfirmedDialog extends StatelessWidget {
             width: 72,
             height: 72,
             decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withOpacity(0.12),
+              color: const Color(0xFF10B981).withValues(alpha: 0.12),
               shape: BoxShape.circle,
             ),
             child: const Icon(Icons.check_circle_outline,
@@ -661,10 +686,10 @@ class _BookingConfirmedDialog extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: GlayaColors.accentPurple.withOpacity(0.08),
+              color: GlayaColors.accentPurple.withValues(alpha: 0.08),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                  color: GlayaColors.accentPurple.withOpacity(0.3)),
+                  color: GlayaColors.accentPurple.withValues(alpha: 0.3)),
             ),
             child: const Text(
               'Warning: Please arrive on time. Late cancellations or no-shows may result in penalties on your account.',
@@ -685,8 +710,8 @@ class _BookingConfirmedDialog extends StatelessWidget {
                 backgroundColor: GlayaColors.berry,
                 foregroundColor: Colors.white,
                 elevation: 0,
-                shape:
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: const Text('Done',

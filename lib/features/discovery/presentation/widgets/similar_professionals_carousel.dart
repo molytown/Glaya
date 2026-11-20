@@ -25,7 +25,11 @@ class SimilarProfessionalsCarousel extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('You May Also Like', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A))),
+          const Text('You May Also Like',
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: Color(0xFF1A1A1A))),
           const SizedBox(height: 12),
           similarAsync.when(
             data: (professionals) {
@@ -33,7 +37,8 @@ class SimilarProfessionalsCarousel extends ConsumerWidget {
                   ? professionals
                   : professionals.where((p) => p.id != excludeId).toList();
               if (filtered.isEmpty) {
-                return const Text('No similar professionals found', style: TextStyle(fontSize: 14, color: Color(0xFF888888)));
+                return const Text('No similar professionals found',
+                    style: TextStyle(fontSize: 14, color: Color(0xFF888888)));
               }
               return SizedBox(
                 height: 160,
@@ -48,8 +53,10 @@ class SimilarProfessionalsCarousel extends ConsumerWidget {
                 ),
               );
             },
-            loading: () => const Center(child: CircularProgressIndicator(color: GlayaColors.berry)),
-            error: (_, __) => const Text('Failed to load similar professionals', style: TextStyle(fontSize: 14, color: Color(0xFF888888))),
+            loading: () => const Center(
+                child: CircularProgressIndicator(color: GlayaColors.berry)),
+            error: (_, __) => const Text('Failed to load similar professionals',
+                style: TextStyle(fontSize: 14, color: Color(0xFF888888))),
           ),
         ],
       ),
@@ -72,20 +79,26 @@ class _ProfessionalCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: const Color(0xFFEEEEEE)),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)
+          ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(12)),
               child: CachedNetworkImage(
                 imageUrl: professional.photoUrl ?? '',
                 height: 90,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                placeholder: (_, __) => Container(color: GlayaColors.berry.withOpacity(0.1)),
-                errorWidget: (_, __, ___) => Container(color: GlayaColors.berry.withOpacity(0.1)),
+                placeholder: (_, __) =>
+                    Container(color: GlayaColors.berry.withValues(alpha: 0.1)),
+                errorWidget: (_, __, ___) =>
+                    Container(color: GlayaColors.berry.withValues(alpha: 0.1)),
               ),
             ),
             Padding(
@@ -94,17 +107,29 @@ class _ProfessionalCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(professional.name, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(professional.name,
+                      style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: Color(0xFF1A1A1A)),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 2),
-                  Text(professional.category, style: const TextStyle(fontSize: 10, color: Color(0xFF888888))),
+                  Text(professional.category,
+                      style: const TextStyle(
+                          fontSize: 10, color: Color(0xFF888888))),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.star, color: Color(0xFFF59E0B), size: 11),
+                      const Icon(Icons.star,
+                          color: Color(0xFFF59E0B), size: 11),
                       const SizedBox(width: 2),
                       Text(
                         (professional.avgRating ?? 0.0).toStringAsFixed(1),
-                        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A)),
+                        style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1A1A1A)),
                       ),
                     ],
                   ),

@@ -63,7 +63,7 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
   bool _isLoading = true;
   bool _isUploading = false;
   final ImagePicker _picker = ImagePicker();
-  String _mediaType = 'photo';
+  final String _mediaType = 'photo';
   String? _selectedAlbumId;
   XFile? _pickedFile;
   Uint8List? _pickedFileBytes;
@@ -213,7 +213,7 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                   style: TextStyle(fontSize: 12)),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
-                value: selectedCategory,
+                initialValue: selectedCategory,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Select category',
@@ -396,10 +396,10 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                         onTap: () => _viewAlbum(album),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey.withOpacity(0.1),
+                            color: Colors.grey.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: GlayaColors.berry.withOpacity(0.3),
+                              color: GlayaColors.berry.withValues(alpha: 0.3),
                               style: BorderStyle.solid,
                             ),
                           ),
@@ -414,7 +414,8 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                                     fit: BoxFit.cover,
                                     errorBuilder: (_, error, stack) {
                                       return Container(
-                                        color: Colors.grey.withOpacity(0.1),
+                                        color:
+                                            Colors.grey.withValues(alpha: 0.1),
                                         child: const Icon(
                                           Icons.broken_image,
                                           color: Colors.grey,
@@ -425,7 +426,7 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                                 )
                               else
                                 Container(
-                                  color: Colors.grey.withOpacity(0.1),
+                                  color: Colors.grey.withValues(alpha: 0.1),
                                   child: const Icon(
                                     Icons.photo_library,
                                     color: Colors.grey,
@@ -443,7 +444,7 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                                       end: Alignment.bottomCenter,
                                       colors: [
                                         Colors.transparent,
-                                        Colors.black.withOpacity(0.7),
+                                        Colors.black.withValues(alpha: 0.7),
                                       ],
                                     ),
                                     borderRadius: const BorderRadius.only(
@@ -608,7 +609,7 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                 errorBuilder: (_, __, ___) => Container(
                   width: 50,
                   height: 50,
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Colors.grey.withValues(alpha: 0.1),
                   child: const Icon(Icons.photo_library, size: 24),
                 ),
               ),
@@ -617,7 +618,7 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
               width: 50,
               height: 50,
               decoration: BoxDecoration(
-                color: Colors.grey.withOpacity(0.1),
+                color: Colors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.photo_library, size: 24),
@@ -718,7 +719,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                               url,
                               fit: BoxFit.cover,
                               errorBuilder: (_, __, ___) => Container(
-                                color: Colors.grey.withOpacity(0.1),
+                                color: Colors.grey.withValues(alpha: 0.1),
                                 child: const Icon(
                                   Icons.broken_image,
                                   color: Colors.grey,
@@ -726,7 +727,7 @@ class _AlbumDetailScreenState extends State<AlbumDetailScreen> {
                               ),
                             )
                           : Container(
-                              color: Colors.grey.withOpacity(0.1),
+                              color: Colors.grey.withValues(alpha: 0.1),
                               child: const Icon(
                                 Icons.broken_image,
                                 color: Colors.grey,

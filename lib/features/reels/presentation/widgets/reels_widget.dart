@@ -4,6 +4,7 @@ import 'package:video_player/video_player.dart';
 import '../../../../shared/services/config_service.dart';
 import '../../../../shared/theme/colors.dart';
 import '../../../../shared/utils/num_utils.dart';
+import '../../../../shared/utils/responsive_helper.dart';
 import '../../../../shared/widgets/verification_badge.dart';
 import '../../data/models/reel_model.dart';
 import '../../data/repositories/reel_repository.dart';
@@ -11,10 +12,21 @@ import '../reel_screen.dart';
 
 class ReelsWidget extends StatefulWidget {
   final List<Reel> reels;
+  final bool forceVerticalLayout;
+
+  /// When set (desktop home), cards size to this width and the row height
+  /// follows the same 120:200 aspect ratio. Null keeps the mobile 120x200.
+  final double? cardWidth;
+
+  /// Horizontal padding for the header and the card track. Defaults to 16.
+  final EdgeInsetsGeometry? contentPadding;
 
   const ReelsWidget({
     super.key,
     required this.reels,
+    this.forceVerticalLayout = false,
+    this.cardWidth,
+    this.contentPadding,
   });
 
   @override
@@ -27,9 +39,16 @@ class _ReelsWidgetState extends State<ReelsWidget> {
   final Set<String> _countedViewIds = {};
   final Map<String, ReelEngagement> _engagement = {};
   int _activeIndex = 0;
-  static const double _cardWidth = 120;
   static const double _cardGap = 12;
-  static const double _cardStride = _cardWidth + _cardGap;
+
+  double get _cardWidth => widget.cardWidth ?? 120;
+  double get _cardHeight => widget.cardWidth != null
+      ? widget.cardWidth! * 200 / 120
+      : 200;
+  double get _cardStride => _cardWidth + _cardGap;
+
+  EdgeInsetsGeometry get _hPad =>
+      widget.contentPadding ?? const EdgeInsets.symmetric(horizontal: 16);
 
   @override
   void initState() {
@@ -129,11 +148,13 @@ class _ReelsWidgetState extends State<ReelsWidget> {
       return const SizedBox.shrink();
     }
 
+    final isTablet = widget.forceVerticalLayout || ResponsiveHelper.isTablet(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: _hPad,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -173,30 +194,45 @@ class _ReelsWidgetState extends State<ReelsWidget> {
           ),
         ),
         const SizedBox(height: 12),
-        SizedBox(
-          height: 200,
-          child: ListView.builder(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: widget.reels.length,
-            itemBuilder: (context, index) {
-              return _ReelCard(
-                reel: widget.reels[index],
-                isActive: index == _activeIndex,
-                // Preload the next card's first frame so auto-advance doesn't
-                // show a loading gap — still only ~2 decoders alive at once.
-                preload: index == _activeIndex + 1,
-                engagement: _engagementFor(widget.reels[index]),
-                onEnded: () => _handlePreviewEnded(index),
-                onPlayedTwoSeconds: () =>
-                    _handlePlayedTwoSeconds(widget.reels[index]),
-                onTap: () => _openReelScreen(index),
-                onLikeTap: () => _toggleLike(widget.reels[index]),
-              );
-            },
+        // Tablet: ~5-visible horizontally-scrollable grid row. The desktop
+        // home passes cardWidth, which keeps the plain ListView below.
+        if (isTablet && widget.cardWidth == null)
+          _GridReelRow(
+            reels: widget.reels,
+            activeIndex: _activeIndex,
+            engagement: _engagement,
+            onEnded: _handlePreviewEnded,
+            onPlayedTwoSeconds: _handlePlayedTwoSeconds,
+            onTap: _openReelScreen,
+            onLikeTap: _toggleLike,
+            engagementFor: _engagementFor,
+          )
+        else
+          SizedBox(
+            height: _cardHeight,
+            child: ListView.builder(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              padding: _hPad,
+              itemCount: widget.reels.length,
+              itemBuilder: (context, index) {
+                return _ReelCard(
+                  reel: widget.reels[index],
+                  width: _cardWidth,
+                  isActive: index == _activeIndex,
+                  // Preload the next card's first frame so auto-advance doesn't
+                  // show a loading gap — still only ~2 decoders alive at once.
+                  preload: index == _activeIndex + 1,
+                  engagement: _engagementFor(widget.reels[index]),
+                  onEnded: () => _handlePreviewEnded(index),
+                  onPlayedTwoSeconds: () =>
+                      _handlePlayedTwoSeconds(widget.reels[index]),
+                  onTap: () => _openReelScreen(index),
+                  onLikeTap: () => _toggleLike(widget.reels[index]),
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
@@ -204,6 +240,7 @@ class _ReelsWidgetState extends State<ReelsWidget> {
 
 class _ReelCard extends StatefulWidget {
   final Reel reel;
+  final double width;
   final bool isActive;
   final bool preload;
   final ReelEngagement engagement;
@@ -215,6 +252,7 @@ class _ReelCard extends StatefulWidget {
   const _ReelCard({
     super.key,
     required this.reel,
+    required this.width,
     required this.isActive,
     this.preload = false,
     required this.engagement,
@@ -352,7 +390,7 @@ class _ReelCardState extends State<_ReelCard> {
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
-        width: 120,
+        width: widget.width,
         margin: const EdgeInsets.only(right: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
@@ -555,6 +593,68 @@ class _ReelCardState extends State<_ReelCard> {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Horizontally-scrollable grid row for tablet: shows ~5 reel cards at a
+/// time, sized to fill the available width, with more revealed on scroll.
+class _GridReelRow extends StatelessWidget {
+  final List<Reel> reels;
+  final int activeIndex;
+  final Map<String, ReelEngagement> engagement;
+  final Function(int) onEnded;
+  final Function(Reel) onPlayedTwoSeconds;
+  final Function(int) onTap;
+  final Function(Reel) onLikeTap;
+  final ReelEngagement Function(Reel) engagementFor;
+
+  const _GridReelRow({
+    required this.reels,
+    required this.activeIndex,
+    required this.engagement,
+    required this.onEnded,
+    required this.onPlayedTwoSeconds,
+    required this.onTap,
+    required this.onLikeTap,
+    required this.engagementFor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const gap = 12.0;
+        const visibleCount = 5;
+        // _ReelCard carries a 12px right margin, so reserve gap space for
+        // every visible card (including the trailing one).
+        final cardWidth = ((constraints.maxWidth - 32 - gap * visibleCount) /
+                visibleCount)
+            .clamp(150.0, 240.0);
+
+        return SizedBox(
+          height: 230,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: reels.length,
+            itemBuilder: (context, index) {
+              final reel = reels[index];
+              return _ReelCard(
+                reel: reel,
+                width: cardWidth,
+                isActive: index == activeIndex,
+                preload: index == activeIndex + 1,
+                engagement: engagementFor(reel),
+                onEnded: () => onEnded(index),
+                onPlayedTwoSeconds: () => onPlayedTwoSeconds(reel),
+                onTap: () => onTap(index),
+                onLikeTap: () => onLikeTap(reel),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

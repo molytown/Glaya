@@ -11,10 +11,12 @@ class GuestLocationPickerScreen extends ConsumerStatefulWidget {
   const GuestLocationPickerScreen({super.key});
 
   @override
-  ConsumerState<GuestLocationPickerScreen> createState() => _GuestLocationPickerScreenState();
+  ConsumerState<GuestLocationPickerScreen> createState() =>
+      _GuestLocationPickerScreenState();
 }
 
-class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerScreen> {
+class _GuestLocationPickerScreenState
+    extends ConsumerState<GuestLocationPickerScreen> {
   bool _isLoading = false;
   String? _error;
 
@@ -28,7 +30,8 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         setState(() {
-          _error = 'Location services are disabled. Please enable them in settings.';
+          _error =
+              'Location services are disabled. Please enable them in settings.';
           _isLoading = false;
         });
         return;
@@ -39,7 +42,8 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           setState(() {
-            _error = 'Location permission denied. Please enable it in settings.';
+            _error =
+                'Location permission denied. Please enable it in settings.';
             _isLoading = false;
           });
           return;
@@ -48,7 +52,8 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
 
       if (permission == LocationPermission.deniedForever) {
         setState(() {
-          _error = 'Location permission permanently denied. Please enable it in settings.';
+          _error =
+              'Location permission permanently denied. Please enable it in settings.';
           _isLoading = false;
         });
         return;
@@ -61,9 +66,9 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
 
       // Update location provider
       await ref.read(locationProvider.notifier).setLocation(
-        position.latitude,
-        position.longitude,
-      );
+            position.latitude,
+            position.longitude,
+          );
 
       HapticFeedback.success();
       if (mounted) {
@@ -110,25 +115,26 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
                 children: [
                   IconButton(
                     onPressed: () => context.pop(),
-                    icon: const Icon(Icons.arrow_back, color: GlayaColors.textPrimary),
+                    icon: const Icon(Icons.arrow_back,
+                        color: GlayaColors.textPrimary),
                   ),
                   const SizedBox(width: 16),
-                  Expanded(
+                  const Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Set Your Location',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
                             color: GlayaColors.textPrimary,
                           ),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
+                        SizedBox(height: 8),
+                        const Text(
                           'Find beauty professionals near you',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             color: GlayaColors.textSecondary,
                           ),
@@ -147,34 +153,34 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: GlayaColors.softShadow,
                       blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      offset: Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Column(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.my_location,
                       size: 48,
                       color: GlayaColors.berry,
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'Use Current Location',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: GlayaColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       'We\'ll use your GPS to find nearby services',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: GlayaColors.textSecondary,
                       ),
@@ -199,7 +205,8 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
                                 width: 20,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white),
                                 ),
                               )
                             : const Text(
@@ -226,7 +233,8 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: Colors.red.shade700, size: 20),
+                      Icon(Icons.error_outline,
+                          color: Colors.red.shade700, size: 20),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -251,34 +259,34 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
+                  boxShadow: const [
                     BoxShadow(
                       color: GlayaColors.softShadow,
                       blurRadius: 10,
-                      offset: const Offset(0, 4),
+                      offset: Offset(0, 4),
                     ),
                   ],
                 ),
                 child: Column(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.map_outlined,
                       size: 48,
                       color: GlayaColors.berry,
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    const Text(
                       'Pick on Map',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: GlayaColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const Text(
                       'Select your location manually on the map',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         color: GlayaColors.textSecondary,
                       ),
@@ -291,7 +299,7 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
                         onPressed: _openMapPicker,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: GlayaColors.berry,
-                          side: BorderSide(color: GlayaColors.berry),
+                          side: const BorderSide(color: GlayaColors.berry),
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -316,9 +324,9 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
               Center(
                 child: TextButton(
                   onPressed: _skipLocation,
-                  child: Text(
+                  child: const Text(
                     'Skip for now',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: GlayaColors.textSecondary,
                       fontWeight: FontWeight.w500,
@@ -339,15 +347,16 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.check_circle, color: GlayaColors.berry, size: 20),
+                      const Icon(Icons.check_circle,
+                          color: GlayaColors.berry, size: 20),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Location Set',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: GlayaColors.berry,
@@ -355,7 +364,7 @@ class _GuestLocationPickerScreenState extends ConsumerState<GuestLocationPickerS
                             ),
                             Text(
                               '${locationState.lat!.toStringAsFixed(4)}, ${locationState.lng!.toStringAsFixed(4)}',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 12,
                                 color: GlayaColors.textSecondary,
                               ),

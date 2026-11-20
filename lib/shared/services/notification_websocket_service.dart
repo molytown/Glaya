@@ -89,7 +89,7 @@ class NotificationWebSocketService {
         'Glaya Notifications',
         channelDescription: 'Booking and chat notifications',
         importance: Importance.high,
-        sound: RawResourceAndroidNotificationSound('notification'),
+        sound: const RawResourceAndroidNotificationSound('notification'),
         playSound: true,
         enableVibration: true,
         vibrationPattern: Int64List.fromList([0, 200, 100, 200]),
@@ -149,8 +149,7 @@ class NotificationWebSocketService {
       _notificationController.add(notificationData);
 
       // Extract notification ID for deduplication
-      final notificationId =
-          notificationData['id']?.toString() ??
+      final notificationId = notificationData['id']?.toString() ??
           notificationData['_id']?.toString() ??
           DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -197,5 +196,5 @@ class NotificationWebSocketService {
 
 final notificationWebSocketServiceProvider =
     Provider<NotificationWebSocketService>((ref) {
-      return NotificationWebSocketService.instance;
-    });
+  return NotificationWebSocketService.instance;
+});

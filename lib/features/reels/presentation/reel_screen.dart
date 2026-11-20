@@ -45,7 +45,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
   List<Reel> _allReels = [];
   DateTime? _lastTap;
   double _startX = 0;
-  double _startY = 0;
+  final double _startY = 0;
   final ReelRepository _reelRepository = ReelRepository();
   final Map<String, ReelEngagement> _engagement = {};
   final Set<String> _countedViewIds = {};
@@ -176,7 +176,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
       setState(() => _isLoadingRelated = true);
       try {
         final response = await ApiService.dio.get(
-          '/reels/related/${professional!.categoryId}/${professional!.id}',
+          '/reels/related/${professional!.categoryId}/${professional.id}',
         );
         final relatedReels = (response.data['data'] as List<dynamic>?)
                 ?.map((json) => Reel.fromJson(json as Map<String, dynamic>))
@@ -302,36 +302,51 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screen = MediaQuery.of(context).size;
+    var dialogH = screen.height * 0.88;
+    var dialogW = dialogH * 9 / 16;
+    final maxW = screen.width * 0.92;
+    if (dialogW > maxW) {
+      dialogW = maxW;
+      dialogH = dialogW * 16 / 9;
+    }
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: _allReels.isEmpty
-            ? const Center(
-                child: Text(
-                  'No reels available',
-                  style: TextStyle(color: Colors.white),
+      backgroundColor: Colors.black.withValues(alpha: 0.75),
+      body: Center(
+        child: Container(
+          width: dialogW,
+          height: dialogH,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: _allReels.isEmpty
+              ? const Center(
+                  child: Text(
+                    'No reels available',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              : PageView.builder(
+                  controller: _pageController,
+                  scrollDirection: Axis.vertical,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _currentIndex = index;
+                    });
+                    _initializeVideo(index);
+                    _incrementView(_allReels[index]);
+                    if (index == _allReels.length - 1) {
+                      _loadRelatedReels();
+                    }
+                  },
+                  itemCount: _allReels.length,
+                  itemBuilder: (context, index) {
+                    return _buildReelItem(_allReels[index]);
+                  },
                 ),
-              )
-            : PageView.builder(
-                controller: _pageController,
-                scrollDirection: Axis.vertical,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                  _initializeVideo(index);
-                  _incrementView(_allReels[index]);
-
-                  // Load related reels when reaching the end
-                  if (index == _allReels.length - 1) {
-                    _loadRelatedReels();
-                  }
-                },
-                itemCount: _allReels.length,
-                itemBuilder: (context, index) {
-                  return _buildReelItem(_allReels[index]);
-                },
-              ),
+        ),
       ),
     );
   }
@@ -416,7 +431,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -433,7 +448,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
               child: Container(
                 padding: const EdgeInsets.all(40),
                 decoration: BoxDecoration(
-                  color: GlayaColors.berry.withOpacity(0.3),
+                  color: GlayaColors.berry.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -526,7 +541,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
                           Text(
                             '${formatCompactCount(stats.views)} views',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.7),
+                              color: Colors.white.withValues(alpha: 0.7),
                               fontSize: 12,
                             ),
                           ),
@@ -552,7 +567,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
                   Text(
                     reel.description!,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                       fontSize: 14,
                     ),
                   ),
@@ -628,7 +643,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.5),
+              color: Colors.black.withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: Icon(

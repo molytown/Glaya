@@ -115,7 +115,7 @@ class _ProfessionalSignupScreenState
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PickMapScreen(
+        builder: (context) => const PickMapScreen(
           fromSignUp: true,
           fromAddAddress: false,
           canRoute: false,
@@ -268,12 +268,12 @@ class _ProfessionalSignupScreenState
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // ── Header Content ──
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 20),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(0, 8, 0, 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         'Professional Sign Up',
                         style: TextStyle(
                             fontSize: 28,
@@ -281,8 +281,8 @@ class _ProfessionalSignupScreenState
                             color: Colors.white),
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
+                      SizedBox(height: 8),
+                      Text(
                         'Join our community of beauty professionals',
                         style: TextStyle(fontSize: 14, color: Colors.white70),
                         textAlign: TextAlign.center,
@@ -293,7 +293,7 @@ class _ProfessionalSignupScreenState
                 const SizedBox(height: 20),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.4),
+                    color: Colors.white.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   padding: const EdgeInsets.all(20),
@@ -517,7 +517,7 @@ class _ProfessionalSignupScreenState
                               horizontal: 14, vertical: 14),
                           decoration: BoxDecoration(
                             color: _selectedLocation != null
-                                ? const Color(0xFFD4AF37).withOpacity(0.1)
+                                ? const Color(0xFFD4AF37).withValues(alpha: 0.1)
                                 : const Color(0xFFF9F9F9),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
@@ -638,7 +638,7 @@ class _ProfessionalSignupScreenState
       ),
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: DropdownButtonFormField<T>(
-        value: value,
+        initialValue: value,
         hint: Text(hint,
             style: const TextStyle(fontSize: 14, color: Colors.black87)),
         icon: const Icon(Icons.keyboard_arrow_down, size: 20),

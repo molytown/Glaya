@@ -28,7 +28,8 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
   Future<void> _loadPromotions() async {
     try {
       final response = await ApiService.dio.get('/promotions');
-      setState(() => _promotions = (response.data['data'] as List).cast<Map<String, dynamic>>());
+      setState(() => _promotions =
+          (response.data['data'] as List).cast<Map<String, dynamic>>());
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -74,9 +75,11 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.local_offer_outlined, size: 64, color: Colors.grey.shade300),
+                      Icon(Icons.local_offer_outlined,
+                          size: 64, color: Colors.grey.shade300),
                       const SizedBox(height: 16),
-                      const Text('No promotions yet', style: TextStyle(color: Colors.grey)),
+                      const Text('No promotions yet',
+                          style: TextStyle(color: Colors.grey)),
                       const SizedBox(height: 8),
                       ElevatedButton(
                         onPressed: () => _showAddDialog(),
@@ -89,18 +92,24 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
                   itemCount: _promotions.length,
                   itemBuilder: (context, index) {
                     final promotion = _promotions[index];
-                    final startDate = DateTime.tryParse(promotion['startDate'] as String? ?? '');
-                    final endDate = DateTime.tryParse(promotion['endDate'] as String? ?? '');
-                    final isActive = endDate != null && endDate.isAfter(DateTime.now());
-                    
+                    final startDate = DateTime.tryParse(
+                        promotion['startDate'] as String? ?? '');
+                    final endDate = DateTime.tryParse(
+                        promotion['endDate'] as String? ?? '');
+                    final isActive =
+                        endDate != null && endDate.isAfter(DateTime.now());
+
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
                       child: ListTile(
                         leading: Container(
                           width: 48,
                           height: 48,
                           decoration: BoxDecoration(
-                            color: isActive ? GlayaColors.berry.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                            color: isActive
+                                ? GlayaColors.berry.withValues(alpha: 0.1)
+                                : Colors.grey.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Icon(
@@ -117,7 +126,8 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
                           children: [
                             Text(
                               '${promotion['discountPercent'] ?? 0}% off',
-                              style: const TextStyle(fontWeight: FontWeight.bold),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.bold),
                             ),
                             if (startDate != null && endDate != null)
                               Text(
@@ -130,9 +140,12 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: isActive ? GlayaColors.success.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                                color: isActive
+                                    ? GlayaColors.success.withValues(alpha: 0.1)
+                                    : Colors.grey.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
@@ -140,13 +153,17 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
-                                  color: isActive ? GlayaColors.success : Colors.grey,
+                                  color: isActive
+                                      ? GlayaColors.success
+                                      : Colors.grey,
                                 ),
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete, color: GlayaColors.error),
-                              onPressed: () => _deletePromotion(promotion['id'] as String),
+                              icon: const Icon(Icons.delete,
+                                  color: GlayaColors.error),
+                              onPressed: () =>
+                                  _deletePromotion(promotion['id'] as String),
                             ),
                           ],
                         ),
@@ -154,8 +171,8 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
                     );
                   },
                 ),
-      bottomNavigationBar: user?.role == 'customer' 
-          ? null 
+      bottomNavigationBar: user?.role == 'customer'
+          ? null
           : GlayaBottomNav(
               currentIndex: 0,
               userRole: user?.role,
@@ -184,17 +201,20 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
               ),
               TextField(
                 controller: discountController,
-                decoration: const InputDecoration(labelText: 'Discount Percent (0-100)'),
+                decoration: const InputDecoration(
+                    labelText: 'Discount Percent (0-100)'),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: startDateController,
-                decoration: const InputDecoration(labelText: 'Start Date (YYYY-MM-DD)'),
+                decoration:
+                    const InputDecoration(labelText: 'Start Date (YYYY-MM-DD)'),
                 keyboardType: TextInputType.datetime,
               ),
               TextField(
                 controller: endDateController,
-                decoration: const InputDecoration(labelText: 'End Date (YYYY-MM-DD)'),
+                decoration:
+                    const InputDecoration(labelText: 'End Date (YYYY-MM-DD)'),
                 keyboardType: TextInputType.datetime,
               ),
               TextField(
@@ -206,7 +226,9 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           TextButton(
             onPressed: () async {
               try {
@@ -224,7 +246,8 @@ class _PromotionsScreenState extends ConsumerState<PromotionsScreen> {
               } catch (e) {
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Failed to create: ${e.toString()}')),
+                    SnackBar(
+                        content: Text('Failed to create: ${e.toString()}')),
                   );
                 }
               }

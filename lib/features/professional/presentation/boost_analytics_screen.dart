@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,7 +10,8 @@ class BoostAnalyticsScreen extends ConsumerStatefulWidget {
   const BoostAnalyticsScreen({super.key});
 
   @override
-  ConsumerState<BoostAnalyticsScreen> createState() => _BoostAnalyticsScreenState();
+  ConsumerState<BoostAnalyticsScreen> createState() =>
+      _BoostAnalyticsScreenState();
 }
 
 class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
@@ -60,7 +60,7 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authNotifierProvider).valueOrNull;
-    
+
     // Role check
     if (user?.role != 'professional' && user?.role != 'both') {
       return Scaffold(
@@ -101,12 +101,12 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
             dropdownColor: Colors.white,
             style: const TextStyle(color: Colors.white),
             underline: Container(),
-            items: ['week', 'month', 'all'].map((p) => 
-              DropdownMenuItem(
-                value: p,
-                child: Text(p[0].toUpperCase() + p.substring(1)),
-              )
-            ).toList(),
+            items: ['week', 'month', 'all']
+                .map((p) => DropdownMenuItem(
+                      value: p,
+                      child: Text(p[0].toUpperCase() + p.substring(1)),
+                    ))
+                .toList(),
             onChanged: (v) {
               setState(() => _period = v!);
               _loadAnalytics();
@@ -124,8 +124,10 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Current Boost Status
-                      if (_analytics != null && _analytics!['currentBoost'] != null) ...[
-                        _buildCurrentBoostCard(_analytics!['currentBoost'] as Map<String, dynamic>),
+                      if (_analytics != null &&
+                          _analytics!['currentBoost'] != null) ...[
+                        _buildCurrentBoostCard(_analytics!['currentBoost']
+                            as Map<String, dynamic>),
                         const SizedBox(height: 24),
                       ],
 
@@ -133,19 +135,25 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
                       if (_analytics != null &&
                           _analytics!['metrics'] != null &&
                           _analytics!['metrics'] is Map<String, dynamic> &&
-                          (_analytics!['metrics'] as Map<String, dynamic>)['revenue'] != null) ...[
-                        _buildROICard((_analytics!['metrics'] as Map<String, dynamic>)['revenue'] as Map<String, dynamic>),
+                          (_analytics!['metrics']
+                                  as Map<String, dynamic>)['revenue'] !=
+                              null) ...[
+                        _buildROICard((_analytics!['metrics']
+                                as Map<String, dynamic>)['revenue']
+                            as Map<String, dynamic>),
                         const SizedBox(height: 24),
                       ],
 
                       // Metrics Grid
                       if (_analytics != null && _analytics!['metrics'] != null)
-                        _buildMetricsGrid(_analytics!['metrics'] as Map<String, dynamic>),
+                        _buildMetricsGrid(
+                            _analytics!['metrics'] as Map<String, dynamic>),
                       const SizedBox(height: 24),
 
                       // Comparison Section
                       if (_analytics != null && _analytics!['metrics'] != null)
-                        _buildComparisonSection(_analytics!['metrics'] as Map<String, dynamic>),
+                        _buildComparisonSection(
+                            _analytics!['metrics'] as Map<String, dynamic>),
                     ],
                   ),
                 ),
@@ -195,13 +203,14 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          _buildInfoChip('Expires', 
-            DateFormat('MMM d, yyyy').format(DateTime.parse(boost['expiryDate'])),
-            Icons.calendar_today),
+          _buildInfoChip(
+              'Expires',
+              DateFormat('MMM d, yyyy')
+                  .format(DateTime.parse(boost['expiryDate'])),
+              Icons.calendar_today),
           const SizedBox(height: 8),
-          _buildInfoChip('Cost', 
-            _formatPrice(boost['cost'], boost['currency']),
-            Icons.payments),
+          _buildInfoChip('Cost', _formatPrice(boost['cost'], boost['currency']),
+              Icons.payments),
         ],
       ),
     );
@@ -210,7 +219,7 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
   Widget _buildROICard(Map<String, dynamic> revenue) {
     final roi = double.parse(revenue['roi']);
     final isPositive = roi >= 0;
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -406,13 +415,13 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          _buildComparisonBar('Profile Views', 
-            metrics['profileViews']['baseline'], 
-            metrics['profileViews']['current']),
+          _buildComparisonBar(
+              'Profile Views',
+              metrics['profileViews']['baseline'],
+              metrics['profileViews']['current']),
           const SizedBox(height: 12),
-          _buildComparisonBar('Bookings', 
-            metrics['bookings']['baseline'], 
-            metrics['bookings']['current']),
+          _buildComparisonBar('Bookings', metrics['bookings']['baseline'],
+              metrics['bookings']['current']),
         ],
       ),
     );
@@ -437,7 +446,8 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Before', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  const Text('Before',
+                      style: TextStyle(fontSize: 11, color: Colors.grey)),
                   Container(
                     height: 8,
                     decoration: BoxDecoration(
@@ -448,7 +458,8 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
                       widthFactor: baselinePercent,
                     ),
                   ),
-                  Text(baseline.toString(), style: const TextStyle(fontSize: 11)),
+                  Text(baseline.toString(),
+                      style: const TextStyle(fontSize: 11)),
                 ],
               ),
             ),
@@ -457,7 +468,8 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('After', style: TextStyle(fontSize: 11, color: Colors.grey)),
+                  const Text('After',
+                      style: TextStyle(fontSize: 11, color: Colors.grey)),
                   Container(
                     height: 8,
                     decoration: BoxDecoration(
@@ -468,7 +480,9 @@ class _BoostAnalyticsScreenState extends ConsumerState<BoostAnalyticsScreen> {
                       widthFactor: currentPercent,
                     ),
                   ),
-                  Text(current.toString(), style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                  Text(current.toString(),
+                      style: const TextStyle(
+                          fontSize: 11, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),

@@ -48,6 +48,7 @@ import '../../features/profile/presentation/cms_page_screen.dart';
 import '../../features/chat/presentation/chat_list_screen.dart';
 import '../../features/loyalty/presentation/loyalty_screen.dart';
 import '../../features/premium/presentation/premium_screen.dart';
+import '../widgets/desktop_shell.dart';
 import '../../features/search/presentation/search_screen.dart';
 import '../../features/home/presentation/pages/popular_services_page.dart';
 import '../../features/discovery/presentation/pro_services_page.dart';
@@ -196,11 +197,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/splash',
-        builder: (context, state) => const SplashScreen(),
-      ),
-      GoRoute(path: '/', builder: (context, state) => const HomePage()),
+      ShellRoute(
+        builder: (context, state, child) => DesktopShell(
+          child: child,
+          path: state.uri.path,
+        ),
+        routes: [
+          GoRoute(
+            path: '/splash',
+            builder: (context, state) => const SplashScreen(),
+          ),
+          GoRoute(path: '/', builder: (context, state) => const HomePage()),
       GoRoute(
         path: '/login',
         builder: (context, state) => const PhoneInputScreen(),
@@ -457,6 +464,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/guest-location',
         builder: (context, state) => const GuestLocationPickerScreen(),
+      ),
+        ],
       ),
     ],
   );

@@ -44,14 +44,15 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
     return 0;
   }
 
-  double get _depositAmount =>
-      _toDouble(_booking?['depositAmount'] ?? _booking?['deposit_amount'] ?? _booking?['deposit']);
+  double get _depositAmount => _toDouble(_booking?['depositAmount'] ??
+      _booking?['deposit_amount'] ??
+      _booking?['deposit']);
 
   /// Amount actually charged: outstanding balance for 'remaining', else deposit.
   double get _payAmount {
     if (_isRemaining) {
-      final outstanding =
-          _toDoubleOrNull(_booking?['outstandingBalance'] ?? _booking?['outstanding_balance']);
+      final outstanding = _toDoubleOrNull(
+          _booking?['outstandingBalance'] ?? _booking?['outstanding_balance']);
       if (outstanding != null && outstanding > 0) return outstanding;
       final rest = _totalAmount - _depositAmount;
       return rest > 0 ? rest : _totalAmount;
@@ -64,7 +65,8 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
   String get _title => _isRemaining ? 'Pay Balance' : 'Pay Deposit';
 
   double get _agreedAmount {
-    final v = _toDouble(_booking?['agreedAmount'] ?? _booking?['agreed_amount']);
+    final v =
+        _toDouble(_booking?['agreedAmount'] ?? _booking?['agreed_amount']);
     return v > 0 ? v : 0;
   }
 
@@ -155,7 +157,8 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
       }
     } on DioException catch (e) {
       final serverMsg = e.response?.data is Map
-          ? (e.response!.data['error'] ?? e.response!.data['message'])?.toString()
+          ? (e.response!.data['error'] ?? e.response!.data['message'])
+              ?.toString()
           : null;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -167,7 +170,8 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Payment failed: $e'),
+          SnackBar(
+              content: Text('Payment failed: $e'),
               backgroundColor: GlayaColors.error),
         );
       }
@@ -196,12 +200,14 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
       if (verified == true && mounted) Navigator.of(context).pop(true);
     } on DioException catch (e) {
       final msg = e.response?.data is Map
-          ? (e.response!.data['error'] ?? e.response!.data['message'])?.toString()
+          ? (e.response!.data['error'] ?? e.response!.data['message'])
+              ?.toString()
           : null;
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text('Could not request cash payment: ${msg ?? e.message}'),
+              content:
+                  Text('Could not request cash payment: ${msg ?? e.message}'),
               backgroundColor: GlayaColors.error),
         );
       }
@@ -210,8 +216,8 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
     }
   }
 
-  Widget _methodOption(String value, String title, String subtitle,
-      IconData icon) {
+  Widget _methodOption(
+      String value, String title, String subtitle, IconData icon) {
     final sel = _method == value;
     return GestureDetector(
       onTap: () => setState(() => _method = value),
@@ -271,8 +277,7 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
             ? const Padding(
                 padding: EdgeInsets.symmetric(vertical: 40),
                 child: Center(
-                    child: CircularProgressIndicator(
-                        color: GlayaColors.berry)),
+                    child: CircularProgressIndicator(color: GlayaColors.berry)),
               )
             : SingleChildScrollView(
                 child: Column(
@@ -299,7 +304,7 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: GlayaColors.berry.withOpacity(0.08),
+                        color: GlayaColors.berry.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: Column(
@@ -313,7 +318,8 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
                                   fontSize: 24,
                                   fontWeight: FontWeight.w800,
                                   color: GlayaColors.berry)),
-                          if (!_isRemaining && _totalAmount > _depositAmount) ...[
+                          if (!_isRemaining &&
+                              _totalAmount > _depositAmount) ...[
                             const SizedBox(height: 4),
                             Text(
                                 'of ${_format(_totalAmount)} — rest due at your appointment',
@@ -330,16 +336,22 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _methodOption('mobile_money', 'Mobile Money',
+                    _methodOption(
+                        'mobile_money',
+                        'Mobile Money',
                         'MTN, Airtel, Orange — secure checkout',
                         Icons.phone_android_outlined),
                     const SizedBox(height: 10),
-                    _methodOption('wallet', 'Glaya Wallet',
+                    _methodOption(
+                        'wallet',
+                        'Glaya Wallet',
                         'Pay instantly from your wallet balance',
                         Icons.account_balance_wallet_outlined),
                     if (_isRemaining) ...[
                       const SizedBox(height: 10),
-                      _methodOption('cod', 'Cash (COD)',
+                      _methodOption(
+                          'cod',
+                          'Cash (COD)',
                           'Pay your professional in cash — they give you a 5-digit code',
                           Icons.payments_outlined),
                     ],

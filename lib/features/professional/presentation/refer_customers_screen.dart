@@ -11,7 +11,8 @@ class ReferCustomersScreen extends ConsumerStatefulWidget {
   const ReferCustomersScreen({super.key});
 
   @override
-  ConsumerState<ReferCustomersScreen> createState() => _ReferCustomersScreenState();
+  ConsumerState<ReferCustomersScreen> createState() =>
+      _ReferCustomersScreenState();
 }
 
 class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
@@ -27,11 +28,13 @@ class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
   Future<void> _loadReferralData() async {
     try {
       final response = await ApiService.dio.get('/referrals/me');
-      setState(() => _referralData = response.data['data'] as Map<String, dynamic>);
+      setState(
+          () => _referralData = response.data['data'] as Map<String, dynamic>);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load referral data: ${e.toString()}')),
+          SnackBar(
+              content: Text('Failed to load referral data: ${e.toString()}')),
         );
       }
     } finally {
@@ -42,11 +45,14 @@ class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
   Future<void> _shareReferralLink() async {
     final referralCode = _referralData?['referralCode'] as String? ?? '';
     final referralLink = _referralData?['referralLink'] as String? ?? '';
-    final message = 'Use my referral code $referralCode to get discounts on Glaya! $referralLink';
-    
+    final message =
+        'Use my referral code $referralCode to get discounts on Glaya! $referralLink';
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Share this: $message'), duration: const Duration(seconds: 3)),
+        SnackBar(
+            content: Text('Share this: $message'),
+            duration: const Duration(seconds: 3)),
       );
     }
   }
@@ -68,9 +74,12 @@ class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
     final referralCode = _referralData?['referralCode'] as String? ?? '';
     final referralLink = _referralData?['referralLink'] as String? ?? '';
     final totalReferrals = _referralData?['totalReferrals'] as int? ?? 0;
-    final successfulReferrals = _referralData?['successfulReferrals'] as int? ?? 0;
-    final totalEarnings = (_referralData?['totalEarnings'] as num?)?.toDouble() ?? 0.0;
-    final referralBonus = (_referralData?['referralBonus'] as num?)?.toDouble() ?? 0.0;
+    final successfulReferrals =
+        _referralData?['successfulReferrals'] as int? ?? 0;
+    final totalEarnings =
+        (_referralData?['totalEarnings'] as num?)?.toDouble() ?? 0.0;
+    final referralBonus =
+        (_referralData?['referralBonus'] as num?)?.toDouble() ?? 0.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -110,7 +119,8 @@ class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
                           children: [
                             _statItem('Total Referrals', '$totalReferrals'),
                             _statItem('Successful', '$successfulReferrals'),
-                            _statItem('Earnings', '\$${totalEarnings.toStringAsFixed(2)}'),
+                            _statItem('Earnings',
+                                '\$${totalEarnings.toStringAsFixed(2)}'),
                           ],
                         ),
                       ],
@@ -137,15 +147,19 @@ class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
                           Container(
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: GlayaColors.berry.withOpacity(0.1),
+                              color: GlayaColors.berry.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: GlayaColors.berry.withOpacity(0.3)),
+                              border: Border.all(
+                                  color:
+                                      GlayaColors.berry.withValues(alpha: 0.3)),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  referralCode.isEmpty ? 'Loading...' : referralCode,
+                                  referralCode.isEmpty
+                                      ? 'Loading...'
+                                      : referralCode,
                                   style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.w800,
@@ -185,11 +199,13 @@ class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.1),
+                              color: Colors.grey.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              referralLink.isEmpty ? 'Loading...' : referralLink,
+                              referralLink.isEmpty
+                                  ? 'Loading...'
+                                  : referralLink,
                               style: const TextStyle(fontSize: 12),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -227,7 +243,8 @@ class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
                   const SizedBox(height: 16),
                   _stepItem(1, 'Share your referral code or link with friends'),
                   _stepItem(2, 'Friends sign up using your code'),
-                  _stepItem(3, 'You earn \$${referralBonus.toStringAsFixed(2)} for each successful referral'),
+                  _stepItem(3,
+                      'You earn \$${referralBonus.toStringAsFixed(2)} for each successful referral'),
                   _stepItem(4, 'Friends get a discount on their first booking'),
                   const SizedBox(height: 24),
 
@@ -235,7 +252,7 @@ class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.1),
+                      color: Colors.grey.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
@@ -246,8 +263,8 @@ class _ReferCustomersScreenState extends ConsumerState<ReferCustomersScreen> {
                 ],
               ),
             ),
-      bottomNavigationBar: user?.role == 'customer' 
-          ? null 
+      bottomNavigationBar: user?.role == 'customer'
+          ? null
           : GlayaBottomNav(
               currentIndex: 0,
               userRole: user?.role,

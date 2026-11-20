@@ -170,7 +170,7 @@ class _SupportChatScreenState extends ConsumerState<SupportChatScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -2),
                 ),
@@ -185,15 +185,15 @@ class _SupportChatScreenState extends ConsumerState<SupportChatScreen> {
                       hintText: 'Type a message...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide(color: const Color(0xFFEEEEEE)),
+                        borderSide: const BorderSide(color: Color(0xFFEEEEEE)),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide(color: const Color(0xFFEEEEEE)),
+                        borderSide: const BorderSide(color: Color(0xFFEEEEEE)),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide(color: GlayaColors.berry),
+                        borderSide: const BorderSide(color: GlayaColors.berry),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
                         horizontal: 20,
@@ -205,7 +205,7 @@ class _SupportChatScreenState extends ConsumerState<SupportChatScreen> {
                 ),
                 const SizedBox(width: 12),
                 Container(
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: GlayaColors.berry,
                     shape: BoxShape.circle,
                   ),

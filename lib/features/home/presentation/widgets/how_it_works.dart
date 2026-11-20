@@ -134,7 +134,6 @@ class _StepItem extends StatelessWidget {
   final AnimationController animation;
 
   const _StepItem({
-    super.key,
     required this.step,
     required this.isActive,
     required this.animation,
@@ -183,7 +182,6 @@ class _AnimatedStepIcon extends StatelessWidget {
   final AnimationController animation;
 
   const _AnimatedStepIcon({
-    super.key,
     required this.icon,
     required this.isActive,
     required this.animation,
@@ -203,9 +201,9 @@ class _AnimatedStepIcon extends StatelessWidget {
               child: Container(
                 width: 56,
                 height: 56,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: const SweepGradient(
+                  gradient: SweepGradient(
                     colors: [
                       Color(0xFFD6006E),
                       Color(0xFFB5179E),

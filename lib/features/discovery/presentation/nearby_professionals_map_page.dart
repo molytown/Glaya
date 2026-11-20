@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../home/presentation/widgets/nearby_professionals_map.dart';
-import '../data/professional_model.dart';
 import '../presentation/discovery_provider.dart';
 import '../../../../shared/providers/location_provider.dart';
 import '../../../../shared/services/location_service.dart';

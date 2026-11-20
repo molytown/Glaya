@@ -240,11 +240,12 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     } catch (e) {
       final msg =
           (e as dynamic).response?.data?['message'] as String? ?? e.toString();
-      if (mounted)
+      if (mounted) {
         setState(() {
           _saving = false;
           _error = msg;
         });
+      }
     }
   }
 
@@ -290,7 +291,8 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFF0F3),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: GlayaColors.berry.withOpacity(0.3)),
+                  border: Border.all(
+                      color: GlayaColors.berry.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   _error!,
@@ -376,7 +378,8 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                                 return Container(
                                   height: 100,
                                   width: 100,
-                                  color: GlayaColors.berry.withOpacity(0.1),
+                                  color:
+                                      GlayaColors.berry.withValues(alpha: 0.1),
                                   child: Center(
                                     child: CircularProgressIndicator(
                                       value:
@@ -407,7 +410,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.camera_alt,
                               color: GlayaColors.berry,
                               size: 20,
@@ -417,7 +420,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                               _selectedImagePath != null
                                   ? 'Change Photo'
                                   : 'Upload Photo',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: GlayaColors.berry,
                                 fontWeight: FontWeight.w600,
@@ -473,7 +476,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                 decoration: BoxDecoration(
                   color: _selectedLocation != null
-                      ? GlayaColors.berry.withOpacity(0.1)
+                      ? GlayaColors.berry.withValues(alpha: 0.1)
                       : const Color(0xFFFAFAFA),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
@@ -504,7 +507,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                       ),
                     ),
                     if (_selectedLocation != null)
-                      Icon(Icons.check_circle,
+                      const Icon(Icons.check_circle,
                           size: 18, color: GlayaColors.berry)
                     else
                       Icon(
@@ -701,9 +704,9 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
       height: 100,
       width: 100,
       decoration: BoxDecoration(
-        color: GlayaColors.berry.withOpacity(0.1),
+        color: GlayaColors.berry.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: GlayaColors.berry.withOpacity(0.3)),
+        border: Border.all(color: GlayaColors.berry.withValues(alpha: 0.3)),
       ),
       child: const Icon(Icons.person, size: 40, color: GlayaColors.berry),
     );
@@ -720,7 +723,9 @@ String _getCurrencySymbol() {
     if (locale.startsWith('fr_') ||
         locale.startsWith('de_') ||
         locale.startsWith('es_') ||
-        locale.startsWith('it_')) return '€';
+        locale.startsWith('it_')) {
+      return '€';
+    }
     if (locale.startsWith('ar_') || locale.startsWith('en_AE')) return 'د.إ';
     if (locale.startsWith('en_KE')) return 'KSh ';
     if (locale.startsWith('en_GH')) return 'GH₵ ';
@@ -776,7 +781,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   int _reviewCount = 0;
   bool _isLoading = true;
   String _appVersion = '1.0.0';
-  Map<String, bool> _notifToggles = {
+  final Map<String, bool> _notifToggles = {
     'appointmentReminders': true,
     'messages': true,
     'promotions': false,
@@ -875,16 +880,18 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Future<void> _loadWallet() async {
     try {
       final r = await ApiService.dio.get('/payments/wallets/me');
-      if (mounted)
+      if (mounted) {
         setState(() => _wallet = r.data['data'] as Map<String, dynamic>?);
+      }
     } catch (_) {}
   }
 
   Future<void> _loadLoyalty() async {
     try {
       final r = await ApiService.dio.get('/loyalty/me');
-      if (mounted)
+      if (mounted) {
         setState(() => _loyalty = r.data['data'] as Map<String, dynamic>?);
+      }
     } catch (_) {}
   }
 
@@ -1014,15 +1021,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = MediaQuery.of(context).size.width >= 1024;
+    final body = _isLoading
+        ? const Center(
+            child: CircularProgressIndicator(color: GlayaColors.berry),
+          )
+        : _role == 'customer'
+            ? _buildCustomerProfile()
+            : _buildProfessionalProfile();
     return Scaffold(
       backgroundColor: const Color(0xFFF8F0F4),
-      body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(color: GlayaColors.berry),
+      body: isDesktop
+          ? Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1200),
+                child: body,
+              ),
             )
-          : _role == 'customer'
-              ? _buildCustomerProfile()
-              : _buildProfessionalProfile(),
+          : body,
       bottomNavigationBar: GlayaBottomNav(currentIndex: 4, userRole: _role),
     );
   }
@@ -1097,8 +1113,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final sinceYear = () {
       try {
         final createdAt = _user?['createdAt'] ?? _user?['created_at'];
-        if (createdAt != null)
+        if (createdAt != null) {
           return DateTime.parse(createdAt as String).year.toString();
+        }
       } catch (_) {}
       return DateTime.now().year.toString();
     }();
@@ -1136,7 +1153,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             border: Border.all(color: Colors.white, width: 3),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: Colors.black.withValues(alpha: 0.2),
                                 blurRadius: 12,
                               ),
                             ],
@@ -1169,21 +1186,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.star_rounded,
                             color: Color(0xFFFFD700),
                             size: 12,
                           ),
-                          const SizedBox(width: 4),
+                          SizedBox(width: 4),
                           Text(
                             'VERIFIED CUSTOMER',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
                               color: Colors.white,
@@ -1352,9 +1369,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.18),
+        color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.white.withOpacity(0.35)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.35)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -1384,7 +1401,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   Widget _avatarFallback() => Container(
-        color: GlayaColors.berry.withOpacity(0.3),
+        color: GlayaColors.berry.withValues(alpha: 0.3),
         child: Center(
           child: Text(
             _initials,
@@ -1415,7 +1432,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           return Container(
             width: 96,
             height: 96,
-            color: GlayaColors.berry.withOpacity(0.3),
+            color: GlayaColors.berry.withValues(alpha: 0.3),
             child: Center(
               child: CircularProgressIndicator(
                 value: loadingProgress.expectedTotalBytes != null
@@ -1482,7 +1499,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -1494,9 +1511,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             Container(
               width: 48,
               height: 48,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
+                gradient: LinearGradient(
                   colors: [Color(0xFFD6006E), Color(0xFF880E4F)],
                 ),
               ),
@@ -1538,7 +1555,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: GlayaColors.berry.withOpacity(0.1),
+                color: GlayaColors.berry.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Row(
@@ -1586,8 +1603,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const Spacer(),
               GestureDetector(
                 onTap: () => context.push('/loyalty'),
-                child: Row(
-                  children: const [
+                child: const Row(
+                  children: [
                     Text(
                       'View Reputation Details',
                       style: TextStyle(
@@ -1651,9 +1668,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Trust Score',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         color: Color(0xFF888888),
                       ),
@@ -1930,14 +1947,14 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            GlayaColors.berry.withOpacity(0.06),
-            const Color(0xFF880E4F).withOpacity(0.04),
+            GlayaColors.berry.withValues(alpha: 0.06),
+            const Color(0xFF880E4F).withValues(alpha: 0.04),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: GlayaColors.berry.withOpacity(0.15)),
+        border: Border.all(color: GlayaColors.berry.withValues(alpha: 0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1948,7 +1965,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: GlayaColors.berry.withOpacity(0.1),
+                  color: GlayaColors.berry.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
@@ -1983,9 +2000,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: sColor.withOpacity(0.12),
+                  color: sColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: sColor.withOpacity(0.3)),
+                  border: Border.all(color: sColor.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   sLabel,
@@ -2139,9 +2156,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          Text(
+          const Text(
             'Available Balance',
-            style: const TextStyle(fontSize: 12, color: Color(0xFF888888)),
+            style: TextStyle(fontSize: 12, color: Color(0xFF888888)),
           ),
           const SizedBox(height: 4),
           Text(
@@ -2293,7 +2310,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       width: 52,
                       height: 52,
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.12),
+                        color: color.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
@@ -2328,9 +2345,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Beauty Level',
-                style: const TextStyle(fontSize: 12, color: Color(0xFF555555)),
+                style: TextStyle(fontSize: 12, color: Color(0xFF555555)),
               ),
               Text(
                 'Level $level',
@@ -2584,8 +2601,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     color: Color(0xFF1A1A1A),
                   ),
                 ),
-                activeTrackColor: GlayaColors.berry.withOpacity(0.4),
-                activeColor: GlayaColors.berry,
+                activeTrackColor: GlayaColors.berry.withValues(alpha: 0.4),
+                activeThumbColor: GlayaColors.berry,
               ),
             );
           }),
@@ -2742,7 +2759,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -2772,9 +2789,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: GlayaColors.berry.withOpacity(0.04),
+            color: GlayaColors.berry.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: GlayaColors.berry.withOpacity(0.1)),
+            border: Border.all(color: GlayaColors.berry.withValues(alpha: 0.1)),
           ),
           child: Center(
             child: Text(
@@ -2884,11 +2901,7 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
     print(
         '[DEBUG] onEditProfile callback is null: ${widget.onEditProfile == null}');
     // Call the parent's edit profile callback
-    if (widget.onEditProfile != null) {
-      widget.onEditProfile();
-    } else {
-      print('[DEBUG] ERROR: onEditProfile callback is null!');
-    }
+    widget.onEditProfile();
   }
 
   String _formatDate(dynamic date) {
@@ -2925,8 +2938,9 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
       try {
         final createdAt =
             widget.user?['createdAt'] ?? widget.user?['created_at'];
-        if (createdAt != null)
+        if (createdAt != null) {
           return DateTime.parse(createdAt as String).year.toString();
+        }
       } catch (_) {}
       return DateTime.now().year.toString();
     }();
@@ -3094,7 +3108,7 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(44),
                       foregroundColor: accent,
-                      side: BorderSide(color: accent, width: 1.5),
+                      side: const BorderSide(color: accent, width: 1.5),
                       shape: const StadiumBorder(),
                     ),
                     child: const Text(
@@ -3552,7 +3566,7 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                     Switch(
                       value: _reminders,
                       onChanged: (v) => setState(() => _reminders = v),
-                      activeColor: Colors.white,
+                      activeThumbColor: Colors.white,
                       activeTrackColor: accent,
                       inactiveThumbColor: Colors.white,
                       inactiveTrackColor: switchOff,

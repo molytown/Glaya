@@ -157,13 +157,15 @@ class LocationService {
     try {
       final response = await ApiService.dio.get('/config/location/default');
       final location = response.data['data'];
-      if (location != null && location['lat'] != null && location['lng'] != null) {
+      if (location != null &&
+          location['lat'] != null &&
+          location['lng'] != null) {
         return LatLng(location['lat'], location['lng']);
       }
       return null;
     } catch (e) {
       debugPrint('Error getting default location: $e');
-      return LatLng(3.8480, 11.5021); // Default to Douala, Cameroon
+      return const LatLng(3.8480, 11.5021); // Default to Douala, Cameroon
     }
   }
 

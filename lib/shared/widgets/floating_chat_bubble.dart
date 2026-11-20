@@ -7,6 +7,7 @@ import '../providers/chat_bubble_provider.dart';
 import '../router/app_router.dart';
 import 'booking_chat_dialog.dart';
 import '../theme/colors.dart';
+import '../utils/responsive_helper.dart';
 
 class FloatingChatBubble extends ConsumerStatefulWidget {
   const FloatingChatBubble({super.key});
@@ -46,6 +47,7 @@ class _FloatingChatBubbleState extends ConsumerState<FloatingChatBubble>
   @override
   Widget build(BuildContext context) {
     final bubbleState = ref.watch(chatBubbleProvider);
+    final isDesktop = ResponsiveHelper.isDesktop(context);
 
     // Handle popup animation
     if (bubbleState.showPopup && !_popupController.isCompleted) {
@@ -64,15 +66,15 @@ class _FloatingChatBubbleState extends ConsumerState<FloatingChatBubble>
         final position = _position ?? _defaultPosition(size);
         return Stack(
           children: [
-            // Trash drop zone — only visible while dragging
-            if (_dragging)
+            // Trash drop zone — only visible while dragging (mobile only)
+            if (!isDesktop && _dragging)
               Positioned(
                 bottom: 24,
                 left: 0,
                 right: 0,
                 child: Center(child: _buildTrashZone()),
               ),
-            // Main bubble (draggable)
+            // Main bubble (draggable on mobile, fixed on desktop)
             Positioned(
               left: position.dx,
               top: position.dy,
@@ -81,16 +83,22 @@ class _FloatingChatBubbleState extends ConsumerState<FloatingChatBubble>
                 children: [
                   GestureDetector(
                     onTap: () => _handleTap(ref, bubbleState.latestBookingId),
-                    onPanStart: (_) => setState(() {
-                      _dragging = true;
-                      _overTrash = false;
-                    }),
-                    onPanUpdate: (details) => _onPanUpdate(details, size),
-                    onPanEnd: (_) => _onPanEnd(),
-                    onPanCancel: () => setState(() {
-                      _dragging = false;
-                      _overTrash = false;
-                    }),
+                    onPanStart: isDesktop
+                        ? null
+                        : (_) => setState(() {
+                            _dragging = true;
+                            _overTrash = false;
+                          }),
+                    onPanUpdate: isDesktop
+                        ? null
+                        : (details) => _onPanUpdate(details, size),
+                    onPanEnd: isDesktop ? null : (_) => _onPanEnd(),
+                    onPanCancel: isDesktop
+                        ? null
+                        : () => setState(() {
+                            _dragging = false;
+                            _overTrash = false;
+                          }),
                     child: Opacity(
                       opacity: _dragging ? 0.85 : 1.0,
                       child: _buildBubble(bubbleState),
@@ -124,7 +132,15 @@ class _FloatingChatBubbleState extends ConsumerState<FloatingChatBubble>
   }
 
   Offset _defaultPosition(Size size) {
-    // Matches the original fixed spot: right 16, bottom 100
+    final isDesktop = ResponsiveHelper.isDesktop(context);
+    if (isDesktop) {
+      // Bottom-right fixed position on desktop
+      return Offset(
+        size.width - 24 - _bubbleSize,
+        size.height - 24 - _bubbleSize,
+      );
+    }
+    // Original mobile position: right 16, bottom 100
     return Offset(
       size.width - 16 - _bubbleSize,
       size.height - 100 - _bubbleSize,

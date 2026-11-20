@@ -113,9 +113,9 @@ class _ProfessionalProfileScreenState
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Error loading profile',
-                style: const TextStyle(fontSize: 16, color: Color(0xFF888888)),
+                style: TextStyle(fontSize: 16, color: Color(0xFF888888)),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
@@ -148,20 +148,19 @@ class _ProfessionalProfileScreenState
     // and skip albums without a usable cover so the profile photo remains the fallback.
     if (professional.portfolioUrls != null &&
         professional.portfolioUrls!.isNotEmpty) {
-      final galleries = professional.portfolioUrls!
-          .whereType<Map<String, dynamic>>()
-          .toList()
-        ..sort((a, b) {
-          final aTime = DateTime.tryParse(
-                (a['updatedAt'] ?? a['createdAt'])?.toString() ?? '',
-              ) ??
-              DateTime.fromMillisecondsSinceEpoch(0);
-          final bTime = DateTime.tryParse(
-                (b['updatedAt'] ?? b['createdAt'])?.toString() ?? '',
-              ) ??
-              DateTime.fromMillisecondsSinceEpoch(0);
-          return bTime.compareTo(aTime);
-        });
+      final galleries =
+          professional.portfolioUrls!.whereType<Map<String, dynamic>>().toList()
+            ..sort((a, b) {
+              final aTime = DateTime.tryParse(
+                    (a['updatedAt'] ?? a['createdAt'])?.toString() ?? '',
+                  ) ??
+                  DateTime.fromMillisecondsSinceEpoch(0);
+              final bTime = DateTime.tryParse(
+                    (b['updatedAt'] ?? b['createdAt'])?.toString() ?? '',
+                  ) ??
+                  DateTime.fromMillisecondsSinceEpoch(0);
+              return bTime.compareTo(aTime);
+            });
 
       for (final gallery in galleries) {
         final media = (gallery['media'] as List<dynamic>?)
@@ -177,8 +176,7 @@ class _ProfessionalProfileScreenState
           orElse: () => media.first,
         );
 
-        final rawCoverUrl =
-            coverMediaMap?['thumbnailUrl'] as String? ??
+        final rawCoverUrl = coverMediaMap?['thumbnailUrl'] as String? ??
             coverMediaMap?['mediaUrl'] as String? ??
             coverItem['thumbnailUrl'] as String? ??
             coverItem['mediaUrl'] as String?;
@@ -306,7 +304,8 @@ class _ProfessionalProfileScreenState
                   ? const Center(
                       child: Padding(
                         padding: EdgeInsets.all(16),
-                        child: CircularProgressIndicator(color: GlayaColors.berry),
+                        child:
+                            CircularProgressIndicator(color: GlayaColors.berry),
                       ),
                     )
                   : _reels.isNotEmpty

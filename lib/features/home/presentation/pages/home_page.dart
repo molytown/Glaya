@@ -15,22 +15,24 @@ import '../widgets/exclusive_offers.dart';
 import '../widgets/hero_banner.dart';
 import '../widgets/home_sections.dart';
 import '../widgets/loading_home.dart';
-import '../widgets/location_bar.dart';
-import '../widgets/premium_banner.dart';
 import '../widgets/professional_card.dart';
 import '../widgets/search_bar.dart';
 import '../widgets/section_title.dart';
 import '../widgets/why_customers_love_glaya.dart';
 import '../widgets/just_finished_section.dart';
+import '../widgets/desktop_home.dart';
 import '../widgets/nearby_professionals_map.dart';
 import '../widgets/home_service_carousel.dart';
-import '../widgets/category_galleries_carousel.dart';
 import '../widgets/category_professionals_carousel.dart';
-import '../../../location/presentation/guest_location_picker_screen.dart';
 import '../../../reels/presentation/widgets/reels_widget.dart';
 import '../../../reels/data/models/reel_model.dart';
 import '../../../reels/data/repositories/reel_repository.dart';
 import '../../../../shared/services/api_service.dart';
+import '../../../../shared/utils/responsive_helper.dart';
+import '../widgets/photo_reels_widget.dart';
+import '../widgets/side_by_side_section.dart';
+import '../widgets/download_banner.dart';
+import '../widgets/how_it_works_section.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -67,34 +69,41 @@ class _HomePageState extends ConsumerState<HomePage> {
     // providers so new data appears without restarting the app.
     _contentSub = ApiService.onContentRefreshed.listen((_) {
       _contentDebounce?.cancel();
-      _contentDebounce = Timer(const Duration(milliseconds: 800), _refreshFromCache);
+      _contentDebounce =
+          Timer(const Duration(milliseconds: 800), _refreshFromCache);
     });
   }
 
   void _refreshFromCache() {
     if (!mounted) return;
-    final providers = <Refreshable<dynamic>>[
-      heroSlidesProvider,
-      topRatedProfessionalsProvider,
-      popularServicesProvider,
-      customerReviewsProvider,
-      trendingNowProvider,
-      howItWorksProvider,
-      exclusiveOffersProvider,
-      premiumPlansProvider,
-      recommendedProfessionalsProvider,
-      professionalsProvider(null),
-    ];
-    for (final provider in providers) {
-      // refresh (not invalidate) keeps the previous data visible while the
-      // provider reloads — invalidate would flash loading placeholders.
-      ref.refresh(provider);
+    try {
+      final providers = <Refreshable<dynamic>>[
+        heroSlidesProvider,
+        topRatedProfessionalsProvider,
+        popularServicesProvider,
+        customerReviewsProvider,
+        trendingNowProvider,
+        howItWorksProvider,
+        exclusiveOffersProvider,
+        premiumPlansProvider,
+        recommendedProfessionalsProvider,
+        professionalsProvider(null),
+      ];
+      for (final provider in providers) {
+        // refresh (not invalidate) keeps the previous data visible while the
+        // provider reloads — invalidate would flash loading placeholders.
+        ref.refresh(provider);
+      }
+      final loc = ref.read(locationProvider);
+      final lat = loc.hasLocation ? loc.lat! : 3.848;
+      final lng = loc.hasLocation ? loc.lng! : 11.502;
+      ref.read(nearbyProfessionalsProvider.notifier).fetchNearby(lat, lng);
+      _loadReels();
+    } catch (_) {
+      // The debounce timer can fire while this element is being deactivated
+      // (mounted is still true during deactivation, but ref lookups throw).
+      // Safe to ignore — the next content refresh will retry.
     }
-    final loc = ref.read(locationProvider);
-    final lat = loc.hasLocation ? loc.lat! : 3.848;
-    final lng = loc.hasLocation ? loc.lng! : 11.502;
-    ref.read(nearbyProfessionalsProvider.notifier).fetchNearby(lat, lng);
-    _loadReels();
   }
 
   Future<void> _loadReels() async {
@@ -133,6 +142,15 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     final lat = locationState.hasLocation ? locationState.lat! : 3.848;
     final lng = locationState.hasLocation ? locationState.lng! : 11.502;
+    final isTablet = ResponsiveHelper.isTablet(context);
+    final isDesktop = ResponsiveHelper.isDesktop(context);
+
+    if (isDesktop) {
+      return _desktopHomeBody(
+        reels: _reels,
+        isLoadingReels: _isLoadingReels,
+      );
+    }
 
     // Trigger nearby professionals fetch when location changes (after build)
     if (_lastLat != lat || _lastLng != lng) {
@@ -193,8 +211,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [GlayaColors.berry, GlayaColors.roseGold],
+                  gradient: const LinearGradient(
+                    colors: const [GlayaColors.berry, GlayaColors.roseGold],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
@@ -277,260 +295,482 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                    // Reels section - vertical on tablet, horizontal on mobile
                     SliverToBoxAdapter(
                       child: _isLoadingReels
                           ? const HomeLoadingPlaceholder(height: 200)
                           : _reels.isNotEmpty
-                              ? ReelsWidget(reels: _reels as List<Reel>)
+                              ? ReelsWidget(
+                                  reels: _reels as List<Reel>,
+                                  forceVerticalLayout: isTablet,
+                                )
                               : const SizedBox.shrink(),
                     ),
                     const SliverToBoxAdapter(child: SizedBox(height: 28)),
-                    _section(
-                      titleWidget: const Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Top Rated ',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: GlayaColors.textPrimary,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Professionals',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: GlayaColors.accentPurple,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      onSeeAll: () => context.push('/search'),
-                      child: topRatedAsync.when(
-                        data: (pros) =>
-                            TopRatedProfessionalsCarousel(professionals: pros),
-                        loading: () =>
-                            const HomeLoadingPlaceholder(height: 280),
-                        error: (_, __) => const SizedBox.shrink(),
-                      ),
-                    ),
-                    const SliverToBoxAdapter(child: JustFinishedSection()),
-                    _section(
-                      title: 'Popular Services',
-                      onSeeAll: () => context.push('/services/popular'),
-                      child: popularServicesAsync.when(
-                        data: (items) => PopularServicesRow(items: items),
-                        loading: () =>
-                            const HomeLoadingPlaceholder(height: 160),
-                        error: (_, __) => const SizedBox.shrink(),
-                      ),
-                    ),
-                    _section(
-                      title: 'Home Service Pros',
-                      titleWidget: const Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Home Service ',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: GlayaColors.textPrimary,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Pros',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blue,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      subtitle:
-                          'They can come or send a stylist over to your home',
-                      onSeeAll: () => context.push('/home-service'),
-                      child: homeServiceAsync.when(
-                        data: (pros) {
-                          return pros.isEmpty
-                              ? const SizedBox.shrink()
-                              : HomeServiceCarousel(professionals: pros);
-                        },
-                        loading: () {
-                          return const HomeLoadingPlaceholder(height: 200);
-                        },
-                        error: (error, stack) {
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    _section(
-                      titleWidget: const Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Makeup ',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: GlayaColors.textPrimary,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Artists',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: GlayaColors.accentPurple,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      onSeeAll: () => context.push('/service-portfolio/makeup'),
-                      child: const CategoryProfessionalsCarousel(
-                        categoryName: 'Makeup',
-                        serviceId: 'makeup',
-                      ),
-                    ),
-                    _section(
-                      titleWidget: const Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Hair ',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: GlayaColors.textPrimary,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Stylist',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: GlayaColors.vibrantPink,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      onSeeAll: () => context.push('/service-portfolio/hair'),
-                      child: const CategoryProfessionalsCarousel(
-                        categoryName: 'Hair',
-                        serviceId: 'hair',
-                      ),
-                    ),
-                    _section(
-                      titleWidget: const Text.rich(
-                        TextSpan(
-                          children: [
-                            TextSpan(
-                              text: 'Nails ',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: GlayaColors.textPrimary,
-                              ),
-                            ),
-                            TextSpan(
-                              text: 'Artists',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: GlayaColors.accentPurple,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      onSeeAll: () => context.push('/service-portfolio/nails'),
-                      child: const CategoryProfessionalsCarousel(
-                        categoryName: 'Nails',
-                        serviceId: 'nails',
-                      ),
-                    ),
-                    const SliverToBoxAdapter(child: BecomeProfessionalBanner()),
-                    const SliverToBoxAdapter(child: ReferLoyaltyRow()),
-                    _section(
-                      title: 'Recommended For You',
-                      onSeeAll: () => context.push('/search'),
-                      child: recommendedAsync.when(
-                        data: (pros) =>
-                            RecommendedProfessionalRow(professionals: pros),
-                        loading: () =>
-                            const HomeLoadingPlaceholder(height: 140),
-                        error: (_, __) => const SizedBox.shrink(),
-                      ),
-                    ),
-                    _section(
-                      title: 'Nearby Professionals',
-                      onSeeAll: () => context.push('/nearby-professionals-map'),
-                      child: nearbyAsync.when(
-                        data: (pros) => pros.isEmpty
-                            ? const SizedBox.shrink()
-                            : _DeferredMap(
-                                child: NearbyProfessionalsMap(professionals: pros)),
-                        loading: () =>
-                            const HomeLoadingPlaceholder(height: 180),
-                        error: (_, __) => const SizedBox.shrink(),
-                      ),
-                    ),
-                    _section(
-                      title: 'Trending Now',
-                      showSeeAll: false,
-                      child: trendingNowAsync.when(
-                        data: (items) => TrendingNowRow(items: items),
-                        loading: () =>
-                            const HomeLoadingPlaceholder(height: 160),
-                        error: (_, __) => const SizedBox.shrink(),
-                      ),
-                    ),
-                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
-                    const SliverToBoxAdapter(child: ExclusiveOffersSection()),
-                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
-                    const SliverToBoxAdapter(
-                        child: WhyCustomersLoveGlayaSection()),
-                    const SliverToBoxAdapter(child: SizedBox(height: 20)),
-                    SliverToBoxAdapter(
-                      child: upcomingAsync.when(
-                        data: (booking) => booking == null
-                            ? const SizedBox.shrink()
-                            : Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 20, 16, 0),
-                                child:
-                                    UpcomingAppointmentCard(booking: booking),
-                              ),
-                        loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: recentlyViewedAsync.when(
-                        data: (list) => list.isEmpty
-                            ? const SizedBox.shrink()
-                            : Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                    if (isTablet) ...[
+                      // Tablet layout: side-by-side sections
+                      SliverToBoxAdapter(
+                        child: SideBySideSection(
+                          left: _boxSection(
+                            child: const JustFinishedSection(),
+                          ),
+                          right: _boxSection(
+                            titleWidget: const Text.rich(
+                              TextSpan(
                                 children: [
-                                  const SizedBox(height: 20),
-                                  HomeSectionTitle(
-                                      title: 'Recently Viewed',
-                                      showSeeAll: false),
-                                  const SizedBox(height: 12),
-                                  ProfessionalCardRow(professionals: list),
+                                  TextSpan(
+                                    text: 'Top Rated ',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: GlayaColors.textPrimary,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Professionals',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: GlayaColors.accentPurple,
+                                    ),
+                                  ),
                                 ],
                               ),
-                        loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
+                            ),
+                            onSeeAll: () => context.push('/search'),
+                            child: topRatedAsync.when(
+                              data: (pros) =>
+                                  TopRatedProfessionalsCarousel(professionals: pros),
+                              loading: () =>
+                                  const HomeLoadingPlaceholder(height: 280),
+                              error: (_, __) => const SizedBox.shrink(),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                      // Glam Photos - photo reels vertical
+                      SliverToBoxAdapter(
+                        child: const PhotoReelsWidget(),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 28)),
+                      // Popular Services | Home Service Pros
+                      SliverToBoxAdapter(
+                        child: SideBySideSection(
+                          left: _boxSection(
+                            title: 'Popular Services',
+                            onSeeAll: () => context.push('/services/popular'),
+                            child: popularServicesAsync.when(
+                              data: (items) => PopularServicesRow(items: items),
+                              loading: () =>
+                                  const HomeLoadingPlaceholder(height: 160),
+                              error: (_, __) => const SizedBox.shrink(),
+                            ),
+                          ),
+                          right: _boxSection(
+                            title: 'Home Service Pros',
+                            titleWidget: const Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Home Service ',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: GlayaColors.textPrimary,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Pros',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            subtitle:
+                                'They can come or send a stylist over to your home',
+                            onSeeAll: () => context.push('/home-service'),
+                            child: homeServiceAsync.when(
+                              data: (pros) {
+                                return pros.isEmpty
+                                    ? const SizedBox.shrink()
+                                    : HomeServiceCarousel(professionals: pros);
+                              },
+                              loading: () =>
+                                  const HomeLoadingPlaceholder(height: 200),
+                              error: (_, __) => const SizedBox.shrink(),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 28)),
+                      // Top Makeup Artists | Top Hair Stylists
+                      SliverToBoxAdapter(
+                        child: SideBySideSection(
+                          left: _boxSection(
+                            titleWidget: const Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Makeup ',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: GlayaColors.textPrimary,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Artists',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: GlayaColors.accentPurple,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onSeeAll: () =>
+                                context.push('/service-portfolio/makeup'),
+                            child: const CategoryProfessionalsCarousel(
+                              categoryName: 'Makeup',
+                              serviceId: 'makeup',
+                            ),
+                          ),
+                          right: _boxSection(
+                            titleWidget: const Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'Hair ',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: GlayaColors.textPrimary,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: 'Stylist',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: GlayaColors.vibrantPink,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onSeeAll: () =>
+                                context.push('/service-portfolio/hair'),
+                            child: const CategoryProfessionalsCarousel(
+                              categoryName: 'Hair',
+                              serviceId: 'hair',
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 28)),
+                      // Top Manicure & Pedicure Artists - vertical on tablet
+                      _section(
+                          titleWidget: const Text.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: 'Nails ',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: GlayaColors.textPrimary,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: 'Artists',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: GlayaColors.accentPurple,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          onSeeAll: () =>
+                              context.push('/service-portfolio/nails'),
+                          child: const CategoryProfessionalsCarousel(
+                            categoryName: 'Nails',
+                            serviceId: 'nails',
+                          ),
+                        ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 28)),
+                      // How Glaya Works | Why Customers Love Glaya
+                      SliverToBoxAdapter(
+                        child: SideBySideSection(
+                          left: const HowItWorksSection(),
+                          right: const WhyCustomersLoveGlayaSection(),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 28)),
+                      // Download Banner | Exclusive Offers
+                      SliverToBoxAdapter(
+                        child: SideBySideSection(
+                          left: const DownloadBanner(),
+                          right: const ExclusiveOffersSection(),
+                        ),
+                      ),
+                    ] else ...[
+                      // Mobile layout: original vertical stack
+                      _section(
+                        titleWidget: const Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Top Rated ',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.textPrimary,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Professionals',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.accentPurple,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onSeeAll: () => context.push('/search'),
+                        child: topRatedAsync.when(
+                          data: (pros) =>
+                              TopRatedProfessionalsCarousel(professionals: pros),
+                          loading: () =>
+                              const HomeLoadingPlaceholder(height: 280),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: JustFinishedSection()),
+                      _section(
+                        title: 'Popular Services',
+                        onSeeAll: () => context.push('/services/popular'),
+                        child: popularServicesAsync.when(
+                          data: (items) => PopularServicesRow(items: items),
+                          loading: () =>
+                              const HomeLoadingPlaceholder(height: 160),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      _section(
+                        title: 'Home Service Pros',
+                        titleWidget: const Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Home Service ',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.textPrimary,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Pros',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.blue,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        subtitle:
+                            'They can come or send a stylist over to your home',
+                        onSeeAll: () => context.push('/home-service'),
+                        child: homeServiceAsync.when(
+                          data: (pros) {
+                            return pros.isEmpty
+                                ? const SizedBox.shrink()
+                                : HomeServiceCarousel(professionals: pros);
+                          },
+                          loading: () {
+                            return const HomeLoadingPlaceholder(height: 200);
+                          },
+                          error: (error, stack) {
+                            return const SizedBox.shrink();
+                          },
+                        ),
+                      ),
+                      _section(
+                        titleWidget: const Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Makeup ',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.textPrimary,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Artists',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.accentPurple,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onSeeAll: () => context.push('/service-portfolio/makeup'),
+                        child: const CategoryProfessionalsCarousel(
+                          categoryName: 'Makeup',
+                          serviceId: 'makeup',
+                        ),
+                      ),
+                      _section(
+                        titleWidget: const Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Hair ',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.textPrimary,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Stylist',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.vibrantPink,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onSeeAll: () => context.push('/service-portfolio/hair'),
+                        child: const CategoryProfessionalsCarousel(
+                          categoryName: 'Hair',
+                          serviceId: 'hair',
+                        ),
+                      ),
+                      _section(
+                        titleWidget: const Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Nails ',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.textPrimary,
+                                ),
+                              ),
+                              TextSpan(
+                                text: 'Artists',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.accentPurple,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        onSeeAll: () => context.push('/service-portfolio/nails'),
+                        child: const CategoryProfessionalsCarousel(
+                          categoryName: 'Nails',
+                          serviceId: 'nails',
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: BecomeProfessionalBanner()),
+                      const SliverToBoxAdapter(child: ReferLoyaltyRow()),
+                      _section(
+                        title: 'Recommended For You',
+                        onSeeAll: () => context.push('/search'),
+                        child: recommendedAsync.when(
+                          data: (pros) =>
+                              RecommendedProfessionalRow(professionals: pros),
+                          loading: () =>
+                              const HomeLoadingPlaceholder(height: 140),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      _section(
+                        title: 'Nearby Professionals',
+                        onSeeAll: () => context.push('/nearby-professionals-map'),
+                        child: nearbyAsync.when(
+                          data: (pros) => pros.isEmpty
+                              ? const SizedBox.shrink()
+                              : _DeferredMap(
+                                  child: NearbyProfessionalsMap(
+                                      professionals: pros)),
+                          loading: () =>
+                              const HomeLoadingPlaceholder(height: 180),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      _section(
+                        title: 'Trending Now',
+                        showSeeAll: false,
+                        child: trendingNowAsync.when(
+                          data: (items) => TrendingNowRow(items: items),
+                          loading: () =>
+                              const HomeLoadingPlaceholder(height: 160),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                      const SliverToBoxAdapter(child: ExclusiveOffersSection()),
+                      const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                      const SliverToBoxAdapter(
+                          child: WhyCustomersLoveGlayaSection()),
+                      const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                      SliverToBoxAdapter(
+                        child: upcomingAsync.when(
+                          data: (booking) => booking == null
+                              ? const SizedBox.shrink()
+                              : Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(16, 20, 16, 0),
+                                  child:
+                                      UpcomingAppointmentCard(booking: booking),
+                                ),
+                          loading: () => const SizedBox.shrink(),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                      ),
+                      SliverToBoxAdapter(
+                        child: recentlyViewedAsync.when(
+                          data: (list) => list.isEmpty
+                              ? const SizedBox.shrink()
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 20),
+                                    const HomeSectionTitle(
+                                        title: 'Recently Viewed',
+                                        showSeeAll: false),
+                                    const SizedBox(height: 12),
+                                    ProfessionalCardRow(professionals: list),
+                                  ],
+                                ),
+                          loading: () => const SizedBox.shrink(),
+                          error: (_, __) => const SizedBox.shrink(),
+                        ),
+                      ),
+                    ],
                     const SliverToBoxAdapter(
                       child: SizedBox(height: 100),
                     ),
@@ -570,6 +810,48 @@ class _HomePageState extends ConsumerState<HomePage> {
         SliverToBoxAdapter(child: child),
         const SliverToBoxAdapter(child: SizedBox(height: 20)),
       ],
+    );
+  }
+
+  /// Non-sliver variant of [_section] for use inside [SideBySideSection]
+  /// (slivers cannot be children of regular box widgets).
+  Widget _boxSection({
+    String title = '',
+    Widget? titleWidget,
+    String? subtitle,
+    required Widget child,
+    VoidCallback? onSeeAll,
+    bool showSeeAll = true,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (title.isNotEmpty || titleWidget != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: HomeSectionTitle(
+                title: title,
+                titleWidget: titleWidget,
+                subtitle: subtitle,
+                onSeeAll: onSeeAll,
+                showSeeAll: showSeeAll),
+          ),
+        child,
+      ],
+    );
+  }
+
+  Widget _desktopHomeBody({
+    required List<dynamic> reels,
+    required bool isLoadingReels,
+  }) {
+    return Scaffold(
+      backgroundColor: GlayaColors.background,
+      body: DesktopHomeBody(
+        reels: reels.cast<Reel>(),
+        isLoadingReels: isLoadingReels,
+      ),
     );
   }
 }

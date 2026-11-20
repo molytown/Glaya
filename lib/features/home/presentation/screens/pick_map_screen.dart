@@ -15,13 +15,13 @@ class PickMapScreen extends StatefulWidget {
   final GoogleMapController? googleMapController;
 
   const PickMapScreen({
-    Key? key,
+    super.key,
     required this.fromSignUp,
     required this.fromAddAddress,
     required this.canRoute,
     required this.route,
     this.googleMapController,
-  }) : super(key: key);
+  });
 
   @override
   State<PickMapScreen> createState() => _PickMapScreenState();
@@ -49,17 +49,18 @@ class _PickMapScreenState extends State<PickMapScreen> {
     if (!widget.fromAddAddress) {
       _getCurrentLocationOnLoad();
     }
-    
+
     // For signup, also ensure location controller has the address
     if (widget.fromSignUp) {
       _ensureLocationLoaded();
     }
   }
-  
+
   Future<void> _ensureLocationLoaded() async {
     try {
       final locationController = Get.find<LocationController>();
-      if (locationController.pickAddress == null || locationController.pickAddress!.isEmpty) {
+      if (locationController.pickAddress == null ||
+          locationController.pickAddress!.isEmpty) {
         await locationController.getCurrentLocation(false);
       }
     } catch (e) {
@@ -223,7 +224,7 @@ class _PickMapScreenState extends State<PickMapScreen> {
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
+                              color: Colors.black.withValues(alpha: 0.3),
                               spreadRadius: 2,
                               blurRadius: 5,
                             ),
@@ -255,7 +256,7 @@ class _PickMapScreenState extends State<PickMapScreen> {
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black.withValues(alpha: 0.2),
                           spreadRadius: 1,
                           blurRadius: 3,
                         ),

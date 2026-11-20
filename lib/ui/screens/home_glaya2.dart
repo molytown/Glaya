@@ -19,41 +19,54 @@ class HomeGlaya2 extends StatelessWidget {
           IconButton(onPressed: () {}, icon: const Icon(Icons.search)),
         ],
       ),
-      body: SafeArea(
+      body: const SafeArea(
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Hello, Jane', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-                    const SizedBox(height: 10),
-                    const Text('Top picks for you', style: TextStyle(fontSize: 14, color: Colors.black54)),
-                    const SizedBox(height: 14),
-                    const GlayaHeroCard(title: 'Glow More, Pay Less', subtitle: 'Exclusive offers just for your next booking.', badge: 'New'),
-                    const SizedBox(height: 14),
+                    Text('Hello, Jane',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.w700)),
+                    SizedBox(height: 10),
+                    Text('Top picks for you',
+                        style: TextStyle(fontSize: 14, color: Colors.black54)),
+                    SizedBox(height: 14),
+                    GlayaHeroCard(
+                        title: 'Glow More, Pay Less',
+                        subtitle:
+                            'Exclusive offers just for your next booking.',
+                        badge: 'New'),
+                    SizedBox(height: 14),
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: const [
+                      children: [
                         GlayaChip(label: 'Wellness', selected: true),
                         GlayaChip(label: 'HAIR'),
                         GlayaChip(label: 'Nails'),
                         GlayaChip(label: 'Face'),
                       ],
                     ),
-                    const SizedBox(height: 16),
-                    const GlayaCard(title: 'Relaxing Massage', subtitle: 'At your comfort', imageUrl: 'https://picsum.photos/200'),
-                    const SizedBox(height: 12),
-                    const GlayaCard(title: 'Hair Styling', subtitle: 'Trendy looks', imageUrl: 'https://picsum.photos/201'),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 16),
+                    GlayaCard(
+                        title: 'Relaxing Massage',
+                        subtitle: 'At your comfort',
+                        imageUrl: 'https://picsum.photos/200'),
+                    SizedBox(height: 12),
+                    GlayaCard(
+                        title: 'Hair Styling',
+                        subtitle: 'Trendy looks',
+                        imageUrl: 'https://picsum.photos/201'),
+                    SizedBox(height: 12),
                   ],
                 ),
               ),
             ),
-            SliverToBoxAdapter(child: SizedBox(height: 96)),
+            const SliverToBoxAdapter(child: const SizedBox(height: 96)),
           ],
         ),
       ),
@@ -69,8 +82,11 @@ class HomeGlaya2 extends StatelessWidget {
               IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
               IconButton(onPressed: () {}, icon: const Icon(Icons.explore)),
               const SizedBox(width: 56),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.chat_bubble_outline)),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.person_outline)),
+              IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.chat_bubble_outline)),
+              IconButton(
+                  onPressed: () {}, icon: const Icon(Icons.person_outline)),
             ],
           ),
         ),

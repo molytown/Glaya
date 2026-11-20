@@ -3,6 +3,7 @@
 /// Postgres `numeric`/`decimal` columns serialize as JSON strings, so raw
 /// `(value as num?)` casts crash when the backend returns e.g. "200.00".
 /// Use these helpers anywhere an API field may arrive as String or num.
+library;
 
 /// Returns [value] as a double, or [fallback] when it isn't numeric.
 double toDoubleOr(dynamic value, [double fallback = 0.0]) {
@@ -17,7 +18,8 @@ int toIntOr(dynamic value, [int fallback = 0]) {
   if (value == null) return fallback;
   if (value is int) return value;
   if (value is num) return value.toInt();
-  if (value is String) return int.tryParse(value) ?? double.tryParse(value)?.toInt() ?? fallback;
+  if (value is String)
+    return int.tryParse(value) ?? double.tryParse(value)?.toInt() ?? fallback;
   return fallback;
 }
 

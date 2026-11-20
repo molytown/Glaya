@@ -10,10 +10,12 @@ class AdminProfessionalsScreen extends ConsumerStatefulWidget {
   const AdminProfessionalsScreen({super.key});
 
   @override
-  ConsumerState<AdminProfessionalsScreen> createState() => _AdminProfessionalsScreenState();
+  ConsumerState<AdminProfessionalsScreen> createState() =>
+      _AdminProfessionalsScreenState();
 }
 
-class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScreen> {
+class _AdminProfessionalsScreenState
+    extends ConsumerState<AdminProfessionalsScreen> {
   List<Map<String, dynamic>> _professionals = [];
   bool _isLoading = true;
   String _searchQuery = '';
@@ -31,7 +33,8 @@ class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScr
       final response = await ApiService.dio.get('/admin/professionals');
       if (mounted) {
         setState(() {
-          _professionals = (response.data['data'] as List).cast<Map<String, dynamic>>();
+          _professionals =
+              (response.data['data'] as List).cast<Map<String, dynamic>>();
           _isLoading = false;
         });
       }
@@ -39,7 +42,8 @@ class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScr
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load professionals: ${e.toString()}')),
+          SnackBar(
+              content: Text('Failed to load professionals: ${e.toString()}')),
         );
       }
     }
@@ -50,7 +54,8 @@ class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScr
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Delete Professional'),
-        content: const Text('Are you sure you want to delete this professional?'),
+        content:
+            const Text('Are you sure you want to delete this professional?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -77,7 +82,9 @@ class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScr
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete professional: ${e.toString()}')),
+            SnackBar(
+                content:
+                    Text('Failed to delete professional: ${e.toString()}')),
           );
         }
       }
@@ -91,12 +98,15 @@ class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScr
       filtered = filtered.where((p) {
         final name = (p['user']?['name'] as String? ?? '').toLowerCase();
         final category = (p['category'] as String? ?? '').toLowerCase();
-        return name.contains(_searchQuery.toLowerCase()) || category.contains(_searchQuery.toLowerCase());
+        return name.contains(_searchQuery.toLowerCase()) ||
+            category.contains(_searchQuery.toLowerCase());
       }).toList();
     }
 
     if (_filterStatus != 'all') {
-      filtered = filtered.where((p) => p['verificationStatus'] == _filterStatus).toList();
+      filtered = filtered
+          .where((p) => p['verificationStatus'] == _filterStatus)
+          .toList();
     }
 
     return filtered;
@@ -151,7 +161,8 @@ class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScr
             decoration: InputDecoration(
               hintText: 'Search professionals...',
               prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
             onChanged: (value) => setState(() => _searchQuery = value),
           ),
@@ -180,7 +191,7 @@ class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScr
         label: Text(label),
         selected: selected,
         onSelected: (_) => setState(() => _filterStatus = value),
-        selectedColor: GlayaColors.berry.withOpacity(0.2),
+        selectedColor: GlayaColors.berry.withValues(alpha: 0.2),
         checkmarkColor: GlayaColors.berry,
       ),
     );
@@ -197,7 +208,9 @@ class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScr
       margin: const EdgeInsets.only(bottom: 12),
       child: ListTile(
         leading: CircleAvatar(
-          backgroundImage: photoUrl != null ? NetworkImage(ConfigService().replaceLocalhost(photoUrl)) : null,
+          backgroundImage: photoUrl != null
+              ? NetworkImage(ConfigService().replaceLocalhost(photoUrl))
+              : null,
           child: photoUrl == null ? Text(name[0].toUpperCase()) : null,
         ),
         title: Text(name, style: GlayaTextStyles.titleMedium()),
@@ -208,7 +221,7 @@ class _AdminProfessionalsScreenState extends ConsumerState<AdminProfessionalsScr
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
+                color: statusColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
@@ -265,7 +278,8 @@ class AddProfessionalDialog extends ConsumerStatefulWidget {
   const AddProfessionalDialog({super.key});
 
   @override
-  ConsumerState<AddProfessionalDialog> createState() => _AddProfessionalDialogState();
+  ConsumerState<AddProfessionalDialog> createState() =>
+      _AddProfessionalDialogState();
 }
 
 class _AddProfessionalDialogState extends ConsumerState<AddProfessionalDialog> {
@@ -309,7 +323,8 @@ class _AddProfessionalDialogState extends ConsumerState<AddProfessionalDialog> {
         'phone': _phoneController.text,
         'category': _selectedCategory,
         'bio': _bioController.text,
-        'verificationStatus': 'approved', // Auto-approve for admin-created professionals
+        'verificationStatus':
+            'approved', // Auto-approve for admin-created professionals
       });
 
       if (mounted) {
@@ -322,7 +337,8 @@ class _AddProfessionalDialogState extends ConsumerState<AddProfessionalDialog> {
       if (mounted) {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add professional: ${e.toString()}')),
+          SnackBar(
+              content: Text('Failed to add professional: ${e.toString()}')),
         );
       }
     }
@@ -344,7 +360,8 @@ class _AddProfessionalDialogState extends ConsumerState<AddProfessionalDialog> {
                   labelText: 'Full Name',
                   border: OutlineInputBorder(),
                 ),
-                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -354,7 +371,8 @@ class _AddProfessionalDialogState extends ConsumerState<AddProfessionalDialog> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -364,11 +382,12 @@ class _AddProfessionalDialogState extends ConsumerState<AddProfessionalDialog> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
-                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _selectedCategory,
+                initialValue: _selectedCategory,
                 decoration: const InputDecoration(
                   labelText: 'Category',
                   border: OutlineInputBorder(),
@@ -379,7 +398,8 @@ class _AddProfessionalDialogState extends ConsumerState<AddProfessionalDialog> {
                     child: Text(category.toUpperCase()),
                   );
                 }).toList(),
-                onChanged: (value) => setState(() => _selectedCategory = value!),
+                onChanged: (value) =>
+                    setState(() => _selectedCategory = value!),
               ),
               const SizedBox(height: 16),
               TextFormField(

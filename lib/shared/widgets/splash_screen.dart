@@ -152,7 +152,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 height: 80,
               ),
             ),
-            Positioned(
+            const Positioned(
               bottom: 32,
               left: 16,
               right: 16,
@@ -161,7 +161,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 children: [
                   Text(
                     'FIND',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Rained Personal',
                       color: Colors.white,
                       fontSize: 28,
@@ -176,10 +176,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 1),
+                  SizedBox(height: 1),
                   Text(
                     'AND BOOK',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Rained Personal',
                       color: Colors.white,
                       fontSize: 24,
@@ -194,10 +194,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       ],
                     ),
                   ),
-                  const SizedBox(height: 1),
+                  SizedBox(height: 1),
                   Text(
                     'PROS NEAR YOUR',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'Rained Personal',
                       color: Colors.white,
                       fontSize: 20,
@@ -231,7 +231,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                   },
                   child: Icon(
                     Icons.swipe_left,
-                    color: Colors.white.withOpacity(0.7),
+                    color: Colors.white.withValues(alpha: 0.7),
                     size: 32,
                   ),
                 ),

@@ -10,7 +10,10 @@ String _currencySym() {
     final locale = Intl.getCurrentLocale();
     if (locale.startsWith('en_US')) return '\$';
     if (locale.startsWith('en_GB')) return '£';
-    if (locale.startsWith('fr_') || locale.startsWith('de_') || locale.startsWith('es_') || locale.startsWith('it_')) return '€';
+    if (locale.startsWith('fr_') ||
+        locale.startsWith('de_') ||
+        locale.startsWith('es_') ||
+        locale.startsWith('it_')) return '€';
     if (locale.startsWith('en_KE')) return 'KSh ';
     if (locale.startsWith('en_GH')) return 'GH₵ ';
     if (locale.startsWith('en_ZA')) return 'R ';
@@ -23,10 +26,12 @@ class ProfessionalBookingsScreen extends ConsumerStatefulWidget {
   const ProfessionalBookingsScreen({super.key});
 
   @override
-  ConsumerState<ProfessionalBookingsScreen> createState() => _ProfessionalBookingsScreenState();
+  ConsumerState<ProfessionalBookingsScreen> createState() =>
+      _ProfessionalBookingsScreenState();
 }
 
-class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBookingsScreen> {
+class _ProfessionalBookingsScreenState
+    extends ConsumerState<ProfessionalBookingsScreen> {
   List<Map<String, dynamic>> _bookings = [];
   bool _loading = true;
   String _filter = 'all';
@@ -50,7 +55,8 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
       final res = await ApiService.dio.get('/professionals/bookings');
       if (mounted) {
         setState(() {
-          _bookings = (res.data['data'] as List? ?? []).cast<Map<String, dynamic>>();
+          _bookings =
+              (res.data['data'] as List? ?? []).cast<Map<String, dynamic>>();
           _loading = false;
         });
       }
@@ -61,20 +67,21 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
 
   List<Map<String, dynamic>> get _filteredBookings {
     var filtered = _bookings;
-    
+
     if (_filter != 'all') {
       filtered = filtered.where((b) => b['status'] == _filter).toList();
     }
-    
+
     if (_searchController.text.isNotEmpty) {
       final query = _searchController.text.toLowerCase();
       filtered = filtered.where((b) {
         final userName = b['user']?['name'] as String? ?? '';
         final bookingId = b['id'] as String? ?? '';
-        return userName.toLowerCase().contains(query) || bookingId.toLowerCase().contains(query);
+        return userName.toLowerCase().contains(query) ||
+            bookingId.toLowerCase().contains(query);
       }).toList();
     }
-    
+
     return filtered;
   }
 
@@ -84,13 +91,17 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
       await _loadBookings();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Booking confirmed'), backgroundColor: Colors.green),
+          const SnackBar(
+              content: Text('Booking confirmed'),
+              backgroundColor: Colors.green),
         );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to confirm booking'), backgroundColor: Colors.red),
+          const SnackBar(
+              content: Text('Failed to confirm booking'),
+              backgroundColor: Colors.red),
         );
       }
     }
@@ -102,13 +113,17 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
       await _loadBookings();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Booking rejected'), backgroundColor: Colors.orange),
+          const SnackBar(
+              content: Text('Booking rejected'),
+              backgroundColor: Colors.orange),
         );
       }
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to reject booking'), backgroundColor: Colors.red),
+          const SnackBar(
+              content: Text('Failed to reject booking'),
+              backgroundColor: Colors.red),
         );
       }
     }
@@ -118,7 +133,7 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
     final scheduledAt = booking['scheduledAt'] ?? booking['scheduled_at'];
     DateTime? selectedDate;
     String? selectedTime;
-    
+
     try {
       selectedDate = DateTime.parse(scheduledAt as String);
       selectedTime = DateFormat('HH:mm').format(selectedDate);
@@ -128,7 +143,8 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
       context: context,
       builder: (_) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           title: const Text('Reschedule Booking'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -152,17 +168,31 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                   }
                 },
                 controller: TextEditingController(
-                  text: selectedDate != null ? DateFormat('yyyy-MM-dd').format(selectedDate!) : '',
+                  text: selectedDate != null
+                      ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                      : '',
                 ),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: selectedTime,
+                initialValue: selectedTime,
                 decoration: const InputDecoration(labelText: 'Time'),
                 items: const [
-                  '08:00', '09:00', '10:00', '11:00', '12:00',
-                  '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'
-                ].map((time) => DropdownMenuItem(value: time, child: Text(time))).toList(),
+                  '08:00',
+                  '09:00',
+                  '10:00',
+                  '11:00',
+                  '12:00',
+                  '14:00',
+                  '15:00',
+                  '16:00',
+                  '17:00',
+                  '18:00',
+                  '19:00'
+                ]
+                    .map((time) =>
+                        DropdownMenuItem(value: time, child: Text(time)))
+                    .toList(),
                 onChanged: (v) => setDialogState(() => selectedTime = v),
               ),
             ],
@@ -184,7 +214,8 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                     int.parse(parts[1]),
                   );
                   try {
-                    await ApiService.dio.post('/bookings/${booking['id']}/reschedule', data: {
+                    await ApiService.dio
+                        .post('/bookings/${booking['id']}/reschedule', data: {
                       'newScheduledAt': newDateTime.toUtc().toIso8601String(),
                     });
                     await _loadBookings();
@@ -192,13 +223,16 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                   } catch (_) {
                     if (mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Failed to reschedule'), backgroundColor: Colors.red),
+                        const SnackBar(
+                            content: Text('Failed to reschedule'),
+                            backgroundColor: Colors.red),
                       );
                     }
                   }
                 }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: GlayaColors.berry),
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: GlayaColors.berry),
               child: const Text('Save'),
             ),
           ],
@@ -212,16 +246,27 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
     final name = (service['name'] as String? ?? '').toLowerCase();
     final category = (service['category'] as String? ?? '').toLowerCase();
 
-    if (name.contains('hair') || name.contains('braid') || name.contains('wig') || category.contains('hair')) {
+    if (name.contains('hair') ||
+        name.contains('braid') ||
+        name.contains('wig') ||
+        category.contains('hair')) {
       return 'Stylist';
     }
-    if (name.contains('makeup') || name.contains('face') || name.contains('facial') || category.contains('makeup') || category.contains('face')) {
+    if (name.contains('makeup') ||
+        name.contains('face') ||
+        name.contains('facial') ||
+        category.contains('makeup') ||
+        category.contains('face')) {
       return 'Makeup Artist';
     }
-    if (name.contains('nail') || name.contains('manicure') || category.contains('nail')) {
+    if (name.contains('nail') ||
+        name.contains('manicure') ||
+        category.contains('nail')) {
       return 'Manicurist';
     }
-    if (name.contains('pedicure') || name.contains('feet') || category.contains('feet')) {
+    if (name.contains('pedicure') ||
+        name.contains('feet') ||
+        category.contains('feet')) {
       return 'Pedicurist';
     }
     return 'Specialist';
@@ -268,16 +313,18 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text('Booking Requests', style: TextStyle(fontWeight: FontWeight.w800)),
+        title: const Text('Booking Requests',
+            style: TextStyle(fontWeight: FontWeight.w800)),
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 16),
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: GlayaColors.berry.withOpacity(0.1),
+              color: GlayaColors.berry.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.notifications_outlined, color: GlayaColors.berry, size: 20),
+            child: const Icon(Icons.notifications_outlined,
+                color: GlayaColors.berry, size: 20),
           ),
         ],
       ),
@@ -286,13 +333,15 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
           _buildFilters(),
           Expanded(
             child: _loading
-                ? const Center(child: CircularProgressIndicator(color: GlayaColors.berry))
+                ? const Center(
+                    child: CircularProgressIndicator(color: GlayaColors.berry))
                 : _filteredBookings.isEmpty
                     ? _buildEmptyState()
                     : ListView.builder(
                         padding: const EdgeInsets.all(16),
                         itemCount: _filteredBookings.length,
-                        itemBuilder: (_, i) => _buildBookingCard(_filteredBookings[i]),
+                        itemBuilder: (_, i) =>
+                            _buildBookingCard(_filteredBookings[i]),
                       ),
           ),
         ],
@@ -311,8 +360,10 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
             decoration: InputDecoration(
               hintText: 'Search bookings...',
               prefixIcon: const Icon(Icons.search),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             ),
             onChanged: (_) => setState(() {}),
           ),
@@ -357,9 +408,11 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
         children: [
           Icon(Icons.event_busy, size: 64, color: Colors.grey.shade300),
           const SizedBox(height: 16),
-          const Text('No bookings found', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+          const Text('No bookings found',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
-          const Text('Try adjusting your filters', style: TextStyle(color: Color(0xFF9E9E9E))),
+          const Text('Try adjusting your filters',
+              style: TextStyle(color: Color(0xFF9E9E9E))),
         ],
       ),
     );
@@ -382,7 +435,9 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: _getStatusColor(status), width: 2),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+        boxShadow: [
+          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -393,9 +448,10 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: _getStatusColor(status).withOpacity(0.1),
+                    color: _getStatusColor(status).withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -409,7 +465,8 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                 ),
                 Text(
                   booking['id'] as String? ?? '',
-                  style: const TextStyle(fontSize: 12, color: Color(0xFF9E9E9E)),
+                  style:
+                      const TextStyle(fontSize: 12, color: Color(0xFF9E9E9E)),
                 ),
               ],
             ),
@@ -427,9 +484,10 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                       height: 48,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: GlayaColors.berry.withOpacity(0.1),
+                        color: GlayaColors.berry.withValues(alpha: 0.1),
                       ),
-                      child: Icon(Icons.spa_outlined, color: GlayaColors.berry, size: 24),
+                      child: const Icon(Icons.spa_outlined,
+                          color: GlayaColors.berry, size: 24),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -438,18 +496,23 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                         children: [
                           Text(
                             service?['name'] as String? ?? 'Service',
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                            style: const TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w700),
                           ),
                           Text(
                             service?['category'] as String? ?? 'Beauty',
-                            style: const TextStyle(fontSize: 12, color: Color(0xFF9E9E9E)),
+                            style: const TextStyle(
+                                fontSize: 12, color: Color(0xFF9E9E9E)),
                           ),
                         ],
                       ),
                     ),
                     Text(
                       '${_currencySym()}${(service?['price'] ?? service?['basePrice'] ?? 0).toString()}',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: GlayaColors.berry),
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: GlayaColors.berry),
                     ),
                   ],
                 ),
@@ -458,8 +521,9 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                   children: [
                     CircleAvatar(
                       radius: 20,
-                      backgroundColor: GlayaColors.berry.withOpacity(0.1),
-                      child: Icon(Icons.person, color: GlayaColors.berry, size: 20),
+                      backgroundColor: GlayaColors.berry.withValues(alpha: 0.1),
+                      child: const Icon(Icons.person,
+                          color: GlayaColors.berry, size: 20),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -468,11 +532,13 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                         children: [
                           Text(
                             user?['name'] as String? ?? 'Client',
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                            style: const TextStyle(
+                                fontSize: 14, fontWeight: FontWeight.w600),
                           ),
                           Text(
                             user?['phone'] as String? ?? '',
-                            style: const TextStyle(fontSize: 12, color: Color(0xFF9E9E9E)),
+                            style: const TextStyle(
+                                fontSize: 12, color: Color(0xFF9E9E9E)),
                           ),
                         ],
                       ),
@@ -486,7 +552,8 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: GlayaColors.berry),
                         foregroundColor: GlayaColors.berry,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
                       ),
                     ),
                   ],
@@ -494,20 +561,25 @@ class _ProfessionalBookingsScreenState extends ConsumerState<ProfessionalBooking
                 const SizedBox(height: 16),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_today, size: 16, color: Color(0xFF6B7280)),
+                    const Icon(Icons.calendar_today,
+                        size: 16, color: Color(0xFF6B7280)),
                     const SizedBox(width: 8),
-                    Text(dateStr, style: const TextStyle(fontSize: 13, color: Color(0xFF374151))),
+                    Text(dateStr,
+                        style: const TextStyle(
+                            fontSize: 13, color: Color(0xFF374151))),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.location_on, size: 16, color: Color(0xFF6B7280)),
+                    const Icon(Icons.location_on,
+                        size: 16, color: Color(0xFF6B7280)),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         booking['address'] as String? ?? 'Salon',
-                        style: const TextStyle(fontSize: 13, color: Color(0xFF374151)),
+                        style: const TextStyle(
+                            fontSize: 13, color: Color(0xFF374151)),
                       ),
                     ),
                   ],

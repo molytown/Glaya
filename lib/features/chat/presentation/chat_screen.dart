@@ -68,8 +68,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     try {
       await ApiService.dio.put('/chat/${widget.bookingId}/read');
       final resp = await ApiService.dio.get('/chats/list');
-      final rooms =
-          (resp.data['data'] as List).cast<Map<String, dynamic>>();
+      final rooms = (resp.data['data'] as List).cast<Map<String, dynamic>>();
       if (mounted) {
         ref.read(chatBubbleProvider.notifier).updateFromChatList(rooms);
       }
@@ -127,8 +126,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     setState(() {
       // Dedupe — REST load and socket echo can deliver the same message
       final id = msg['id']?.toString();
-      final exists = id != null &&
-          _messages.any((m) => m['id']?.toString() == id);
+      final exists =
+          id != null && _messages.any((m) => m['id']?.toString() == id);
       if (!exists) {
         _messages.add(msg);
         // Sort by time to ensure correct order
@@ -213,9 +212,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
     final professional = details['professional'] as Map<String, dynamic>?;
     final proUser = professional?['user'] as Map<String, dynamic>?;
-    final name = (professional?['businessName'] as String?)?.trim().isNotEmpty == true
-        ? professional!['businessName'] as String
-        : (proUser?['name'] as String?)?.trim() ?? '';
+    final name =
+        (professional?['businessName'] as String?)?.trim().isNotEmpty == true
+            ? professional!['businessName'] as String
+            : (proUser?['name'] as String?)?.trim() ?? '';
     return name.isNotEmpty ? name : 'Professional';
   }
 
@@ -227,127 +227,127 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
     final chatBody = Column(
       children: [
-          Expanded(
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.all(16),
-              itemCount: _messages.length,
-              itemBuilder: (context, index) {
-                final message = _messages[index];
-                final isMe = _messageSenderId(message) == _userId;
-                return Align(
-                  alignment:
-                      isMe ? Alignment.centerRight : Alignment.centerLeft,
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: isMe ? _senderColor : _receiverColor,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      message['content'] as String,
-                      style: GlayaTextStyles.bodyMedium(
-                          color: isMe ? Colors.white : _receiverTextColor),
-                    ),
+        Expanded(
+          child: ListView.builder(
+            controller: _scrollController,
+            padding: const EdgeInsets.all(16),
+            itemCount: _messages.length,
+            itemBuilder: (context, index) {
+              final message = _messages[index];
+              final isMe = _messageSenderId(message) == _userId;
+              return Align(
+                alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isMe ? _senderColor : _receiverColor,
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                );
-              },
-            ),
+                  child: Text(
+                    message['content'] as String,
+                    style: GlayaTextStyles.bodyMedium(
+                        color: isMe ? Colors.white : _receiverTextColor),
+                  ),
+                ),
+              );
+            },
           ),
-          if (_isTyping)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text('Typing...', style: GlayaTextStyles.bodySmall()),
-            ),
-          // Professional controls
-          if (isProfessional && bookingStatus == 'requested')
-            _buildProfessionalControls(),
-          if (isProfessional && bookingStatus == 'accepted')
-            _buildFinalizeControl(),
-          if (isProfessional && bookingStatus == 'in_progress')
-            _buildServiceDoneControls(),
-          // User controls
-          if (!isProfessional && bookingStatus == 'deposit_required')
-            _buildUserDepositControl(),
-          if (!isProfessional &&
-              bookingStatus == 'in_progress' &&
-              (_outstandingBalance > 0 || _codRequested))
-            _buildBalanceControls(),
-          // Quick replies
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                'I\'m on my way',
-                'I\'m here',
-                'Running late',
-              ]
-                  .map((text) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: ActionChip(
-                          label: Text(text),
-                          onPressed: () => _sendQuickReply(text),
-                        ),
-                      ))
-                  .toList(),
-            ),
-          ),
+        ),
+        if (_isTyping)
           Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _messageController,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                    ),
-                    cursorColor: GlayaColors.berry,
-                    decoration: InputDecoration(
-                      hintText: 'Type a message...',
-                      hintStyle: TextStyle(color: Colors.grey[500]),
-                      filled: true,
-                      fillColor: Colors.white,
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: GlayaColors.divider),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: GlayaColors.divider),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: const BorderSide(color: GlayaColors.berry, width: 1.5),
-                      ),
-                    ),
-                    onChanged: (_) {
-                      if (_userId != null) {
-                        _webSocketService.sendTypingStart(
-                            widget.bookingId, _userId!);
-                      }
-                    },
-                  ),
-                ),
-                const SizedBox(width: 8),
-                CircleAvatar(
-                  backgroundColor: GlayaColors.berry,
-                  child: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.white),
-                    onPressed: _sendMessage,
-                  ),
-                ),
-              ],
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text('Typing...', style: GlayaTextStyles.bodySmall()),
           ),
-        ],
-      );
+        // Professional controls
+        if (isProfessional && bookingStatus == 'requested')
+          _buildProfessionalControls(),
+        if (isProfessional && bookingStatus == 'accepted')
+          _buildFinalizeControl(),
+        if (isProfessional && bookingStatus == 'in_progress')
+          _buildServiceDoneControls(),
+        // User controls
+        if (!isProfessional && bookingStatus == 'deposit_required')
+          _buildUserDepositControl(),
+        if (!isProfessional &&
+            bookingStatus == 'in_progress' &&
+            (_outstandingBalance > 0 || _codRequested))
+          _buildBalanceControls(),
+        // Quick replies
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            children: [
+              'I\'m on my way',
+              'I\'m here',
+              'Running late',
+            ]
+                .map((text) => Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ActionChip(
+                        label: Text(text),
+                        onPressed: () => _sendQuickReply(text),
+                      ),
+                    ))
+                .toList(),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: _messageController,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
+                  cursorColor: GlayaColors.berry,
+                  decoration: InputDecoration(
+                    hintText: 'Type a message...',
+                    hintStyle: TextStyle(color: Colors.grey[500]),
+                    filled: true,
+                    fillColor: Colors.white,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: GlayaColors.divider),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: GlayaColors.divider),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(
+                          color: GlayaColors.berry, width: 1.5),
+                    ),
+                  ),
+                  onChanged: (_) {
+                    if (_userId != null) {
+                      _webSocketService.sendTypingStart(
+                          widget.bookingId, _userId!);
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(width: 8),
+              CircleAvatar(
+                backgroundColor: GlayaColors.berry,
+                child: IconButton(
+                  icon: const Icon(Icons.send, color: Colors.white),
+                  onPressed: _sendMessage,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
 
     if (widget.embedded) {
       return Material(
@@ -418,8 +418,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         children: [
           IconButton(
             icon: const Icon(Icons.close, color: GlayaColors.textPrimary),
-            onPressed: widget.onClose ??
-                () => Navigator.of(context).maybePop(),
+            onPressed: widget.onClose ?? () => Navigator.of(context).maybePop(),
           ),
           Expanded(
             child: Text(
@@ -465,8 +464,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: GlayaColors.error,
                 side: const BorderSide(color: GlayaColors.error),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30)),
               ),
@@ -541,8 +540,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               style: OutlinedButton.styleFrom(
                 foregroundColor: GlayaColors.berry,
                 side: const BorderSide(color: GlayaColors.berry),
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30)),
               ),
@@ -580,8 +579,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 style: OutlinedButton.styleFrom(
                   foregroundColor: GlayaColors.berry,
                   side: const BorderSide(color: GlayaColors.berry),
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30)),
                 ),
@@ -635,7 +634,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       _markMessagesRead();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payment confirmed — booking completed')),
+          const SnackBar(
+              content: Text('Payment confirmed — booking completed')),
         );
       }
     }
@@ -718,8 +718,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Decline Booking',
             style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
         content: const Text(
@@ -909,7 +908,8 @@ class _ProposeTermsDialogState extends State<_ProposeTermsDialog> {
                     fontWeight: FontWeight.w800,
                     color: Color(0xFF1A1A1A))),
             const SizedBox(height: 4),
-            const Text('Set the schedule and agreed price — the customer pays the deposit to confirm.',
+            const Text(
+                'Set the schedule and agreed price — the customer pays the deposit to confirm.',
                 style: TextStyle(fontSize: 12, color: Color(0xFF888888))),
             const SizedBox(height: 16),
             ListTile(
@@ -927,8 +927,8 @@ class _ProposeTermsDialogState extends State<_ProposeTermsDialog> {
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.schedule_outlined,
-                  color: GlayaColors.berry),
+              leading:
+                  const Icon(Icons.schedule_outlined, color: GlayaColors.berry),
               title: Text(
                 _time != null ? _time!.format(context) : 'Select time',
                 style: const TextStyle(fontSize: 14),
@@ -939,13 +939,14 @@ class _ProposeTermsDialogState extends State<_ProposeTermsDialog> {
             const SizedBox(height: 8),
             TextField(
               controller: _amountController,
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
                 labelText: 'Agreed amount',
                 prefixText: 'XAF ',
                 errorText: _error,
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: GlayaColors.berry),
@@ -969,8 +970,7 @@ class _ProposeTermsDialogState extends State<_ProposeTermsDialog> {
                     borderRadius: BorderRadius.circular(12)),
               ),
               child: const Text('Send to Customer',
-                  style:
-                      TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
             ),
           ],
         ),

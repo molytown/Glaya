@@ -38,8 +38,7 @@ class Album {
         : null;
 
     // Parse media items
-    final mediaItems =
-        media
+    final mediaItems = media
             ?.map(
               (item) => GalleryMediaItem.fromJson(item as Map<String, dynamic>),
             )
@@ -71,7 +70,7 @@ class PortfolioGallery extends ConsumerWidget {
     final authState = ref.watch(authNotifierProvider);
     final user = authState.valueOrNull;
     final isOwnProfile = user?.role == 'professional' || user?.role == 'both';
-    
+
     // Try to parse as albums first
     List<Album> albums = [];
     if (portfolioUrls != null && portfolioUrls!.isNotEmpty) {
@@ -187,15 +186,15 @@ class PortfolioGallery extends ConsumerWidget {
                             imageUrl: album.coverUrl!,
                             fit: BoxFit.cover,
                             placeholder: (_, __) => Container(
-                              color: GlayaColors.berry.withOpacity(0.1),
+                              color: GlayaColors.berry.withValues(alpha: 0.1),
                             ),
                             errorWidget: (_, __, ___) => Container(
-                              color: GlayaColors.berry.withOpacity(0.1),
+                              color: GlayaColors.berry.withValues(alpha: 0.1),
                             ),
                           )
                         else
                           Container(
-                            color: GlayaColors.berry.withOpacity(0.1),
+                            color: GlayaColors.berry.withValues(alpha: 0.1),
                             child: const Icon(
                               Icons.photo_library,
                               color: GlayaColors.berry,
@@ -240,7 +239,8 @@ class PortfolioGallery extends ConsumerWidget {
                     backgroundColor: GlayaColors.berry,
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
                   ),
                 ),
               ),
@@ -253,7 +253,7 @@ class PortfolioGallery extends ConsumerWidget {
   void _showGalleryViewer(BuildContext context, Album album) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.9),
+      barrierColor: Colors.black.withValues(alpha: 0.9),
       builder: (context) => GalleryImageViewer(
         mediaItems: album.mediaItems,
         professionalId: professionalId,

@@ -47,13 +47,15 @@ class BottomStickyBookingBar extends ConsumerWidget {
     final minPrice = services.isEmpty
         ? 0.0
         : services
-                .map((s) => (s as ServiceItem).price)
-                .reduce((a, b) => a < b ? a : b);
+            .map((s) => (s as ServiceItem).price)
+            .reduce((a, b) => a < b ? a : b);
 
     final currencyCode = professional.currency ?? 'XAF';
     final currencySymbol = _getCurrencySymbol(currencyCode);
-    final converted = ref.watch(convertedPriceProvider((amount: minPrice, fromCurrency: currencyCode)));
-    final displayPrice = NumberFormat('#,##0').format(converted.value ?? minPrice);
+    final converted = ref.watch(
+        convertedPriceProvider((amount: minPrice, fromCurrency: currencyCode)));
+    final displayPrice =
+        NumberFormat('#,##0').format(converted.value ?? minPrice);
     final authState = ref.watch(authNotifierProvider);
     final isAuthenticated = authState.valueOrNull != null;
 
@@ -61,7 +63,12 @@ class BottomStickyBookingBar extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 10, offset: const Offset(0, -2))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.08),
+              blurRadius: 10,
+              offset: const Offset(0, -2))
+        ],
       ),
       child: SafeArea(
         child: Row(
@@ -70,8 +77,13 @@ class BottomStickyBookingBar extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Starting from', style: TextStyle(fontSize: 11, color: Color(0xFF888888))),
-                Text('$currencySymbol $displayPrice', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A))),
+                const Text('Starting from',
+                    style: TextStyle(fontSize: 11, color: Color(0xFF888888))),
+                Text('$currencySymbol $displayPrice',
+                    style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF1A1A1A))),
               ],
             ),
             const Spacer(),
@@ -80,7 +92,8 @@ class BottomStickyBookingBar extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () {
                   if (!isAuthenticated) {
-                    context.push('/login?from=${Uri.encodeComponent('/book/${professional.id}')}');
+                    context.push(
+                        '/login?from=${Uri.encodeComponent('/book/${professional.id}')}');
                   } else {
                     context.push('/book/${professional.id}');
                   }
@@ -90,9 +103,12 @@ class BottomStickyBookingBar extends ConsumerWidget {
                   foregroundColor: Colors.white,
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
                 ),
-                child: const Text('Book Appointment', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                child: const Text('Book Appointment',
+                    style:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
               ),
             ),
           ],

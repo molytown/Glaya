@@ -21,7 +21,8 @@ class CategoryProfessionalsCarousel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final professionalsAsync = ref.watch(categoryProfessionalsProvider(categoryName));
+    final professionalsAsync =
+        ref.watch(categoryProfessionalsProvider(categoryName));
 
     return professionalsAsync.when(
       data: (professionals) {
@@ -67,7 +68,8 @@ class _CategoryProfessionalCard extends ConsumerWidget {
   });
 
   Color _getStatusColor() {
-    if (professional.cardStatus == 'offline' || professional.cardStatus == 'closed') {
+    if (professional.cardStatus == 'offline' ||
+        professional.cardStatus == 'closed') {
       return Colors.red;
     } else if (professional.totalBookings >= 5) {
       return Colors.yellow;
@@ -89,11 +91,11 @@ class _CategoryProfessionalCard extends ConsumerWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: GlayaColors.softShadow,
               blurRadius: 8,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -104,20 +106,24 @@ class _CategoryProfessionalCard extends ConsumerWidget {
             AspectRatio(
               aspectRatio: 1,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(16)),
                 child: professional.photoUrl?.isNotEmpty == true
                     ? CachedNetworkImage(
                         imageUrl: professional.photoUrl!,
                         fit: BoxFit.cover,
                         width: double.infinity,
                         errorWidget: (_, __, ___) => Container(
-                          color: GlayaColors.vibrantPink.withOpacity(0.25),
-                          child: const Icon(Icons.person, size: 48, color: GlayaColors.berry),
+                          color:
+                              GlayaColors.vibrantPink.withValues(alpha: 0.25),
+                          child: const Icon(Icons.person,
+                              size: 48, color: GlayaColors.berry),
                         ),
                       )
                     : Container(
-                        color: GlayaColors.vibrantPink.withOpacity(0.25),
-                        child: const Icon(Icons.person, size: 48, color: GlayaColors.berry),
+                        color: GlayaColors.vibrantPink.withValues(alpha: 0.25),
+                        child: const Icon(Icons.person,
+                            size: 48, color: GlayaColors.berry),
                       ),
               ),
             ),
@@ -142,7 +148,8 @@ class _CategoryProfessionalCard extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(width: 4),
-                      VerificationBadge(subscriptionType: professional.subscriptionType),
+                      VerificationBadge(
+                          subscriptionType: professional.subscriptionType),
                     ],
                   ),
                   const SizedBox(height: 2),

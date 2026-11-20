@@ -82,15 +82,16 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return Scaffold(
-        backgroundColor: const Color(0xFF1A1A2E),
+      return const Scaffold(
+        backgroundColor: Color(0xFF1A1A2E),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(color: Colors.white),
-              const SizedBox(height: 20),
-              const Text('Connecting...', style: TextStyle(color: Colors.white70, fontSize: 16)),
+              CircularProgressIndicator(color: Colors.white),
+              SizedBox(height: 20),
+              Text('Connecting...',
+                  style: TextStyle(color: Colors.white70, fontSize: 16)),
             ],
           ),
         ),
@@ -105,9 +106,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
             children: [
               const Icon(Icons.error_outline, color: Colors.red, size: 64),
               const SizedBox(height: 16),
-              Text(_error!, style: const TextStyle(color: Colors.white70), textAlign: TextAlign.center),
+              Text(_error!,
+                  style: const TextStyle(color: Colors.white70),
+                  textAlign: TextAlign.center),
               const SizedBox(height: 24),
-              ElevatedButton(onPressed: () => context.pop(), child: const Text('Go Back')),
+              ElevatedButton(
+                  onPressed: () => context.pop(), child: const Text('Go Back')),
             ],
           ),
         ),
@@ -123,19 +127,29 @@ class _CallScreenState extends ConsumerState<CallScreen> {
             // Avatar
             CircleAvatar(
               radius: 56,
-              backgroundColor: GlayaColors.berry.withOpacity(0.3),
+              backgroundColor: GlayaColors.berry.withValues(alpha: 0.3),
               child: Text(
                 (_otherName ?? '?')[0].toUpperCase(),
-                style: const TextStyle(fontSize: 40, color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    fontSize: 40,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(height: 24),
-            Text(_otherName ?? '', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+            Text(_otherName ?? '',
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
-            Text(_elapsed, style: const TextStyle(color: Colors.white60, fontSize: 18)),
-            if (_channelName != null) ...
-              [const SizedBox(height: 4),
-              Text('Channel: $_channelName', style: const TextStyle(color: Colors.white38, fontSize: 12))],
+            Text(_elapsed,
+                style: const TextStyle(color: Colors.white60, fontSize: 18)),
+            if (_channelName != null) ...[
+              const SizedBox(height: 4),
+              Text('Channel: $_channelName',
+                  style: const TextStyle(color: Colors.white38, fontSize: 12))
+            ],
             const Spacer(),
             // Controls
             Row(
@@ -153,8 +167,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   child: Container(
                     width: 72,
                     height: 72,
-                    decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle),
-                    child: const Icon(Icons.call_end, color: Colors.white, size: 32),
+                    decoration: const BoxDecoration(
+                        color: Colors.red, shape: BoxShape.circle),
+                    child: const Icon(Icons.call_end,
+                        color: Colors.white, size: 32),
                   ),
                 ),
                 _buildControl(
@@ -172,7 +188,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
-  Widget _buildControl({required IconData icon, required String label, required Color color, required VoidCallback onTap}) {
+  Widget _buildControl(
+      {required IconData icon,
+      required String label,
+      required Color color,
+      required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -184,7 +204,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
             child: Icon(icon, color: Colors.white, size: 26),
           ),
           const SizedBox(height: 8),
-          Text(label, style: const TextStyle(color: Colors.white54, fontSize: 12)),
+          Text(label,
+              style: const TextStyle(color: Colors.white54, fontSize: 12)),
         ],
       ),
     );

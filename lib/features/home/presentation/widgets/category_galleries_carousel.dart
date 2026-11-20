@@ -71,9 +71,9 @@ class _CategoryGalleriesCarouselState
   void _showGalleryViewer(Map<String, dynamic> gallery) {
     final configService = ConfigService();
     final mediaItems = (gallery['media'] as List<dynamic>?)?.map((item) {
-          String normalizedMediaUrl =
-              item['mediaUrl']?.toString() ?? '';
-          if (normalizedMediaUrl.isNotEmpty && !normalizedMediaUrl.startsWith('http')) {
+          String normalizedMediaUrl = item['mediaUrl']?.toString() ?? '';
+          if (normalizedMediaUrl.isNotEmpty &&
+              !normalizedMediaUrl.startsWith('http')) {
             normalizedMediaUrl =
                 '${configService.socketUrl}$normalizedMediaUrl';
           }
@@ -101,7 +101,7 @@ class _CategoryGalleriesCarouselState
     if (mediaItems.isNotEmpty && professionalId != null) {
       showDialog(
         context: context,
-        barrierColor: Colors.black.withOpacity(0.9),
+        barrierColor: Colors.black.withValues(alpha: 0.9),
         builder: (context) => GalleryImageViewer(
           mediaItems: mediaItems,
           professionalId: professionalId,
@@ -175,7 +175,8 @@ class _CategoryGalleriesCarouselState
                       fit: StackFit.expand,
                       children: [
                         // Media
-                        mediaType == 'video' && normalizedThumbnailUrl?.isNotEmpty == true
+                        mediaType == 'video' &&
+                                normalizedThumbnailUrl?.isNotEmpty == true
                             ? CachedNetworkImage(
                                 imageUrl: normalizedThumbnailUrl!,
                                 fit: BoxFit.cover,
@@ -193,16 +194,16 @@ class _CategoryGalleriesCarouselState
                               )
                             : normalizedMediaUrl.isNotEmpty
                                 ? CachedNetworkImage(
-                                imageUrl: normalizedMediaUrl,
-                                fit: BoxFit.cover,
-                                placeholder: (_, __) =>
-                                    Container(color: Colors.grey[300]),
-                                errorWidget: (_, __, ___) => Container(
-                                  color: Colors.grey[300],
-                                  child: const Icon(Icons.broken_image),
-                                ),
-                              )
-                            : Container(color: Colors.grey[300]),
+                                    imageUrl: normalizedMediaUrl,
+                                    fit: BoxFit.cover,
+                                    placeholder: (_, __) =>
+                                        Container(color: Colors.grey[300]),
+                                    errorWidget: (_, __, ___) => Container(
+                                      color: Colors.grey[300],
+                                      child: const Icon(Icons.broken_image),
+                                    ),
+                                  )
+                                : Container(color: Colors.grey[300]),
                         // Video indicator
                         if (mediaType == 'video')
                           Positioned(
@@ -211,7 +212,7 @@ class _CategoryGalleriesCarouselState
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.6),
+                                color: Colors.black.withValues(alpha: 0.6),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -234,7 +235,7 @@ class _CategoryGalleriesCarouselState
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.transparent,
-                                  Colors.black.withOpacity(0.7),
+                                  Colors.black.withValues(alpha: 0.7),
                                 ],
                               ),
                             ),

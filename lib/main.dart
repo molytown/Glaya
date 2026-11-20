@@ -16,9 +16,11 @@ import 'shared/services/config_service.dart';
 import 'shared/theme/app_theme.dart';
 import 'shared/theme/colors.dart';
 import 'shared/constants/api_constants.dart';
+import 'shared/utils/responsive_helper.dart';
 import 'ui/app_theme_glaya2.dart';
 import 'features/home/controller/location_controller.dart';
 import 'shared/widgets/floating_chat_bubble.dart';
+import 'shared/widgets/glaya_scroll_behavior.dart';
 import 'shared/widgets/booking_chat_dialog.dart';
 import 'shared/providers/chat_bubble_provider.dart';
 import 'shared/providers/location_provider.dart';
@@ -76,14 +78,14 @@ Future<void> _setupFCM() async {
     'Glaya Notifications',
     description: 'Booking and chat notifications',
     importance: Importance.high,
-    sound: RawResourceAndroidNotificationSound('notification'),
+    sound: const RawResourceAndroidNotificationSound('notification'),
     enableVibration: true,
     vibrationPattern: Int64List.fromList([0, 200, 100, 200]),
     showBadge: true,
   );
   final flutterLocalNotifications = FlutterLocalNotificationsPlugin();
 
-  final androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
   final initializationSettings = InitializationSettings(
     android: androidSettings,
   );
@@ -119,35 +121,36 @@ Future<void> _setupFCM() async {
 
     // Check if this is a chat message
     final isChat = data['type']?.toString().contains('chat') == true ||
-                   data['type']?.toString().contains('message') == true;
+        data['type']?.toString().contains('message') == true;
 
     // Dedupe against the socket channel — whichever arrives first alerts,
     // the other is skipped for sound/system-notification purposes.
     final notificationId = data['notificationId']?.toString() ?? '';
     final wsService = NotificationWebSocketService.instance;
-    final alreadySeen = notificationId.isNotEmpty && wsService.wasRecentlySeen(notificationId);
+    final alreadySeen =
+        notificationId.isNotEmpty && wsService.wasRecentlySeen(notificationId);
     if (notificationId.isNotEmpty) wsService.markSeen(notificationId);
 
     // Play the in-app notification sound (foreground)
     if (!alreadySeen) {
       try {
-      final userData = await StorageService.getUserData();
-      var isProfessional = false;
-      if (userData != null && userData.isNotEmpty) {
-        final role =
-            (jsonDecode(userData) as Map<String, dynamic>)['role'] as String?;
-        isProfessional = role == 'professional' || role == 'both';
-      }
-      // Use message sound for chat, notification sound for others
-      if (isChat) {
-        await NotificationSoundService.instance.playMessageReceived(
-          isProfessional: isProfessional,
-        );
-      } else {
-        await NotificationSoundService.instance.playNotification(
-          isProfessional: isProfessional,
-        );
-      }
+        final userData = await StorageService.getUserData();
+        var isProfessional = false;
+        if (userData != null && userData.isNotEmpty) {
+          final role =
+              (jsonDecode(userData) as Map<String, dynamic>)['role'] as String?;
+          isProfessional = role == 'professional' || role == 'both';
+        }
+        // Use message sound for chat, notification sound for others
+        if (isChat) {
+          await NotificationSoundService.instance.playMessageReceived(
+            isProfessional: isProfessional,
+          );
+        } else {
+          await NotificationSoundService.instance.playNotification(
+            isProfessional: isProfessional,
+          );
+        }
       } catch (_) {}
     }
 
@@ -163,7 +166,7 @@ Future<void> _setupFCM() async {
             androidChannel.name,
             channelDescription: androidChannel.description,
             icon: '@mipmap/ic_launcher',
-            sound: RawResourceAndroidNotificationSound('notification'),
+            sound: const RawResourceAndroidNotificationSound('notification'),
             playSound: true,
             enableVibration: true,
             vibrationPattern: Int64List.fromList([0, 200, 100, 200]),
@@ -204,8 +207,9 @@ Future<void> _setupFCM() async {
 
   // Cold-start notification tap (app launched from terminated state)
   final initialMessage = await messaging.getInitialMessage();
-  final initialParsed =
-      initialMessage != null ? _parseNotificationData(initialMessage.data) : null;
+  final initialParsed = initialMessage != null
+      ? _parseNotificationData(initialMessage.data)
+      : null;
   if (initialParsed != null) {
     if (initialParsed['bookingId'] != null && initialParsed['isChat'] == true) {
       pendingNotificationBookingId = initialParsed['bookingId'];
@@ -222,13 +226,18 @@ Map<String, dynamic>? _parseNotificationData(Map<String, dynamic> data) {
     return {'route': explicit, 'bookingId': null, 'isChat': false};
   }
 
-  final bookingId = data['bookingId']?.toString() ?? data['booking_id']?.toString();
+  final bookingId =
+      data['bookingId']?.toString() ?? data['booking_id']?.toString();
   final type = data['type']?.toString() ?? '';
   if (bookingId != null && bookingId.isNotEmpty) {
     if (type.contains('message') || type.contains('chat')) {
       return {'route': null, 'bookingId': bookingId, 'isChat': true};
     }
-    return {'route': '/bookings/$bookingId', 'bookingId': null, 'isChat': false};
+    return {
+      'route': '/bookings/$bookingId',
+      'bookingId': null,
+      'isChat': false
+    };
   }
   return {'route': '/notifications', 'bookingId': null, 'isChat': false};
 }
@@ -244,8 +253,7 @@ Future<void> main() async {
   final previousOnError = FlutterError.onError;
   FlutterError.onError = (details) {
     try {
-      final signature =
-          '${details.exceptionAsString()}|${details.context}';
+      final signature = '${details.exceptionAsString()}|${details.context}';
       if (seenErrorSignatures.add(signature)) {
         final buf = StringBuffer('FLUTTER_ERROR: ');
         buf.writeln(details.exceptionAsString());
@@ -345,9 +353,10 @@ class GlayaApp extends ConsumerWidget {
       theme: GlayaTheme2.theme,
       darkTheme: GlayaAppTheme.darkTheme,
       themeMode: ThemeMode.light,
+      scrollBehavior: const GlayaScrollBehavior(),
       routerConfig: router,
       builder: (context, child) {
-        return _AppWithBubble(child: child!, user: user);
+        return _AppWithBubble(user: user, child: child!);
       },
     );
   }
@@ -472,8 +481,8 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
     final isChat = type.contains('chat') || type.contains('message');
     final payload = data['payload'];
     final payloadMap = payload is Map ? payload : const {};
-    final bookingId = payloadMap['bookingId']?.toString() ??
-        data['bookingId']?.toString();
+    final bookingId =
+        payloadMap['bookingId']?.toString() ?? data['bookingId']?.toString();
     final reelId = payloadMap['reelId']?.toString();
     final notificationId = (data['id'] ?? data['_id'])?.toString() ?? '';
 
@@ -488,7 +497,8 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
             const SizedBox(width: 8),
             Expanded(
               child: Text(title,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.w700)),
             ),
           ],
         ),
@@ -504,19 +514,19 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
                 Navigator.of(dialogContext).pop();
                 if (notificationId.isNotEmpty) {
                   try {
-                    await ApiService.dio.put('/notifications/$notificationId/read');
+                    await ApiService.dio
+                        .put('/notifications/$notificationId/read');
                   } catch (_) {}
                 }
                 if (!mounted || !navContext.mounted) return;
                 ref.read(notificationCountProvider.notifier).refresh();
                 try {
                   final res = await ApiService.dio.get('/reels/$reelId');
-                  final reel = Reel.fromJson(
-                      res.data['data'] as Map<String, dynamic>);
+                  final reel =
+                      Reel.fromJson(res.data['data'] as Map<String, dynamic>);
                   if (!navContext.mounted) return;
                   if (reel.isPhoto) {
-                    final url = ConfigService()
-                        .replaceLocalhost(reel.videoUrl);
+                    final url = ConfigService().replaceLocalhost(reel.videoUrl);
                     showDialog(
                       context: navContext,
                       builder: (ctx) => Dialog(
@@ -529,9 +539,10 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
                                 child: Image.network(
                                   url,
                                   fit: BoxFit.contain,
-                                  errorBuilder: (_, __, ___) =>
-                                      const Icon(Icons.broken_image,
-                                          color: Colors.white54, size: 64),
+                                  errorBuilder: (_, __, ___) => const Icon(
+                                      Icons.broken_image,
+                                      color: Colors.white54,
+                                      size: 64),
                                 ),
                               ),
                             ),
@@ -564,15 +575,15 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
                 Navigator.of(dialogContext).pop();
                 if (notificationId.isNotEmpty) {
                   try {
-                    await ApiService.dio.put('/notifications/$notificationId/read');
+                    await ApiService.dio
+                        .put('/notifications/$notificationId/read');
                   } catch (_) {}
                 }
                 if (!mounted || !navContext.mounted) return;
                 ref.read(notificationCountProvider.notifier).refresh();
                 if (isChat) {
                   // Restore a dismissed chat bubble for chat notifications
-                  final notifier =
-                      ref.read(chatBubbleProvider.notifier);
+                  final notifier = ref.read(chatBubbleProvider.notifier);
                   notifier.undismiss();
                   ApiService.dio.get('/chats/list').then((resp) {
                     final rooms = (resp.data['data'] as List)
@@ -638,6 +649,9 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
     }
 
     if (widget.user == null) return widget.child;
+
+    final isDesktop = ResponsiveHelper.isDesktop(context);
+    if (isDesktop) return widget.child;
 
     return Stack(
       children: [

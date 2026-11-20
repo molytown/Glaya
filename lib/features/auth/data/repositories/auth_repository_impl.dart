@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'dart:io' show Platform;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -133,7 +132,8 @@ class AuthRepositoryImpl implements AuthRepository {
       // Professional fields
       if (email != null) 'email': email,
       if (businessName != null) 'businessName': businessName,
-      if (categoryIds != null && categoryIds.isNotEmpty) 'categoryIds': categoryIds,
+      if (categoryIds != null && categoryIds.isNotEmpty)
+        'categoryIds': categoryIds,
       if (country != null) 'country': country,
       if (state != null && state.isNotEmpty) 'state': state,
       if (city != null) 'city': city,
@@ -147,7 +147,8 @@ class AuthRepositoryImpl implements AuthRepository {
     final responseData = response.data['data'] as Map<String, dynamic>;
     final accessToken = responseData['accessToken'] as String;
     final refreshToken = responseData['refreshToken'] as String;
-    final user = UserModel.fromJson(responseData['user'] as Map<String, dynamic>);
+    final user =
+        UserModel.fromJson(responseData['user'] as Map<String, dynamic>);
 
     await _storeSession(accessToken, refreshToken, user, rememberMe);
 
@@ -230,7 +231,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<User?> getCurrentUser() async {
     final token = await StorageService.getToken();
-    print('[AUTH_REPO] Token from storage: ${token != null ? "exists" : "null"}');
+    print(
+        '[AUTH_REPO] Token from storage: ${token != null ? "exists" : "null"}');
     if (token == null) {
       await StorageService.clearAll();
       return null;

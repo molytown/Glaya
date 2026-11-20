@@ -11,35 +11,33 @@ import '../models/prediction_model.dart';
 
 class LocationController extends GetxController implements GetxService {
   final LocationRepository locationRepository;
-  
+
   LocationController({required this.locationRepository});
 
   Position _position = Position(
-    longitude: 0, 
-    latitude: 0, 
-    timestamp: DateTime.now(), 
-    accuracy: 1, 
-    altitude: 1, 
-    altitudeAccuracy: 1, 
-    heading: 1, 
-    headingAccuracy: 1, 
-    speed: 1, 
-    speedAccuracy: 1
-  );
-  
+      longitude: 0,
+      latitude: 0,
+      timestamp: DateTime.now(),
+      accuracy: 1,
+      altitude: 1,
+      altitudeAccuracy: 1,
+      heading: 1,
+      headingAccuracy: 1,
+      speed: 1,
+      speedAccuracy: 1);
+
   Position _pickPosition = Position(
-    longitude: 0, 
-    latitude: 0, 
-    timestamp: DateTime.now(), 
-    accuracy: 1, 
-    altitude: 1, 
-    altitudeAccuracy: 1, 
-    heading: 1, 
-    headingAccuracy: 1, 
-    speed: 1, 
-    speedAccuracy: 1
-  );
-  
+      longitude: 0,
+      latitude: 0,
+      timestamp: DateTime.now(),
+      accuracy: 1,
+      altitude: 1,
+      altitudeAccuracy: 1,
+      heading: 1,
+      headingAccuracy: 1,
+      speed: 1,
+      speedAccuracy: 1);
+
   bool _loading = false;
   String? _address = '';
   String? _pickAddress = '';
@@ -80,12 +78,11 @@ class LocationController extends GetxController implements GetxService {
     update();
   }
 
-  Future<AddressModel> getCurrentLocation(bool fromAddress, {
-    GoogleMapController? mapController, 
-    LatLng? defaultLatLng, 
-    bool notify = true, 
-    bool showSnackBar = false
-  }) async {
+  Future<AddressModel> getCurrentLocation(bool fromAddress,
+      {GoogleMapController? mapController,
+      LatLng? defaultLatLng,
+      bool notify = true,
+      bool showSnackBar = false}) async {
     _loading = true;
     if (notify) {
       update();
@@ -95,77 +92,72 @@ class LocationController extends GetxController implements GetxService {
     try {
       await Geolocator.requestPermission();
       Position newLocalData = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high
-      );
+          desiredAccuracy: LocationAccuracy.high);
       myPosition = newLocalData;
     } catch (e) {
       myPosition = Position(
         latitude: defaultLatLng != null ? defaultLatLng.latitude : 0,
         longitude: defaultLatLng != null ? defaultLatLng.longitude : 0,
-        timestamp: DateTime.now(), 
-        accuracy: 1, 
-        altitude: 1, 
-        altitudeAccuracy: 1, 
-        heading: 1, 
-        headingAccuracy: 1, 
-        speed: 1, 
+        timestamp: DateTime.now(),
+        accuracy: 1,
+        altitude: 1,
+        altitudeAccuracy: 1,
+        heading: 1,
+        headingAccuracy: 1,
+        speed: 1,
         speedAccuracy: 1,
       );
     }
-    
+
     if (fromAddress) {
       _position = myPosition;
     } else {
       _pickPosition = myPosition;
     }
-    
+
     if (mapController != null) {
       mapController.animateCamera(CameraUpdate.newCameraPosition(
         CameraPosition(
-          target: LatLng(myPosition.latitude, myPosition.longitude), 
-          zoom: 16
-        ),
+            target: LatLng(myPosition.latitude, myPosition.longitude),
+            zoom: 16),
       ));
     }
-    
+
     String addressFromGeocode = await getAddressFromGeocode(
-      LatLng(myPosition.latitude, myPosition.longitude)
-    );
-    
-    fromAddress ? _address = addressFromGeocode : _pickAddress = addressFromGeocode;
-    
+        LatLng(myPosition.latitude, myPosition.longitude));
+
+    fromAddress
+        ? _address = addressFromGeocode
+        : _pickAddress = addressFromGeocode;
+
     ZoneResponseModel responseModel = await getZone(
-      myPosition.latitude.toString(), 
-      myPosition.longitude.toString(), 
-      true, 
-      showSnackBar: showSnackBar
-    );
-    
+        myPosition.latitude.toString(), myPosition.longitude.toString(), true,
+        showSnackBar: showSnackBar);
+
     _buttonDisabled = !responseModel.isSuccess;
-    
+
     addressModel = AddressModel(
-      latitude: myPosition.latitude.toString(), 
-      longitude: myPosition.longitude.toString(), 
+      latitude: myPosition.latitude.toString(),
+      longitude: myPosition.longitude.toString(),
       addressType: 'others',
-      zoneId: responseModel.isSuccess ? responseModel.zoneIds[0] : 0, 
+      zoneId: responseModel.isSuccess ? responseModel.zoneIds[0] : 0,
       zoneIds: responseModel.zoneIds,
-      address: addressFromGeocode, 
+      address: addressFromGeocode,
       zoneData: responseModel.zoneData,
     );
-    
+
     _loading = false;
     update();
     return addressModel;
   }
 
-  Future<ZoneResponseModel> getZone(String? lat, String? long, bool updateInAddress, {
-    bool markerLoad = false, 
-    bool showSnackBar = true
-  }) async {
+  Future<ZoneResponseModel> getZone(
+      String? lat, String? long, bool updateInAddress,
+      {bool markerLoad = false, bool showSnackBar = true}) async {
     if (lat == null || lat.isEmpty || long == null || long.isEmpty) {
       return ZoneResponseModel(false, 'Invalid coordinates', [], []);
     }
-    
+
     _loading = true;
     if (!updateInAddress) {
       update();
@@ -175,7 +167,7 @@ class LocationController extends GetxController implements GetxService {
     if (cachedZone != null && cachedZone.isSuccess) {
       _inZone = true;
       _zoneID = cachedZone.zoneIds.isNotEmpty ? cachedZone.zoneIds[0] : 0;
-      
+
       if (updateInAddress) {
         AddressModel? address = await getUserAddress();
         if (address != null) {
@@ -183,7 +175,7 @@ class LocationController extends GetxController implements GetxService {
           saveUserAddress(address);
         }
       }
-      
+
       if (markerLoad) {
         _loading = false;
       } else {
@@ -194,27 +186,27 @@ class LocationController extends GetxController implements GetxService {
     }
 
     final response = await locationRepository.getZone(lat, long);
-    
+
     ZoneResponseModel responseModel;
     if (response.statusCode == 200) {
       _inZone = true;
       List<int> zoneIds = [];
-      
+
       Map<String, dynamic> body = {};
       try {
         body = jsonDecode(response.body);
       } catch (e) {
         body = {};
       }
-      
+
       try {
         final zoneIdData = body['zone_id'];
         if (zoneIdData == null) {
           _zoneID = 0;
         } else if (zoneIdData is List) {
-          zoneIdData.forEach((zoneId) {
+          for (var zoneId in zoneIdData) {
             zoneIds.add(int.parse(zoneId.toString()));
-          });
+          }
           _zoneID = zoneIds.isNotEmpty ? zoneIds[0] : 0;
         } else if (zoneIdData is String) {
           try {
@@ -234,17 +226,19 @@ class LocationController extends GetxController implements GetxService {
       } catch (e) {
         _zoneID = 0;
       }
-      
+
       List<ZoneData> zoneData = [];
       final zoneDataRaw = body['zone_data'];
       if (zoneDataRaw != null && zoneDataRaw is List) {
-        zoneDataRaw.forEach((data) => zoneData.add(ZoneData.fromJson(data)));
+        for (var data in zoneDataRaw) {
+          zoneData.add(ZoneData.fromJson(data));
+        }
       }
-      
+
       responseModel = ZoneResponseModel(true, '', zoneIds, zoneData);
-      
+
       await locationRepository.saveZoneToCache(lat, long, responseModel);
-      
+
       if (updateInAddress) {
         AddressModel? address = await getUserAddress();
         if (address != null) {
@@ -256,7 +250,7 @@ class LocationController extends GetxController implements GetxService {
       _inZone = false;
       responseModel = ZoneResponseModel(false, 'Failed to get zone', [], []);
     }
-    
+
     if (markerLoad) {
       _loading = false;
     } else {
@@ -273,45 +267,45 @@ class LocationController extends GetxController implements GetxService {
       try {
         if (fromAddress) {
           _position = Position(
-            latitude: position!.target.latitude, 
-            longitude: position.target.longitude, 
+            latitude: position!.target.latitude,
+            longitude: position.target.longitude,
             timestamp: DateTime.now(),
-            heading: 1, 
-            accuracy: 1, 
-            altitude: 1, 
-            altitudeAccuracy: 1, 
-            headingAccuracy: 1, 
-            speedAccuracy: 1, 
+            heading: 1,
+            accuracy: 1,
+            altitude: 1,
+            altitudeAccuracy: 1,
+            headingAccuracy: 1,
+            speedAccuracy: 1,
             speed: 1,
           );
         } else {
           _pickPosition = Position(
-            latitude: position!.target.latitude, 
-            longitude: position.target.longitude, 
+            latitude: position!.target.latitude,
+            longitude: position.target.longitude,
             timestamp: DateTime.now(),
-            heading: 1, 
-            accuracy: 1, 
-            altitude: 1, 
-            altitudeAccuracy: 1, 
-            headingAccuracy: 1, 
-            speedAccuracy: 1, 
+            heading: 1,
+            accuracy: 1,
+            altitude: 1,
+            altitudeAccuracy: 1,
+            headingAccuracy: 1,
+            speedAccuracy: 1,
             speed: 1,
           );
         }
-        
+
         ZoneResponseModel responseModel = await getZone(
-          position.target.latitude.toString(), 
-          position.target.longitude.toString(), 
-          true
-        );
-        
+            position.target.latitude.toString(),
+            position.target.longitude.toString(),
+            true);
+
         _buttonDisabled = !responseModel.isSuccess;
-        
+
         if (_changeAddress) {
           String addressFromGeocode = await getAddressFromGeocode(
-            LatLng(position.target.latitude, position.target.longitude)
-          );
-          fromAddress ? _address = addressFromGeocode : _pickAddress = addressFromGeocode;
+              LatLng(position.target.latitude, position.target.longitude));
+          fromAddress
+              ? _address = addressFromGeocode
+              : _pickAddress = addressFromGeocode;
         } else {
           _changeAddress = true;
         }
@@ -326,11 +320,7 @@ class LocationController extends GetxController implements GetxService {
   Future<bool> saveUserAddress(AddressModel address) async {
     String userAddress = jsonEncode(address.toJson());
     return await locationRepository.saveUserAddress(
-      userAddress, 
-      address.zoneIds, 
-      address.latitude, 
-      address.longitude
-    );
+        userAddress, address.zoneIds, address.latitude, address.longitude);
   }
 
   Future<AddressModel?> getUserAddress() async {
@@ -351,13 +341,14 @@ class LocationController extends GetxController implements GetxService {
     }
   }
 
-  Future<Position> setLocation(String? placeID, String? address, GoogleMapController? mapController) async {
+  Future<Position> setLocation(String? placeID, String? address,
+      GoogleMapController? mapController) async {
     _loading = true;
     update();
 
     LatLng latLng = const LatLng(0, 0);
     final response = await locationRepository.getPlaceDetails(placeID);
-    
+
     if (response.statusCode == 200) {
       try {
         final body = jsonDecode(response.body);
@@ -365,9 +356,8 @@ class LocationController extends GetxController implements GetxService {
           final geometry = body['result']['geometry'];
           final location = geometry['location'];
           latLng = LatLng(
-            double.tryParse(location['lat']?.toString() ?? '0') ?? 0, 
-            double.tryParse(location['lng']?.toString() ?? '0') ?? 0
-          );
+              double.tryParse(location['lat']?.toString() ?? '0') ?? 0,
+              double.tryParse(location['lng']?.toString() ?? '0') ?? 0);
         }
       } catch (e) {
         // Handle JSON decode error
@@ -375,15 +365,15 @@ class LocationController extends GetxController implements GetxService {
     }
 
     _pickPosition = Position(
-      latitude: latLng.latitude, 
+      latitude: latLng.latitude,
       longitude: latLng.longitude,
-      timestamp: DateTime.now(), 
-      accuracy: 1, 
-      altitude: 1, 
-      altitudeAccuracy: 1, 
-      heading: 1, 
-      headingAccuracy: 1, 
-      speed: 1, 
+      timestamp: DateTime.now(),
+      accuracy: 1,
+      altitude: 1,
+      altitudeAccuracy: 1,
+      heading: 1,
+      headingAccuracy: 1,
+      speed: 1,
       speedAccuracy: 1,
     );
 
@@ -391,9 +381,8 @@ class LocationController extends GetxController implements GetxService {
     _changeAddress = false;
 
     if (mapController != null) {
-      mapController.animateCamera(
-        CameraUpdate.newCameraPosition(CameraPosition(target: latLng, zoom: 16))
-      );
+      mapController.animateCamera(CameraUpdate.newCameraPosition(
+          CameraPosition(target: latLng, zoom: 16)));
     }
     _loading = false;
     update();
@@ -415,16 +404,16 @@ class LocationController extends GetxController implements GetxService {
 
   void setUpdateAddress(AddressModel address) {
     _position = Position(
-      latitude: double.parse(address.latitude!), 
-      longitude: double.parse(address.longitude!), 
+      latitude: double.parse(address.latitude!),
+      longitude: double.parse(address.longitude!),
       timestamp: DateTime.now(),
-      altitude: 1, 
-      altitudeAccuracy: 1, 
-      headingAccuracy: 1, 
-      heading: 1, 
-      speed: 1, 
-      speedAccuracy: 1, 
-      floor: 1, 
+      altitude: 1,
+      altitudeAccuracy: 1,
+      headingAccuracy: 1,
+      heading: 1,
+      speed: 1,
+      speedAccuracy: 1,
+      floor: 1,
       accuracy: 1,
     );
     _address = address.address;
@@ -452,7 +441,8 @@ class LocationController extends GetxController implements GetxService {
             address = results[0]['formatted_address'].toString();
           }
         } else if (body['status'] != 'ZERO_RESULTS') {
-          final errorMessage = body['error_message']?.toString() ?? 'Failed to get address';
+          final errorMessage =
+              body['error_message']?.toString() ?? 'Failed to get address';
           Get.snackbar('Error', errorMessage);
         }
       } catch (e) {
@@ -462,7 +452,8 @@ class LocationController extends GetxController implements GetxService {
     return address;
   }
 
-  Future<List<PredictionModel>> searchLocation(BuildContext context, String text) async {
+  Future<List<PredictionModel>> searchLocation(
+      BuildContext context, String text) async {
     if (text.isNotEmpty) {
       final response = await locationRepository.searchLocation(text);
       if (response.statusCode == 200) {
@@ -472,12 +463,13 @@ class LocationController extends GetxController implements GetxService {
             _predictionList = [];
             final predictions = body['predictions'];
             if (predictions != null && predictions is List) {
-              predictions.forEach((prediction) => 
-                _predictionList.add(PredictionModel.fromJson(prediction))
-              );
+              for (var prediction in predictions) {
+                _predictionList.add(PredictionModel.fromJson(prediction));
+              }
             }
           } else {
-            final errorMessage = body['error_message']?.toString() ?? 'Failed to search location';
+            final errorMessage = body['error_message']?.toString() ??
+                'Failed to search location';
             Get.snackbar('Error', errorMessage);
           }
         } catch (e) {
@@ -498,12 +490,14 @@ class LocationController extends GetxController implements GetxService {
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.denied) {
-      Get.snackbar('Permission Denied', 'You have to allow location permission');
+      Get.snackbar(
+          'Permission Denied', 'You have to allow location permission');
     } else if (permission == LocationPermission.deniedForever) {
       Get.dialog(
         AlertDialog(
           title: const Text('Location Permission'),
-          content: const Text('Location permission is permanently denied. Please enable it from app settings.'),
+          content: const Text(
+              'Location permission is permanently denied. Please enable it from app settings.'),
           actions: [
             TextButton(
               onPressed: () => Get.back(),
@@ -533,11 +527,12 @@ class LocationController extends GetxController implements GetxService {
       }
 
       double distance = Geolocator.distanceBetween(
-        double.parse(currentAddress.latitude!), 
-        double.parse(currentAddress.longitude!),
-        double.parse(selectedAddress.latitude!), 
-        double.parse(selectedAddress.longitude!),
-      ) / 1000;
+            double.parse(currentAddress.latitude!),
+            double.parse(currentAddress.longitude!),
+            double.parse(selectedAddress.latitude!),
+            double.parse(selectedAddress.longitude!),
+          ) /
+          1000;
 
       if (distance > 1) {
         return true;

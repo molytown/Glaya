@@ -15,7 +15,8 @@ class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
 
   @override
-  ConsumerState<NotificationsScreen> createState() => _NotificationsScreenState();
+  ConsumerState<NotificationsScreen> createState() =>
+      _NotificationsScreenState();
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
@@ -31,11 +32,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   Future<void> _loadNotifications() async {
     try {
       final response = await ApiService.dio.get('/notifications');
-      setState(() => _notifications = (response.data['data'] as List).cast<Map<String, dynamic>>());
+      setState(() => _notifications =
+          (response.data['data'] as List).cast<Map<String, dynamic>>());
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load notifications: ${e.toString()}')),
+          SnackBar(
+              content: Text('Failed to load notifications: ${e.toString()}')),
         );
       }
     } finally {
@@ -68,9 +71,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               itemBuilder: (context, index) {
                 final notification = _notifications[index];
                 final read = notification['read'] as bool;
-                final createdAt = DateTime.parse(notification['createdAt'] as String);
+                final createdAt =
+                    DateTime.parse(notification['createdAt'] as String);
                 return ListTile(
-                  tileColor: read ? null : GlayaColors.berry.withOpacity(0.05),
+                  tileColor:
+                      read ? null : GlayaColors.berry.withValues(alpha: 0.05),
                   leading: CircleAvatar(
                     backgroundColor: GlayaColors.berry,
                     child: Icon(
@@ -81,7 +86,9 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   title: Text(
                     notification['title'] ?? 'Notification',
                     style: GlayaTextStyles.titleMedium(
-                      color: read ? GlayaColors.textSecondary : GlayaColors.textPrimary,
+                      color: read
+                          ? GlayaColors.textSecondary
+                          : GlayaColors.textPrimary,
                     ),
                   ),
                   subtitle: Text(
@@ -96,8 +103,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     if (isChat) {
                       // Restore a dismissed bubble immediately,
                       // then refresh its data in the background
-                      final notifier =
-                          ref.read(chatBubbleProvider.notifier);
+                      final notifier = ref.read(chatBubbleProvider.notifier);
                       notifier.undismiss();
                       ApiService.dio.get('/chats/list').then((resp) {
                         final rooms = (resp.data['data'] as List)
@@ -107,7 +113,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     }
                     _markAsRead(notification['id'] as String);
                     if (mounted) {
-                      final payload = notification['payload'] as Map<String, dynamic>?;
+                      final payload =
+                          notification['payload'] as Map<String, dynamic>?;
                       final reelId = payload?['reelId'] as String?;
                       final bookingId = payload?['bookingId'] as String?;
                       if (reelId != null) {

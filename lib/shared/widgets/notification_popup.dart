@@ -70,7 +70,7 @@ class _NotificationPopupState extends ConsumerState<NotificationPopup> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -82,7 +82,7 @@ class _NotificationPopupState extends ConsumerState<NotificationPopup> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: GlayaColors.vibrantPink.withOpacity(0.05),
+              color: GlayaColors.vibrantPink.withValues(alpha: 0.05),
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(16)),
             ),
@@ -238,7 +238,7 @@ class _NotificationItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
       decoration: BoxDecoration(
-        color: read ? null : GlayaColors.vibrantPink.withOpacity(0.05),
+        color: read ? null : GlayaColors.vibrantPink.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Material(

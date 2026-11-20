@@ -41,7 +41,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
       await _videoController!.initialize();
       await _videoController!.setVolume(0.0); // Muted
       setState(() => _isVideoInitialized = true);
-      
+
       // Auto-play after 5 seconds
       await Future.delayed(const Duration(seconds: 5));
       if (mounted && _isVideoInitialized) {
@@ -62,8 +62,9 @@ class _PortfolioCardState extends State<PortfolioCard> {
   @override
   Widget build(BuildContext context) {
     final coverMedia = widget.gallery['coverMedia'];
-    final professional = widget.gallery['professional'] as Map<String, dynamic>?;
-    
+    final professional =
+        widget.gallery['professional'] as Map<String, dynamic>?;
+
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
@@ -72,7 +73,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.08),
+              color: Colors.black.withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -84,7 +85,9 @@ class _PortfolioCardState extends State<PortfolioCard> {
             fit: StackFit.expand,
             children: [
               if (coverMedia != null)
-                _shouldAutoPlay && _isVideoInitialized && _videoController != null
+                _shouldAutoPlay &&
+                        _isVideoInitialized &&
+                        _videoController != null
                     ? FittedBox(
                         fit: BoxFit.cover,
                         child: SizedBox(
@@ -98,7 +101,8 @@ class _PortfolioCardState extends State<PortfolioCard> {
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => Container(
                           color: Colors.grey.shade200,
-                          child: const Icon(Icons.broken_image, color: Colors.grey),
+                          child: const Icon(Icons.broken_image,
+                              color: Colors.grey),
                         ),
                       )
               else
@@ -112,9 +116,10 @@ class _PortfolioCardState extends State<PortfolioCard> {
                   top: 8,
                   right: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Row(
@@ -122,7 +127,9 @@ class _PortfolioCardState extends State<PortfolioCard> {
                       children: [
                         Icon(Icons.play_arrow, color: Colors.white, size: 12),
                         SizedBox(width: 2),
-                        Text('Video', style: TextStyle(color: Colors.white, fontSize: 10)),
+                        Text('Video',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 10)),
                       ],
                     ),
                   ),
@@ -134,14 +141,15 @@ class _PortfolioCardState extends State<PortfolioCard> {
                   left: 0,
                   right: 0,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.7),
+                          Colors.black.withValues(alpha: 0.7),
                         ],
                       ),
                     ),
@@ -174,14 +182,16 @@ class _PortfolioCardState extends State<PortfolioCard> {
                   ),
                 ),
               // Media count indicator
-              if (widget.gallery['mediaCount'] != null && widget.gallery['mediaCount'] > 1)
+              if (widget.gallery['mediaCount'] != null &&
+                  widget.gallery['mediaCount'] > 1)
                 Positioned(
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.6),
+                      color: Colors.black.withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(

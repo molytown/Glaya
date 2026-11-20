@@ -43,7 +43,7 @@ class _DepositInvoiceFormState extends State<DepositInvoiceForm> {
         return;
       }
     }
-    
+
     widget.onConfirm(_requireDeposit, amount);
     Navigator.of(context).pop();
   }
@@ -121,7 +121,8 @@ class _DepositInvoiceFormState extends State<DepositInvoiceForm> {
               const SizedBox(height: 8),
               TextField(
                 controller: _amountController,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType:
+                    const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
                   hintText: 'Enter amount',
                   prefixText: 'XAF ',
@@ -138,9 +139,9 @@ class _DepositInvoiceFormState extends State<DepositInvoiceForm> {
                 onChanged: (_) => setState(() => _error = null),
               ),
               const SizedBox(height: 8),
-              Text(
+              const Text(
                 'This amount will be required as a deposit to confirm the booking.',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 11,
                   color: GlayaColors.textSecondary,
                   fontStyle: FontStyle.italic,
@@ -153,18 +154,18 @@ class _DepositInvoiceFormState extends State<DepositInvoiceForm> {
                   color: GlayaColors.success.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.info_outline,
                       color: GlayaColors.success,
                       size: 20,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
+                    SizedBox(width: 8),
+                    const Expanded(
+                      child: const Text(
                         'No deposit required. User can proceed with booking confirmation.',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12,
                           color: GlayaColors.success,
                         ),
@@ -190,7 +191,9 @@ class _DepositInvoiceFormState extends State<DepositInvoiceForm> {
                   ),
                 ),
                 child: Text(
-                  _requireDeposit ? 'Send Deposit Invoice' : 'Confirm No Deposit',
+                  _requireDeposit
+                      ? 'Send Deposit Invoice'
+                      : 'Confirm No Deposit',
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,

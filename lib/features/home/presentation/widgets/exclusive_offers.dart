@@ -43,9 +43,9 @@ class ExclusiveOffersSection extends ConsumerWidget {
               ),
               GestureDetector(
                 onTap: () => context.push('/offers'),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Text(
+                    Text(
                       'View all',
                       style: TextStyle(
                         fontSize: 13,
@@ -53,8 +53,8 @@ class ExclusiveOffersSection extends ConsumerWidget {
                         color: GlayaColors.berry,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Icon(
+                    SizedBox(width: 4),
+                    const Icon(
                       Icons.chevron_right,
                       size: 13,
                       color: GlayaColors.berry,
@@ -78,9 +78,11 @@ class ExclusiveOffersSection extends ConsumerWidget {
                   ),
                 );
               }
-              final offerList = offers.map((offer) => Offer.fromJson(offer as Map<String, dynamic>)).toList();
+              final offerList =
+                  offers.map((offer) => Offer.fromJson(offer)).toList();
               return Column(
-                children: offerList.map((offer) => _OfferCard(offer: offer)).toList(),
+                children:
+                    offerList.map((offer) => _OfferCard(offer: offer)).toList(),
               );
             },
             loading: () => const Center(
@@ -90,7 +92,9 @@ class ExclusiveOffersSection extends ConsumerWidget {
               ),
             ),
             error: (_, __) => Column(
-              children: _getFallbackOffers().map((offer) => _OfferCard(offer: offer)).toList(),
+              children: _getFallbackOffers()
+                  .map((offer) => _OfferCard(offer: offer))
+                  .toList(),
             ),
           ),
         ],
@@ -128,7 +132,9 @@ class _OfferCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final configService = ConfigService();
-    final imageUrl = offer.imageUrl?.isNotEmpty == true ? configService.replaceLocalhost(offer.imageUrl!) : null;
+    final imageUrl = offer.imageUrl?.isNotEmpty == true
+        ? configService.replaceLocalhost(offer.imageUrl!)
+        : null;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
@@ -191,7 +197,8 @@ class _OfferCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(4),
@@ -260,14 +267,14 @@ class _OfferCard extends StatelessWidget {
                     end: Alignment.centerRight,
                     colors: [
                       offer.bgColor,
-                      offer.bgColor.withOpacity(0.7),
+                      offer.bgColor.withValues(alpha: 0.7),
                     ],
                   ),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.local_offer,
                   size: 48,
-                  color: const Color.fromRGBO(255, 255, 255, 0.2),
+                  color: Color.fromRGBO(255, 255, 255, 0.2),
                 ),
               ),
             ),
@@ -300,13 +307,14 @@ class Offer {
           json['discount_label']?.toString() ??
           '',
       title: json['title']?.toString() ?? '',
-      validUntil: (json['validUntil'] ?? json['valid_until'])?.toString() ??
-          '',
+      validUntil: (json['validUntil'] ?? json['valid_until'])?.toString() ?? '',
       code: json['code']?.toString() ?? '',
       bgColor: json['bgColor'] != null
-          ? Color(int.parse(json['bgColor'].toString().replaceFirst('#', '0xFF')))
+          ? Color(
+              int.parse(json['bgColor'].toString().replaceFirst('#', '0xFF')))
           : json['bg_color'] != null
-              ? Color(int.parse(json['bg_color'].toString().replaceFirst('#', '0xFF')))
+              ? Color(int.parse(
+                  json['bg_color'].toString().replaceFirst('#', '0xFF')))
               : const Color(0xFF2D1B4E),
       imageUrl: json['imageUrl'] as String? ?? json['image_url'] as String?,
     );

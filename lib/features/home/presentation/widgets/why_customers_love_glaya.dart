@@ -6,10 +6,12 @@ class WhyCustomersLoveGlayaSection extends StatefulWidget {
   const WhyCustomersLoveGlayaSection({super.key});
 
   @override
-  State<WhyCustomersLoveGlayaSection> createState() => _WhyCustomersLoveGlayaSectionState();
+  State<WhyCustomersLoveGlayaSection> createState() =>
+      _WhyCustomersLoveGlayaSectionState();
 }
 
-class _WhyCustomersLoveGlayaSectionState extends State<WhyCustomersLoveGlayaSection> {
+class _WhyCustomersLoveGlayaSectionState
+    extends State<WhyCustomersLoveGlayaSection> {
   int _reviewIndex = 0;
   late final List<CustomerReview> _reviews;
 
@@ -67,9 +69,9 @@ class _WhyCustomersLoveGlayaSectionState extends State<WhyCustomersLoveGlayaSect
               ),
               GestureDetector(
                 onTap: () => context.push('/reviews'),
-                child: Row(
+                child: const Row(
                   children: [
-                    const Text(
+                    Text(
                       'View all',
                       style: TextStyle(
                         fontSize: 13,
@@ -77,8 +79,8 @@ class _WhyCustomersLoveGlayaSectionState extends State<WhyCustomersLoveGlayaSect
                         color: GlayaColors.berry,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Icon(
+                    SizedBox(width: 4),
+                    const Icon(
                       Icons.chevron_right,
                       size: 13,
                       color: GlayaColors.berry,
@@ -98,7 +100,8 @@ class _WhyCustomersLoveGlayaSectionState extends State<WhyCustomersLoveGlayaSect
                 icon: Icons.chevron_left,
                 onTap: () {
                   setState(() {
-                    _reviewIndex = (_reviewIndex - 1 + _reviews.length) % _reviews.length;
+                    _reviewIndex =
+                        (_reviewIndex - 1 + _reviews.length) % _reviews.length;
                   });
                 },
               ),
@@ -115,8 +118,11 @@ class _WhyCustomersLoveGlayaSectionState extends State<WhyCustomersLoveGlayaSect
                       width: index == _reviewIndex ? 20 : 7,
                       height: 7,
                       decoration: BoxDecoration(
-                        color: index == _reviewIndex ? GlayaColors.berry : const Color(0xFFEEEEEE),
-                        borderRadius: BorderRadius.circular(index == _reviewIndex ? 4 : 3.5),
+                        color: index == _reviewIndex
+                            ? GlayaColors.berry
+                            : const Color(0xFFEEEEEE),
+                        borderRadius: BorderRadius.circular(
+                            index == _reviewIndex ? 4 : 3.5),
                       ),
                     ),
                   );
@@ -142,19 +148,22 @@ class _WhyCustomersLoveGlayaSectionState extends State<WhyCustomersLoveGlayaSect
       CustomerReview(
         reviewerName: 'Adaeze N.',
         rating: 5,
-        comment: "The best beauty app I've used! Found amazing professionals and the booking process is so easy.",
+        comment:
+            "The best beauty app I've used! Found amazing professionals and the booking process is so easy.",
         createdAt: '2 days ago',
       ),
       CustomerReview(
         reviewerName: 'Fatima K.',
         rating: 5,
-        comment: 'Booked a makeup artist in 5 minutes. She was professional and on time. Glaya is amazing!',
+        comment:
+            'Booked a makeup artist in 5 minutes. She was professional and on time. Glaya is amazing!',
         createdAt: '3 days ago',
       ),
       CustomerReview(
         reviewerName: 'Chioma B.',
         rating: 5,
-        comment: 'My nails look fantastic! Great service and very affordable. Will definitely book again.',
+        comment:
+            'My nails look fantastic! Great service and very affordable. Will definitely book again.',
         createdAt: '1 week ago',
       ),
     ];
@@ -190,7 +199,7 @@ class _ReviewCard extends StatelessWidget {
               Container(
                 width: 36,
                 height: 36,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: GlayaColors.berry,
                   shape: BoxShape.circle,
                 ),
@@ -225,7 +234,9 @@ class _ReviewCard extends StatelessWidget {
                           return Icon(
                             Icons.star,
                             size: 14,
-                            color: index < review.rating ? const Color(0xFFF59E0B) : const Color(0xFFD1D5DB),
+                            color: index < review.rating
+                                ? const Color(0xFFF59E0B)
+                                : const Color(0xFFD1D5DB),
                           );
                         }),
                       ],
@@ -261,7 +272,7 @@ class _NavButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
 
-  const _NavButton({super.key, required this.icon, required this.onTap});
+  const _NavButton({required this.icon, required this.onTap});
 
   @override
   Widget build(BuildContext context) {

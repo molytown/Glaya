@@ -13,7 +13,8 @@ class AvailabilityScreen extends ConsumerStatefulWidget {
 
 class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
   final List<String> _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  final List<List<bool>> _slots = List.generate(7, (_) => List.generate(24, (_) => false));
+  final List<List<bool>> _slots =
+      List.generate(7, (_) => List.generate(24, (_) => false));
   bool _isLoading = true;
 
   @override
@@ -43,7 +44,8 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load availability: ${e.toString()}')),
+          SnackBar(
+              content: Text('Failed to load availability: ${e.toString()}')),
         );
       }
     } finally {
@@ -57,7 +59,9 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
         final start = _slots[day].indexOf(true);
         if (start != -1) {
           int end = start;
-          while (end < 24 && _slots[day][end]) end++;
+          while (end < 24 && _slots[day][end]) {
+            end++;
+          }
           final startTime = '${start.toString().padLeft(2, '0')}:00';
           final endTime = '${end.toString().padLeft(2, '0')}:00';
           await ApiService.dio.post('/services/availability', data: {
@@ -112,7 +116,9 @@ class _AvailabilityScreenState extends ConsumerState<AvailabilityScreen> {
                           selected: _slots[day][hour],
                           selectedColor: GlayaColors.berry,
                           labelStyle: TextStyle(
-                            color: _slots[day][hour] ? Colors.white : GlayaColors.textPrimary,
+                            color: _slots[day][hour]
+                                ? Colors.white
+                                : GlayaColors.textPrimary,
                             fontSize: 10,
                           ),
                           onSelected: (selected) {

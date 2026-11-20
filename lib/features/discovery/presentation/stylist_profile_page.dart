@@ -48,7 +48,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
         _isLoading = false;
       });
     } catch (e) {
-      print('Error loading professional data: $e');
+      debugPrint('Error loading professional data: $e');
       setState(() => _isLoading = false);
     }
   }
@@ -122,9 +122,9 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(.20),
-                    Colors.black.withOpacity(.05),
-                    Colors.black.withOpacity(.30),
+                    Colors.black.withValues(alpha: .20),
+                    Colors.black.withValues(alpha: .05),
+                    Colors.black.withValues(alpha: .30),
                   ],
                 ),
               ),
@@ -184,7 +184,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(.04),
+              color: Colors.black.withValues(alpha: .04),
               blurRadius: 12,
               offset: const Offset(0, -3),
             ),
@@ -323,8 +323,6 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   }
 
   Widget _buildProfilePhoto() {
-    final pro =
-        _professionalData?['professional'] as Map<String, dynamic>? ?? {};
     final user = ref.read(authNotifierProvider).valueOrNull;
     final photoUrl = user?.photoUrl;
     final configService = ConfigService();
@@ -344,7 +342,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
           fit: BoxFit.cover,
         ),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(.15), blurRadius: 10),
+          BoxShadow(color: Colors.black.withValues(alpha: .15), blurRadius: 10),
         ],
       ),
       child: Align(
@@ -728,24 +726,6 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
         );
       }
     }
-  }
-
-  Widget _specialtyChip(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: lightPink,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: textColor,
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
   }
 
   // ------------------------------------------------------------
@@ -1261,67 +1241,6 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   }
 
   // ------------------------------------------------------------
-  // BOTTOM ACTION BAR
-  // ------------------------------------------------------------
-
-  Widget _buildBottomActionBar() {
-    return Positioned(
-      left: 0,
-      right: 0,
-      bottom: 0,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 15),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(.10),
-              blurRadius: 15,
-              offset: const Offset(0, -4),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
-                label: const Text('Message Stylist'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  minimumSize: const Size(0, 52),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 9),
-            _bottomCircleButton(Icons.phone_rounded, onTap: () {}),
-            const SizedBox(width: 9),
-            _bottomCircleButton(Icons.location_on_rounded, onTap: () {}),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _bottomCircleButton(IconData icon, {required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: 52,
-        height: 52,
-        decoration: BoxDecoration(color: primaryColor, shape: BoxShape.circle),
-        child: Icon(icon, color: Colors.white, size: 21),
-      ),
-    );
-  }
-
-  // ------------------------------------------------------------
   // COMMON COMPONENTS
   // ------------------------------------------------------------
 
@@ -1341,7 +1260,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
       border: Border.all(color: const Color(0xFFF0E8EC)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withOpacity(.025),
+          color: Colors.black.withValues(alpha: .025),
           blurRadius: 8,
           offset: const Offset(0, 3),
         ),
@@ -1373,7 +1292,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withValues(alpha: 0.3),
           shape: BoxShape.circle,
         ),
         child: Icon(icon, color: Colors.white, size: 20),
@@ -1390,17 +1309,17 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
       child: InkWell(
         onTap: () => context.push('/settings'),
         borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+        child: const Padding(
+          padding: EdgeInsets.symmetric(vertical: 12, horizontal: 4),
           child: Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.edit_outlined,
                 size: 20,
                 color: Color(0xFF555555),
               ),
-              const SizedBox(width: 12),
-              const Expanded(
+              SizedBox(width: 12),
+              Expanded(
                 child: Text(
                   'Edit Profile',
                   style: TextStyle(
@@ -1410,7 +1329,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                   ),
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right,
                 size: 16,
                 color: Color(0xFFCCCCCC),

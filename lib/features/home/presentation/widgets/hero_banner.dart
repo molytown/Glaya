@@ -7,12 +7,15 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../shared/theme/colors.dart';
 import '../../../../shared/services/config_service.dart';
-import 'home_utils.dart';
 
 class HomeHeroBanner extends StatefulWidget {
   final List<Map<String, dynamic>> slides;
 
-  const HomeHeroBanner({super.key, required this.slides});
+  /// Fixed height override — React desktop .hero is a fixed 424px tall,
+  /// full-width banner. When null the banner keeps its 16/8 aspect ratio.
+  final double? height;
+
+  const HomeHeroBanner({super.key, required this.slides, this.height});
 
   @override
   State<HomeHeroBanner> createState() => _HomeHeroBannerState();
@@ -61,37 +64,48 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
   @override
   Widget build(BuildContext context) {
     final count = widget.slides.isEmpty ? 1 : widget.slides.length;
-    final isMobile = MediaQuery.of(context).size.width < 768;
 
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 0),
-      child: AspectRatio(
-        aspectRatio: 16 / 8,
-        child: PageView.builder(
-          controller: _pageController,
-          itemCount: count,
-          onPageChanged: (index) => setState(() => _currentPage = index),
-          itemBuilder: (_, index) {
-            final slide =
-                widget.slides.isEmpty ? _fallback : widget.slides[index];
-            return _HeroSlide(
-              slide: slide,
-              currentIndex: _currentPage,
-              totalSlides: count,
-              onPageChanged: (index) {
-                if (_pageController.hasClients) {
-                  _pageController.animateToPage(
-                    index,
-                    duration: const Duration(milliseconds: 500),
-                    curve: Curves.easeInOut,
-                  );
-                }
-              },
-            );
+    final pageView = PageView.builder(
+      controller: _pageController,
+      itemCount: count,
+      onPageChanged: (index) => setState(() => _currentPage = index),
+      itemBuilder: (_, index) {
+        final slide = widget.slides.isEmpty ? _fallback : widget.slides[index];
+        return _HeroSlide(
+          slide: slide,
+          currentIndex: _currentPage,
+          totalSlides: count,
+          onPageChanged: (index) {
+            if (_pageController.hasClients) {
+              _pageController.animateToPage(
+                index,
+                duration: const Duration(milliseconds: 500),
+                curve: Curves.easeInOut,
+              );
+            }
           },
-        ),
-      ),
-    ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.05, end: 0);
+        );
+      },
+    );
+
+    // Desktop: fixed-height full-width banner (React .hero = 424px).
+    // Mobile/tablet: 16/8 aspect ratio with 16px side inset.
+    final banner = widget.height != null
+        ? SizedBox(
+            height: widget.height,
+            width: double.infinity,
+            child: pageView,
+          )
+        : Padding(
+            // 16px side inset matches the rest of the home content on all devices.
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: AspectRatio(aspectRatio: 16 / 8, child: pageView),
+          );
+
+    return banner
+        .animate()
+        .fadeIn(duration: 400.ms)
+        .slideY(begin: 0.05, end: 0);
   }
 }
 
@@ -249,7 +263,8 @@ class _HeroSlide extends StatelessWidget {
                         GestureDetector(
                           onTap: () {
                             final serviceId = slide['serviceId'] as String?;
-                            final professionalId = slide['professionalId'] as String?;
+                            final professionalId =
+                                slide['professionalId'] as String?;
                             final ctaLink = slide['ctaLink'] as String?;
 
                             print('[HERO] Button tapped');
@@ -259,17 +274,23 @@ class _HeroSlide extends StatelessWidget {
 
                             // If service is selected, navigate to booking with service pre-selected
                             if (serviceId != null && professionalId != null) {
-                              print('[HERO] Navigating to booking with service');
-                              context.push('/book/${professionalId}', extra: serviceId);
+                              print(
+                                  '[HERO] Navigating to booking with service');
+                              context.push('/book/$professionalId',
+                                  extra: serviceId);
                             }
                             // If only professional is selected, navigate to professional profile
                             else if (professionalId != null) {
-                              print('[HERO] Navigating to professional profile');
-                              context.push('/professional/${professionalId}');
+                              print(
+                                  '[HERO] Navigating to professional profile');
+                              context.push('/professional/$professionalId');
                             }
                             // Otherwise, use CTA Link as fallback if it's a valid path, otherwise go to search
                             else {
-                              final fallbackPath = (ctaLink != null && ctaLink.startsWith('/')) ? ctaLink : '/search';
+                              final fallbackPath =
+                                  (ctaLink != null && ctaLink.startsWith('/'))
+                                      ? ctaLink
+                                      : '/search';
                               print('[HERO] Using CTA fallback: $fallbackPath');
                               context.push(fallbackPath);
                             }

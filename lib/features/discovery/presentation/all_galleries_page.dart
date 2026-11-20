@@ -49,7 +49,11 @@ class _AllGalleriesPageState extends ConsumerState<AllGalleriesPage> {
     setState(() => _isLoading = true);
     try {
       final locationState = ref.read(locationProvider);
-      final queryParams = <String, dynamic>{'limit': _pageSize, 'offset': 0, ...zoneQueryParams(locationState)};
+      final queryParams = <String, dynamic>{
+        'limit': _pageSize,
+        'offset': 0,
+        ...zoneQueryParams(locationState)
+      };
 
       if (locationState.hasLocation) {
         queryParams['lat'] = locationState.lat;
@@ -145,8 +149,7 @@ class _AllGalleriesPageState extends ConsumerState<AllGalleriesPage> {
                   id: item['id']?.toString() ?? '',
                   mediaUrl: normalizeUrl(item['mediaUrl']?.toString()),
                   mediaType: item['mediaType']?.toString() ?? 'photo',
-                  thumbnailUrl:
-                      normalizeUrl(item['thumbnailUrl']?.toString()),
+                  thumbnailUrl: normalizeUrl(item['thumbnailUrl']?.toString()),
                 ))
             .where((i) => i.mediaUrl.isNotEmpty)
             .toList() ??
@@ -163,8 +166,7 @@ class _AllGalleriesPageState extends ConsumerState<AllGalleriesPage> {
             id: gallery['id']?.toString() ?? '',
             mediaUrl: coverUrl,
             mediaType: cover?['mediaType']?.toString() ?? 'photo',
-            thumbnailUrl:
-                normalizeUrl(cover?['thumbnailUrl']?.toString()),
+            thumbnailUrl: normalizeUrl(cover?['thumbnailUrl']?.toString()),
           ),
         ];
       }
@@ -175,7 +177,7 @@ class _AllGalleriesPageState extends ConsumerState<AllGalleriesPage> {
     if (items.isNotEmpty) {
       showDialog(
         context: context,
-        barrierColor: Colors.black.withOpacity(0.9),
+        barrierColor: Colors.black.withValues(alpha: 0.9),
         builder: (context) => GalleryImageViewer(
           mediaItems: items,
           professionalId: professionalId ?? '',

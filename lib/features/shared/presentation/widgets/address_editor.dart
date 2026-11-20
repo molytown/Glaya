@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../shared/services/api_service.dart';
-import '../../../../shared/theme/colors.dart';
-import '../../../auth/presentation/providers/auth_notifier.dart';
 
 class AddressEditor extends ConsumerStatefulWidget {
   final bool isProfessional;
-  
+
   const AddressEditor({super.key, this.isProfessional = false});
 
   @override
@@ -22,7 +20,7 @@ class _AddressEditorState extends ConsumerState<AddressEditor> {
   final _fullAddressController = TextEditingController();
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
-  
+
   bool _isLoading = false;
   bool _isSaving = false;
 
@@ -48,7 +46,8 @@ class _AddressEditorState extends ConsumerState<AddressEditor> {
     setState(() => _isLoading = true);
     try {
       // Fetch full user data from API to get address fields
-      final endpoint = widget.isProfessional ? '/professionals/me' : '/users/me/profile';
+      final endpoint =
+          widget.isProfessional ? '/professionals/me' : '/users/me/profile';
       final response = await ApiService.dio.get(endpoint);
       final userData = response.data['data'] as Map<String, dynamic>;
 
@@ -93,7 +92,8 @@ class _AddressEditorState extends ConsumerState<AddressEditor> {
               'state': _stateController.text.trim(),
               'city': _cityController.text.trim(),
               'neighborhood': _neighborhoodController.text.trim(),
-              if (_latitudeController.text.isNotEmpty && _longitudeController.text.isNotEmpty)
+              if (_latitudeController.text.isNotEmpty &&
+                  _longitudeController.text.isNotEmpty)
                 'location': {
                   'lat': double.parse(_latitudeController.text),
                   'lng': double.parse(_longitudeController.text),
@@ -111,15 +111,14 @@ class _AddressEditorState extends ConsumerState<AddressEditor> {
                 'longitude': double.parse(_longitudeController.text),
             };
 
-      final endpoint = widget.isProfessional
-          ? '/professionals/me'
-          : '/users/me/profile';
-      
+      final endpoint =
+          widget.isProfessional ? '/professionals/me' : '/users/me/profile';
+
       await ApiService.dio.put(endpoint, data: payload);
-      
+
       // Reload address data after save
       await _loadCurrentAddress();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Address updated successfully')),
@@ -249,7 +248,8 @@ class _AddressEditorState extends ConsumerState<AddressEditor> {
                               hintText: 'e.g. 6.5244',
                               border: OutlineInputBorder(),
                             ),
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true, signed: true),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -261,7 +261,8 @@ class _AddressEditorState extends ConsumerState<AddressEditor> {
                               hintText: 'e.g. 3.3792',
                               border: OutlineInputBorder(),
                             ),
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true, signed: true),
                           ),
                         ),
                       ],

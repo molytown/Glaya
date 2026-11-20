@@ -53,7 +53,8 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
       _referralCodeController.clear();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Referral code applied! You earned 25 points.')),
+          const SnackBar(
+              content: Text('Referral code applied! You earned 25 points.')),
         );
       }
     } catch (e) {
@@ -78,7 +79,8 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
       appBar: AppBar(
         backgroundColor: GlayaColors.berry,
         foregroundColor: Colors.white,
-        title: const Text('Loyalty & Rewards', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Loyalty & Rewards',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         elevation: 0,
         bottom: TabBar(
           controller: _tabController,
@@ -116,7 +118,8 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
           ),
         ),
       ),
-      bottomNavigationBar: GlayaBottomNav(currentIndex: 4, userRole: user?.role),
+      bottomNavigationBar:
+          GlayaBottomNav(currentIndex: 4, userRole: user?.role),
     );
   }
 
@@ -142,7 +145,10 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [GlayaColors.berry, GlayaColors.berry.withOpacity(0.75)],
+                colors: [
+                  GlayaColors.berry,
+                  GlayaColors.berry.withValues(alpha: 0.75)
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -156,19 +162,30 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Your Points', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                        const Text('Your Points',
+                            style:
+                                TextStyle(color: Colors.white70, fontSize: 14)),
                         Text(
                           NumberFormat('#,##0').format(points),
-                          style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      decoration: BoxDecoration(color: tierColor, borderRadius: BorderRadius.circular(20)),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                          color: tierColor,
+                          borderRadius: BorderRadius.circular(20)),
                       child: Text(
                         tier.toUpperCase(),
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.white),
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                            color: Colors.white),
                       ),
                     ),
                   ],
@@ -179,7 +196,9 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
                     children: [
                       Expanded(
                         child: LinearProgressIndicator(
-                          value: tier == 'bronze' ? points / 100 : (points - 100) / 400,
+                          value: tier == 'bronze'
+                              ? points / 100
+                              : (points - 100) / 400,
                           backgroundColor: Colors.white30,
                           valueColor: AlwaysStoppedAnimation<Color>(tierColor),
                           borderRadius: BorderRadius.circular(4),
@@ -200,43 +219,59 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
           const SizedBox(height: 24),
 
           // Tier benefits
-          const Text('Tier Benefits', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Tier Benefits',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
-          _buildTierCard('Bronze', 'Standard perks', '0+ pts', const Color(0xFFCD7F32), tier == 'bronze'),
+          _buildTierCard('Bronze', 'Standard perks', '0+ pts',
+              const Color(0xFFCD7F32), tier == 'bronze'),
           const SizedBox(height: 8),
-          _buildTierCard('Silver', 'Priority booking + 5% discount', '100+ pts', const Color(0xFFC0C0C0), tier == 'silver'),
+          _buildTierCard('Silver', 'Priority booking + 5% discount', '100+ pts',
+              const Color(0xFFC0C0C0), tier == 'silver'),
           const SizedBox(height: 8),
-          _buildTierCard('Gold', 'Dedicated support + 10% off + free gift', '500+ pts', const Color(0xFFFFD700), tier == 'gold'),
+          _buildTierCard('Gold', 'Dedicated support + 10% off + free gift',
+              '500+ pts', const Color(0xFFFFD700), tier == 'gold'),
           const SizedBox(height: 24),
 
           // History
-          const Text('Points History', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Points History',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           if (history.isEmpty)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 32),
-              child: Center(child: Text('No points activity yet', style: TextStyle(color: Colors.grey))),
+              child: Center(
+                  child: Text('No points activity yet',
+                      style: TextStyle(color: Colors.grey))),
             )
           else
             ...history.map((e) {
               final entry = e as Map<String, dynamic>;
               final pts = entry['points'] as int? ?? 0;
               final isCredit = pts >= 0;
-              final createdAt = DateTime.tryParse(entry['createdAt']?.toString() ?? '');
+              final createdAt =
+                  DateTime.tryParse(entry['createdAt']?.toString() ?? '');
               return ListTile(
                 contentPadding: EdgeInsets.zero,
                 leading: CircleAvatar(
-                  backgroundColor: isCredit ? Colors.green.withOpacity(0.12) : Colors.red.withOpacity(0.12),
+                  backgroundColor: isCredit
+                      ? Colors.green.withValues(alpha: 0.12)
+                      : Colors.red.withValues(alpha: 0.12),
                   child: Icon(
-                    isCredit ? Icons.add_circle_outline : Icons.remove_circle_outline,
+                    isCredit
+                        ? Icons.add_circle_outline
+                        : Icons.remove_circle_outline,
                     color: isCredit ? Colors.green : Colors.red,
                   ),
                 ),
-                title: Text(entry['description']?.toString() ?? entry['eventType']?.toString() ?? '',
+                title: Text(
+                    entry['description']?.toString() ??
+                        entry['eventType']?.toString() ??
+                        '',
                     style: const TextStyle(fontSize: 14)),
                 subtitle: createdAt != null
                     ? Text(DateFormat('MMM d, y').format(createdAt),
-                        style: const TextStyle(fontSize: 12, color: Colors.grey))
+                        style:
+                            const TextStyle(fontSize: 12, color: Colors.grey))
                     : null,
                 trailing: Text(
                   '${isCredit ? '+' : ''}$pts pts',
@@ -253,13 +288,16 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
     );
   }
 
-  Widget _buildTierCard(String name, String benefit, String threshold, Color color, bool isCurrent) {
+  Widget _buildTierCard(String name, String benefit, String threshold,
+      Color color, bool isCurrent) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isCurrent ? color.withOpacity(0.12) : Colors.grey[50],
+        color: isCurrent ? color.withValues(alpha: 0.12) : Colors.grey[50],
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: isCurrent ? color : Colors.grey.shade200, width: isCurrent ? 2 : 1),
+        border: Border.all(
+            color: isCurrent ? color : Colors.grey.shade200,
+            width: isCurrent ? 2 : 1),
       ),
       child: Row(
         children: [
@@ -267,22 +305,32 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
             width: 40,
             height: 40,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-            child: Center(child: Text(name[0], style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
+            child: Center(
+                child: Text(name[0],
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold))),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                Text(benefit, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                Text(name,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15)),
+                Text(benefit,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600])),
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(color: color.withOpacity(0.15), borderRadius: BorderRadius.circular(12)),
-            child: Text(threshold, style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600)),
+            decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(12)),
+            child: Text(threshold,
+                style: TextStyle(
+                    fontSize: 11, color: color, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -304,15 +352,20 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
           const SizedBox(height: 24),
 
           // How it works
-          const Text('How it works', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('How it works',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
-          _buildHowItWorksStep('1', 'Share your code', 'Send your referral code to friends', Icons.share),
-          _buildHowItWorksStep('2', 'Friend signs up', 'They enter your code when joining', Icons.person_add),
-          _buildHowItWorksStep('3', 'Both get rewarded', 'You earn 50 pts, they earn 25 pts', Icons.card_giftcard),
+          _buildHowItWorksStep('1', 'Share your code',
+              'Send your referral code to friends', Icons.share),
+          _buildHowItWorksStep('2', 'Friend signs up',
+              'They enter your code when joining', Icons.person_add),
+          _buildHowItWorksStep('3', 'Both get rewarded',
+              'You earn 50 pts, they earn 25 pts', Icons.card_giftcard),
           const SizedBox(height: 24),
 
           // Enter a referral code
-          const Text('Have a referral code?', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Have a referral code?',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -332,11 +385,17 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
                 onPressed: _applyingCode ? null : _applyReferral,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: GlayaColors.berry,
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 ),
                 child: _applyingCode
-                    ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                    : const Text('Apply', style: TextStyle(color: Colors.white)),
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                    : const Text('Apply',
+                        style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -350,7 +409,10 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [GlayaColors.berry, GlayaColors.berry.withOpacity(0.75)],
+          colors: [
+            GlayaColors.berry,
+            GlayaColors.berry.withValues(alpha: 0.75)
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -358,11 +420,16 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
       ),
       child: Column(
         children: [
-          const Text('Your Referral Code', style: TextStyle(color: Colors.white70, fontSize: 14)),
+          const Text('Your Referral Code',
+              style: TextStyle(color: Colors.white70, fontSize: 14)),
           const SizedBox(height: 8),
           Text(
             code,
-            style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold, letterSpacing: 4),
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 4),
           ),
           const SizedBox(height: 16),
           Row(
@@ -373,13 +440,16 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
                   await Clipboard.setData(ClipboardData(text: code));
                   if (mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Code copied to clipboard!')),
+                      const SnackBar(
+                          content: Text('Code copied to clipboard!')),
                     );
                   }
                 },
                 icon: const Icon(Icons.copy, size: 16),
                 label: const Text('Copy'),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: GlayaColors.berry),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: GlayaColors.berry),
               ),
             ],
           ),
@@ -388,7 +458,8 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
     );
   }
 
-  Widget _buildHowItWorksStep(String step, String title, String subtitle, IconData icon) {
+  Widget _buildHowItWorksStep(
+      String step, String title, String subtitle, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -396,9 +467,14 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
           Container(
             width: 44,
             height: 44,
-            decoration: BoxDecoration(color: GlayaColors.berry, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+                color: GlayaColors.berry, shape: BoxShape.circle),
             child: Center(
-              child: Text(step, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+              child: Text(step,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18)),
             ),
           ),
           const SizedBox(width: 12),
@@ -406,12 +482,15 @@ class _LoyaltyScreenState extends ConsumerState<LoyaltyScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                Text(subtitle, style: TextStyle(fontSize: 13, color: Colors.grey[600])),
+                Text(title,
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 15)),
+                Text(subtitle,
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600])),
               ],
             ),
           ),
-          Icon(icon, color: GlayaColors.berry.withOpacity(0.5)),
+          Icon(icon, color: GlayaColors.berry.withValues(alpha: 0.5)),
         ],
       ),
     );

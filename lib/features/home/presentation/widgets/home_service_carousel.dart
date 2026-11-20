@@ -7,6 +7,7 @@ import 'professional_card.dart';
 import 'home_utils.dart';
 import '../../../../shared/theme/colors.dart';
 import '../../../../shared/utils/haptic_feedback.dart';
+import '../../../../shared/utils/responsive_helper.dart';
 import '../../../../shared/widgets/verification_badge.dart';
 
 class HomeServiceCarousel extends StatelessWidget {
@@ -18,6 +19,30 @@ class HomeServiceCarousel extends StatelessWidget {
   Widget build(BuildContext context) {
     if (professionals.isEmpty) {
       return const SizedBox.shrink();
+    }
+
+    // Tablet (side-by-side column): show 2 cards at a time in a fixed-height
+    // vertically-scrollable list so more professionals can be revealed.
+    if (ResponsiveHelper.isTablet(context)) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: SizedBox(
+          height: 232, // 2 x 110px cards + 12px gap
+          child: ListView.builder(
+            itemCount: professionals.length,
+            itemBuilder: (context, index) {
+              final professional = professionals[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: _HomeServiceListCard(
+                  professional: professional,
+                  rating: professional.avgRating ?? 0.0,
+                ),
+              );
+            },
+          ),
+        ),
+      );
     }
 
     final displayProfessionals = professionals.take(3).toList();
@@ -49,7 +74,8 @@ class _HomeServiceListCard extends ConsumerWidget {
   });
 
   Color _getStatusColor() {
-    if (professional.cardStatus == 'offline' || professional.cardStatus == 'closed') {
+    if (professional.cardStatus == 'offline' ||
+        professional.cardStatus == 'closed') {
       return Colors.red;
     } else if (professional.totalBookings >= 5) {
       return Colors.yellow;
@@ -70,11 +96,11 @@ class _HomeServiceListCard extends ConsumerWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: GlayaColors.softShadow,
               blurRadius: 8,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -93,13 +119,17 @@ class _HomeServiceListCard extends ConsumerWidget {
                           imageUrl: professional.photoUrl!,
                           fit: BoxFit.cover,
                           errorWidget: (_, __, ___) => Container(
-                            color: GlayaColors.vibrantPink.withOpacity(0.25),
-                            child: const Icon(Icons.person, size: 32, color: GlayaColors.berry),
+                            color:
+                                GlayaColors.vibrantPink.withValues(alpha: 0.25),
+                            child: const Icon(Icons.person,
+                                size: 32, color: GlayaColors.berry),
                           ),
                         )
                       : Container(
-                          color: GlayaColors.vibrantPink.withOpacity(0.25),
-                          child: const Icon(Icons.person, size: 32, color: GlayaColors.berry),
+                          color:
+                              GlayaColors.vibrantPink.withValues(alpha: 0.25),
+                          child: const Icon(Icons.person,
+                              size: 32, color: GlayaColors.berry),
                         ),
                 ),
               ),
@@ -127,7 +157,8 @@ class _HomeServiceListCard extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(width: 6),
-                        VerificationBadge(subscriptionType: professional.subscriptionType),
+                        VerificationBadge(
+                            subscriptionType: professional.subscriptionType),
                       ],
                     ),
                     const SizedBox(height: 2),
@@ -215,7 +246,8 @@ class _HomeServiceListCard extends ConsumerWidget {
                   context.push('/professional/${professional.id}');
                 },
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
                     color: const Color(0xFFD6006E),
                     borderRadius: BorderRadius.circular(20),

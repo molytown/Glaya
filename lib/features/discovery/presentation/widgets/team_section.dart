@@ -96,7 +96,7 @@ class _TeamMemberCard extends StatelessWidget {
             height: 60,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: GlayaColors.berry.withOpacity(0.1),
+              color: GlayaColors.berry.withValues(alpha: 0.1),
             ),
             child: ClipOval(
               child: photo != null

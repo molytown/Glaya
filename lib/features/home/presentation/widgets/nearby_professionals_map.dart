@@ -5,7 +5,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../discovery/data/professional_model.dart';
 import '../../../../shared/providers/location_provider.dart';
 import '../../../../shared/theme/colors.dart';
-import '../../../../shared/constants/api_constants.dart';
 import '../../../../shared/utils/marker_icon_helper.dart';
 
 class NearbyProfessionalsMap extends ConsumerStatefulWidget {
@@ -87,7 +86,8 @@ class _NearbyProfessionalsMapState
           },
         ),
       );
-    }))).toSet();
+    })))
+        .toSet();
 
     if (!mounted) return;
     setState(() {

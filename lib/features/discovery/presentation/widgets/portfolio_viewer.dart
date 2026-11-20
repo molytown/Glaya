@@ -20,7 +20,8 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
   @override
   void initState() {
     super.initState();
-    _media = (widget.gallery['media'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+    _media =
+        (widget.gallery['media'] as List?)?.cast<Map<String, dynamic>>() ?? [];
     _initializeVideos();
   }
 
@@ -29,7 +30,8 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
     for (int i = 0; i < _media.length; i++) {
       final item = _media[i];
       if (item['mediaType'] == 'video') {
-        final controller = VideoPlayerController.networkUrl(Uri.parse(item['mediaUrl'] as String));
+        final controller = VideoPlayerController.networkUrl(
+            Uri.parse(item['mediaUrl'] as String));
         controller.initialize().then((_) {
           if (mounted) setState(() {});
         });
@@ -47,10 +49,10 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
 
   void _onPageChanged(int index) {
     setState(() => _currentIndex = index);
-    
+
     // Pause all videos
     _videoControllers?.forEach((_, controller) => controller.pause());
-    
+
     // Play current video if it's a video
     final currentItem = _media[_currentIndex];
     if (currentItem['mediaType'] == 'video') {
@@ -77,7 +79,7 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              color: Colors.black.withOpacity(0.9),
+              color: Colors.black.withValues(alpha: 0.9),
             ),
           ),
           // Content
@@ -113,7 +115,7 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha: 0.5),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -141,7 +143,7 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
                               decoration: BoxDecoration(
                                 color: index == _currentIndex
                                     ? Colors.white
-                                    : Colors.white.withOpacity(0.5),
+                                    : Colors.white.withValues(alpha: 0.5),
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -154,17 +156,21 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
                         top: 12,
                         left: 12,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.5),
+                            color: Colors.black.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.play_arrow, color: Colors.white, size: 16),
+                              Icon(Icons.play_arrow,
+                                  color: Colors.white, size: 16),
                               SizedBox(width: 4),
-                              Text('Video', style: TextStyle(color: Colors.white, fontSize: 12)),
+                              Text('Video',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 12)),
                             ],
                           ),
                         ),

@@ -39,18 +39,20 @@ class CategoryProfessionalsPage extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               itemCount: professionals.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (_, index) => _ProfessionalTile(professional: professionals[index]),
+              itemBuilder: (_, index) =>
+                  _ProfessionalTile(professional: professionals[index]),
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: GlayaColors.berry)),
-        error: (e, _) => Center(
+        loading: () => const Center(
+            child: CircularProgressIndicator(color: GlayaColors.berry)),
+        error: (e, _) => const Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: EdgeInsets.all(24),
             child: Text(
               'Could not load professionals. Pull down to retry.',
               textAlign: TextAlign.center,
-              style: const TextStyle(color: GlayaColors.textSecondary),
+              style: TextStyle(color: GlayaColors.textSecondary),
             ),
           ),
         ),
@@ -83,11 +85,11 @@ class _ProfessionalTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: GlayaColors.softShadow,
               blurRadius: 8,
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
             ),
           ],
         ),
@@ -126,20 +128,25 @@ class _ProfessionalTile extends StatelessWidget {
                           ),
                         ),
                       ),
-                      VerificationBadge(subscriptionType: professional.subscriptionType),
+                      VerificationBadge(
+                          subscriptionType: professional.subscriptionType),
                     ],
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    professional.category.isNotEmpty ? professional.category : 'Professional',
+                    professional.category.isNotEmpty
+                        ? professional.category
+                        : 'Professional',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12, color: GlayaColors.textSecondary),
+                    style: const TextStyle(
+                        fontSize: 12, color: GlayaColors.textSecondary),
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
-                      const Icon(Icons.star, size: 14, color: GlayaColors.warning),
+                      const Icon(Icons.star,
+                          size: 14, color: GlayaColors.warning),
                       const SizedBox(width: 4),
                       Text(
                         rating.toStringAsFixed(1),
@@ -171,7 +178,7 @@ class _ProfessionalTile extends StatelessWidget {
   }
 
   Widget _placeholder() => Container(
-        color: GlayaColors.vibrantPink.withOpacity(0.25),
+        color: GlayaColors.vibrantPink.withValues(alpha: 0.25),
         child: const Icon(Icons.person, size: 32, color: GlayaColors.berry),
       );
 }
@@ -181,13 +188,13 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.content_cut, size: 56, color: GlayaColors.textGray),
-          const SizedBox(height: 12),
-          const Text(
+          const Icon(Icons.content_cut, size: 56, color: GlayaColors.textGray),
+          SizedBox(height: 12),
+          Text(
             'No professionals in this category yet',
             style: TextStyle(fontSize: 15, color: GlayaColors.textSecondary),
           ),

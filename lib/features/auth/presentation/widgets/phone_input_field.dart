@@ -14,10 +14,10 @@ class PhoneInputField extends StatelessWidget {
       keyboardType: TextInputType.phone,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       maxLength: 15,
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         labelText: 'Phone Number',
         hintText: '7XX XXX XXX',
-        prefixIcon: const Icon(Icons.phone, color: GlayaColors.berry),
+        prefixIcon: Icon(Icons.phone, color: GlayaColors.berry),
         counterText: '',
       ),
     );

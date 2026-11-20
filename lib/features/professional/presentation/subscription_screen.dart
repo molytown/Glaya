@@ -24,7 +24,9 @@ String _currencySym() {
     if (locale.startsWith('fr_') ||
         locale.startsWith('de_') ||
         locale.startsWith('es_') ||
-        locale.startsWith('it_')) return '€';
+        locale.startsWith('it_')) {
+      return '€';
+    }
     if (locale.startsWith('en_KE')) return 'KSh ';
     if (locale.startsWith('en_GH')) return 'GH₵ ';
     if (locale.startsWith('en_ZA')) return 'R ';
@@ -129,7 +131,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                 ...plans.map((plan) {
                   final planData = plan as Map<String, dynamic>;
                   return _buildPlanCard(planData, currentPlan);
-                }).toList(),
+                }),
               ],
             ),
           );
@@ -151,7 +153,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -163,9 +165,10 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: badgeColor.withOpacity(0.1),
+                  color: badgeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -235,7 +238,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -271,7 +274,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
               padding: const EdgeInsets.only(bottom: 8),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.check_circle,
                     size: 16,
                     color: _green,
@@ -289,7 +292,7 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                 ],
               ),
             );
-          }).toList(),
+          }),
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
@@ -299,8 +302,9 @@ class _SubscriptionScreenState extends ConsumerState<SubscriptionScreen> {
                   ? null
                   : () => _upgradeTo(planName.toLowerCase()),
               style: ElevatedButton.styleFrom(
-                backgroundColor: isActive ? badgeColor.withOpacity(0.2) : badgeColor,
-                disabledBackgroundColor: badgeColor.withOpacity(0.2),
+                backgroundColor:
+                    isActive ? badgeColor.withValues(alpha: 0.2) : badgeColor,
+                disabledBackgroundColor: badgeColor.withValues(alpha: 0.2),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),

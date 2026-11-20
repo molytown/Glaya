@@ -42,7 +42,7 @@ class SalonProfileHeader extends StatelessWidget {
                   border: Border.all(color: Colors.white, width: 3),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 10,
                     ),
                   ],
@@ -51,10 +51,10 @@ class SalonProfileHeader extends StatelessWidget {
                   child: CachedNetworkImage(
                     imageUrl: photoUrl ?? '',
                     fit: BoxFit.cover,
-                    placeholder: (_, __) =>
-                        Container(color: GlayaColors.berry.withOpacity(0.1)),
-                    errorWidget: (_, __, ___) =>
-                        Container(color: GlayaColors.berry.withOpacity(0.1)),
+                    placeholder: (_, __) => Container(
+                        color: GlayaColors.berry.withValues(alpha: 0.1)),
+                    errorWidget: (_, __, ___) => Container(
+                        color: GlayaColors.berry.withValues(alpha: 0.1)),
                   ),
                 ),
               ),
@@ -120,7 +120,7 @@ class SalonProfileHeader extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.location_on_outlined,
                           size: 14,
                           color: GlayaColors.berry,
@@ -141,26 +141,29 @@ class SalonProfileHeader extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color: isOnline
-                                ? const Color(0xFF10B981).withOpacity(0.15)
+                                ? const Color(0xFF10B981)
+                                    .withValues(alpha: 0.15)
                                 : isBusy
-                                ? const Color(0xFFF59E0B).withOpacity(0.15)
-                                : const Color(0xFF9E9E9E).withOpacity(0.15),
+                                    ? const Color(0xFFF59E0B)
+                                        .withValues(alpha: 0.15)
+                                    : const Color(0xFF9E9E9E)
+                                        .withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Text(
                             isOnline
                                 ? 'Open'
                                 : isBusy
-                                ? 'Busy'
-                                : 'Closed',
+                                    ? 'Busy'
+                                    : 'Closed',
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               color: isOnline
                                   ? const Color(0xFF10B981)
                                   : isBusy
-                                  ? const Color(0xFFF59E0B)
-                                  : const Color(0xFF9E9E9E),
+                                      ? const Color(0xFFF59E0B)
+                                      : const Color(0xFF9E9E9E),
                             ),
                           ),
                         ),

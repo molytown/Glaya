@@ -23,8 +23,7 @@ class NotchPayPaymentWidget extends ConsumerStatefulWidget {
       _NotchPayPaymentWidgetState();
 }
 
-class _NotchPayPaymentWidgetState
-    extends ConsumerState<NotchPayPaymentWidget> {
+class _NotchPayPaymentWidgetState extends ConsumerState<NotchPayPaymentWidget> {
   bool _isLoading = false;
   bool _isCheckingAvailability = true;
   bool _isAvailable = false;
@@ -60,8 +59,9 @@ class _NotchPayPaymentWidgetState
         return;
       }
 
-      final reference = 'booking_${widget.bookingId}_${DateTime.now().millisecondsSinceEpoch}';
-      
+      final reference =
+          'booking_${widget.bookingId}_${DateTime.now().millisecondsSinceEpoch}';
+
       final result = await NotchPayService.initiatePayment(
         amount: widget.amount,
         currency: widget.currency,
@@ -77,7 +77,7 @@ class _NotchPayPaymentWidgetState
         final url = Uri.parse(result['authorizationUrl']);
         if (await canLaunchUrl(url)) {
           await launchUrl(url, mode: LaunchMode.externalApplication);
-          
+
           // Start polling for payment status
           _pollPaymentStatus(reference);
         } else {
@@ -106,11 +106,11 @@ class _NotchPayPaymentWidgetState
 
     while (attempts < maxAttempts) {
       await Future.delayed(const Duration(seconds: 10));
-      
+
       final result = await NotchPayService.verifyPayment(reference);
       if (result != null) {
         final status = result['status'] as String?;
-        
+
         if (status == 'complete') {
           widget.onPaymentComplete(true);
           setState(() {
@@ -126,7 +126,7 @@ class _NotchPayPaymentWidgetState
           return;
         }
       }
-      
+
       attempts++;
     }
 
@@ -156,23 +156,23 @@ class _NotchPayPaymentWidgetState
     }
 
     if (!_isAvailable) {
-      return Card(
+      return const Card(
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(16),
           child: Column(
             children: [
-              const Icon(
+              Icon(
                 Icons.payment,
                 size: 48,
                 color: Colors.grey,
               ),
-              const SizedBox(height: 16),
-              const Text(
+              SizedBox(height: 16),
+              Text(
                 'NotchPay Not Available',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 8),
-              const Text(
+              SizedBox(height: 8),
+              Text(
                 'This payment method is currently not available. Please try another payment method.',
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey),
@@ -244,7 +244,8 @@ class _NotchPayPaymentWidgetState
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : const Text(

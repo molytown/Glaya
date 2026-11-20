@@ -42,7 +42,9 @@ class ProfessionalCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Get the minimum price from services if available
     final minPrice = professional.services?.isNotEmpty == true
-        ? professional.services!.map((s) => (s as dynamic).price as double? ?? 0).reduce((a, b) => a < b ? a : b)
+        ? professional.services!
+            .map((s) => (s as dynamic).price as double? ?? 0)
+            .reduce((a, b) => a < b ? a : b)
         : 25.0; // Default fallback price
 
     return GestureDetector(
@@ -56,22 +58,23 @@ class ProfessionalCard extends ConsumerWidget {
         decoration: BoxDecoration(
           color: GlayaColors.surface,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: GlayaColors.softShadow,
               blurRadius: 12,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(20)),
                   child: professional.photoUrl?.isNotEmpty == true
                       ? CachedNetworkImage(
                           imageUrl: professional.photoUrl!,
@@ -86,25 +89,28 @@ class ProfessionalCard extends ConsumerWidget {
                   top: 10,
                   left: 10,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: GlayaColors.surface.withOpacity(0.95),
+                      color: GlayaColors.surface.withValues(alpha: 0.95),
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: GlayaColors.softShadow,
                           blurRadius: 4,
-                          offset: const Offset(0, 2),
+                          offset: Offset(0, 2),
                         ),
                       ],
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.star, color: GlayaColors.warning, size: 13),
+                        const Icon(Icons.star,
+                            color: GlayaColors.warning, size: 13),
                         const SizedBox(width: 3),
                         Text(
                           rating.toStringAsFixed(1),
-                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+                          style: const TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w700),
                         ),
                       ],
                     ),
@@ -121,7 +127,7 @@ class ProfessionalCard extends ConsumerWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withValues(alpha: 0.3),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -151,23 +157,27 @@ class ProfessionalCard extends ConsumerWidget {
                             ),
                           ),
                         ),
-                        VerificationBadge(subscriptionType: professional.subscriptionType),
+                        VerificationBadge(
+                            subscriptionType: professional.subscriptionType),
                       ],
                     ),
                     const SizedBox(height: 3),
                     Text(
                       professional.category,
-                      style: const TextStyle(fontSize: 12, color: GlayaColors.textSecondary),
+                      style: const TextStyle(
+                          fontSize: 12, color: GlayaColors.textSecondary),
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.location_on, size: 12, color: GlayaColors.textSecondary),
+                        const Icon(Icons.location_on,
+                            size: 12, color: GlayaColors.textSecondary),
                         const SizedBox(width: 3),
                         Expanded(
                           child: Text(
                             distanceLabel,
-                            style: const TextStyle(fontSize: 11, color: GlayaColors.textSecondary),
+                            style: const TextStyle(
+                                fontSize: 11, color: GlayaColors.textSecondary),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -196,7 +206,7 @@ class ProfessionalCard extends ConsumerWidget {
   Widget _photoPlaceholder() => Container(
         height: 120,
         width: 140,
-        color: GlayaColors.vibrantPink.withOpacity(0.25),
+        color: GlayaColors.vibrantPink.withValues(alpha: 0.25),
         child: const Icon(Icons.person, size: 48, color: GlayaColors.berry),
       );
 }
@@ -208,7 +218,9 @@ class ProfessionalCardRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = professionals.isEmpty ? List<ProfessionalModel?>.filled(3, null) : professionals.take(6).toList();
+    final items = professionals.isEmpty
+        ? List<ProfessionalModel?>.filled(3, null)
+        : professionals.take(6).toList();
 
     return SizedBox(
       height: 220,
@@ -235,11 +247,11 @@ class ProfessionalCardRow extends StatelessWidget {
         decoration: BoxDecoration(
           color: GlayaColors.surface,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: GlayaColors.softShadow,
               blurRadius: 12,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
@@ -247,9 +259,9 @@ class ProfessionalCardRow extends StatelessWidget {
           children: [
             Container(
               height: 130,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: GlayaColors.blushPink,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
             ),
             const SizedBox(height: 10),
@@ -271,13 +283,27 @@ class ProfessionalCardRow extends StatelessWidget {
 class TopRatedProfessionalsCarousel extends StatefulWidget {
   final List<ProfessionalModel> professionals;
 
-  const TopRatedProfessionalsCarousel({super.key, required this.professionals});
+  /// Desktop mode: show exactly this many cards and let the user drag-scroll.
+  /// Null keeps the legacy auto-scrolling mobile/tablet behavior.
+  final int? visibleCount;
+
+  /// Card width/height ratio used in [visibleCount] mode (e.g. 9/16).
+  final double? cardAspectRatio;
+
+  const TopRatedProfessionalsCarousel({
+    super.key,
+    required this.professionals,
+    this.visibleCount,
+    this.cardAspectRatio,
+  });
 
   @override
-  State<TopRatedProfessionalsCarousel> createState() => _TopRatedProfessionalsCarouselState();
+  State<TopRatedProfessionalsCarousel> createState() =>
+      _TopRatedProfessionalsCarouselState();
 }
 
-class _TopRatedProfessionalsCarouselState extends State<TopRatedProfessionalsCarousel> {
+class _TopRatedProfessionalsCarouselState
+    extends State<TopRatedProfessionalsCarousel> {
   final ScrollController _scrollController = ScrollController();
   Timer? _autoScrollTimer;
   double _scrollOffset = 0.0;
@@ -285,7 +311,8 @@ class _TopRatedProfessionalsCarouselState extends State<TopRatedProfessionalsCar
   @override
   void initState() {
     super.initState();
-    _startAutoScroll();
+    // Auto-scroll only applies to the legacy (mobile/tablet) layout.
+    if (widget.visibleCount == null) _startAutoScroll();
   }
 
   @override
@@ -296,7 +323,8 @@ class _TopRatedProfessionalsCarouselState extends State<TopRatedProfessionalsCar
   }
 
   void _startAutoScroll() {
-    _autoScrollTimer = Timer.periodic(const Duration(milliseconds: 16), (timer) {
+    _autoScrollTimer =
+        Timer.periodic(const Duration(milliseconds: 16), (timer) {
       if (_scrollController.hasClients && widget.professionals.isNotEmpty) {
         setState(() {
           _scrollOffset += 0.5;
@@ -317,11 +345,11 @@ class _TopRatedProfessionalsCarouselState extends State<TopRatedProfessionalsCar
         decoration: BoxDecoration(
           color: GlayaColors.surface,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: GlayaColors.softShadow,
               blurRadius: 12,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
@@ -335,8 +363,8 @@ class _TopRatedProfessionalsCarouselState extends State<TopRatedProfessionalsCar
 
   @override
   Widget build(BuildContext context) {
-    final items = widget.professionals.isEmpty 
-        ? List<ProfessionalModel?>.filled(3, null) 
+    final items = widget.professionals.isEmpty
+        ? List<ProfessionalModel?>.filled(3, null)
         : widget.professionals.toList();
 
     if (items.isEmpty) {
@@ -345,13 +373,57 @@ class _TopRatedProfessionalsCarouselState extends State<TopRatedProfessionalsCar
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final screenWidth = constraints.maxWidth;
-        final isMobile = screenWidth < 600;
-        final cardSize = isMobile ? (screenWidth - 32) / 2 : 450.0;
+        // Breakpoint must use the real screen width — constraints.maxWidth
+        // here is the half-column width inside SideBySideSection on tablet.
+        final isMobile = MediaQuery.of(context).size.width < 600;
+        final availableWidth = constraints.maxWidth;
+
+        // Desktop: fixed count of 9:16 cards, drag-scrollable (mouse pull).
+        if (widget.visibleCount != null) {
+          const gap = 12.0;
+          final count = widget.visibleCount!;
+          final cardWidth = (availableWidth - gap * (count - 1)) / count;
+          final cardHeight =
+              cardWidth / (widget.cardAspectRatio ?? (9 / 16));
+          return SizedBox(
+            height: cardHeight,
+            child: ListView.builder(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              itemCount: items.length,
+              itemBuilder: (context, index) {
+                final pro = items[index % items.length];
+                if (pro == null) {
+                  return SizedBox(
+                    width: cardWidth,
+                    child: _placeholderCard(),
+                  );
+                }
+                return Padding(
+                  padding: EdgeInsets.only(
+                      right: index == items.length - 1 ? 0 : gap),
+                  child: SizedBox(
+                    width: cardWidth,
+                    child: _TopRatedFullImageCard(
+                      professional: pro,
+                      rating: professionalRating(pro.trustScore),
+                      aspectRatio: widget.cardAspectRatio ?? (9 / 16),
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+        }
+
+        // Tablet: portrait 1:2 cards (~2.2 visible). Mobile: square cards.
+        final cardWidth =
+            isMobile ? (availableWidth - 32) / 2 : (availableWidth - 32) / 2.2;
+        final cardHeight = isMobile ? cardWidth : cardWidth * 1.4;
         final cardPadding = isMobile ? 4.0 : 6.0;
 
         return SizedBox(
-          height: cardSize,
+          height: cardHeight,
           child: ListView.builder(
             controller: _scrollController,
             scrollDirection: Axis.horizontal,
@@ -360,15 +432,19 @@ class _TopRatedProfessionalsCarouselState extends State<TopRatedProfessionalsCar
             itemBuilder: (context, index) {
               final pro = items[index % items.length];
               if (pro == null) {
-                return _placeholderCard();
+                return SizedBox(
+                  width: cardWidth,
+                  child: _placeholderCard(),
+                );
               }
               return Padding(
                 padding: EdgeInsets.symmetric(horizontal: cardPadding),
                 child: SizedBox(
-                  width: cardSize,
+                  width: cardWidth,
                   child: _TopRatedFullImageCard(
                     professional: pro,
                     rating: professionalRating(pro.trustScore),
+                    aspectRatio: isMobile ? 1 : 1 / 1.4,
                   ),
                 ),
               );
@@ -383,10 +459,12 @@ class _TopRatedProfessionalsCarouselState extends State<TopRatedProfessionalsCar
 class _TopRatedFullImageCard extends StatelessWidget {
   final ProfessionalModel professional;
   final double rating;
+  final double aspectRatio;
 
   const _TopRatedFullImageCard({
     required this.professional,
     required this.rating,
+    this.aspectRatio = 1,
   });
 
   Color _getStatusColor() {
@@ -409,18 +487,18 @@ class _TopRatedFullImageCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: GlayaColors.softShadow,
               blurRadius: 12,
-              offset: const Offset(0, 4),
+              offset: Offset(0, 4),
             ),
           ],
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(16),
           child: AspectRatio(
-            aspectRatio: 1 / 1,
+            aspectRatio: aspectRatio,
             child: Stack(
               children: [
                 Positioned.fill(
@@ -429,13 +507,17 @@ class _TopRatedFullImageCard extends StatelessWidget {
                           imageUrl: professional.photoUrl!,
                           fit: BoxFit.cover,
                           errorWidget: (_, __, ___) => Container(
-                            color: GlayaColors.vibrantPink.withOpacity(0.25),
-                            child: const Icon(Icons.person, size: 48, color: GlayaColors.berry),
+                            color:
+                                GlayaColors.vibrantPink.withValues(alpha: 0.25),
+                            child: const Icon(Icons.person,
+                                size: 48, color: GlayaColors.berry),
                           ),
                         )
                       : Container(
-                          color: GlayaColors.vibrantPink.withOpacity(0.25),
-                          child: const Icon(Icons.person, size: 48, color: GlayaColors.berry),
+                          color:
+                              GlayaColors.vibrantPink.withValues(alpha: 0.25),
+                          child: const Icon(Icons.person,
+                              size: 48, color: GlayaColors.berry),
                         ),
                 ),
                 Positioned.fill(
@@ -446,8 +528,8 @@ class _TopRatedFullImageCard extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withOpacity(0.3),
-                          Colors.black.withOpacity(0.7),
+                          Colors.black.withValues(alpha: 0.3),
+                          Colors.black.withValues(alpha: 0.7),
                         ],
                         stops: const [0.0, 0.5, 1.0],
                       ),
@@ -465,7 +547,7 @@ class _TopRatedFullImageCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Colors.black.withValues(alpha: 0.3),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -477,9 +559,10 @@ class _TopRatedFullImageCard extends StatelessWidget {
                   top: 12,
                   left: 12,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
+                      color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -527,7 +610,9 @@ class _TopRatedFullImageCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 6),
-                            VerificationBadge(subscriptionType: professional.subscriptionType),
+                            VerificationBadge(
+                                subscriptionType:
+                                    professional.subscriptionType),
                           ],
                         ),
                         const SizedBox(height: 1),
@@ -551,7 +636,8 @@ class _TopRatedFullImageCard extends StatelessWidget {
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
-                                professional.displayArea ?? 'Location not specified',
+                                professional.displayArea ??
+                                    'Location not specified',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
@@ -582,7 +668,9 @@ class RecommendedProfessionalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = professionals.isEmpty ? List<ProfessionalModel?>.filled(4, null) : professionals.take(6).toList();
+    final items = professionals.isEmpty
+        ? List<ProfessionalModel?>.filled(4, null)
+        : professionals.take(6).toList();
 
     return SizedBox(
       height: 168,
@@ -603,11 +691,11 @@ class RecommendedProfessionalRow extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: GlayaColors.blushPink,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: GlayaColors.softShadow,
                           blurRadius: 8,
-                          offset: const Offset(0, 3),
+                          offset: Offset(0, 3),
                         ),
                       ],
                     ),
@@ -650,7 +738,8 @@ class RecommendedProfessionalRow extends StatelessWidget {
                             height: 95,
                             width: 105,
                             color: GlayaColors.blushPink,
-                            child: const Icon(Icons.person, color: GlayaColors.berry, size: 40),
+                            child: const Icon(Icons.person,
+                                color: GlayaColors.berry, size: 40),
                           ),
                   ),
                   const SizedBox(height: 8),
@@ -678,10 +767,12 @@ class RecommendedProfessionalRow extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.star, size: 11, color: GlayaColors.warning),
+                      const Icon(Icons.star,
+                          size: 11, color: GlayaColors.warning),
                       Text(
                         ' ${rating.toStringAsFixed(1)}',
-                        style: const TextStyle(fontSize: 11, color: GlayaColors.textSecondary),
+                        style: const TextStyle(
+                            fontSize: 11, color: GlayaColors.textSecondary),
                       ),
                     ],
                   ),

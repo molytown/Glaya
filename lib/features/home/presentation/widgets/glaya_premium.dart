@@ -25,7 +25,7 @@ class GlayaPremiumSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: GlayaColors.berry.withOpacity(0.4),
+            color: GlayaColors.berry.withValues(alpha: 0.4),
             blurRadius: 20,
             offset: const Offset(0, 6),
           ),
@@ -51,7 +51,7 @@ class GlayaPremiumSection extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w700,
-                          color: Colors.white.withOpacity(0.92),
+                          color: Colors.white.withValues(alpha: 0.92),
                         ),
                       ),
                     ],
@@ -68,40 +68,41 @@ class GlayaPremiumSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   ...premium.features.map((feature) => Padding(
-                    padding: const EdgeInsets.only(bottom: 5),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.check,
-                          size: 12,
-                          color: Colors.white,
-                        ),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(
-                            feature,
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              color: Colors.white.withOpacity(0.92),
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.check,
+                              size: 12,
+                              color: Colors.white,
                             ),
-                          ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                feature,
+                                style: TextStyle(
+                                  fontSize: 11.5,
+                                  color: Colors.white.withValues(alpha: 0.92),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  )),
+                      )),
                   const SizedBox(height: 14),
                   GestureDetector(
                     onTap: () => context.push('/premium'),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 18, vertical: 8),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text(
+                          Text(
                             'Upgrade Now',
                             style: TextStyle(
                               fontSize: 13,
@@ -109,8 +110,8 @@ class GlayaPremiumSection extends StatelessWidget {
                               color: GlayaColors.berry,
                             ),
                           ),
-                          const SizedBox(width: 5),
-                          Icon(
+                          SizedBox(width: 5),
+                          const Icon(
                             Icons.arrow_forward,
                             size: 14,
                             color: GlayaColors.berry,
@@ -130,8 +131,8 @@ class GlayaPremiumSection extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.white.withOpacity(0.08),
-                  Colors.white.withOpacity(0.04),
+                  Colors.white.withValues(alpha: 0.08),
+                  Colors.white.withValues(alpha: 0.04),
                 ],
               ),
             ),

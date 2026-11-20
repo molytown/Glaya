@@ -22,7 +22,8 @@ class _PickMapScreenState extends State<PickMapScreen> {
   String _address = 'Select a location';
   bool _isLoading = false;
 
-  static const LatLng _defaultLocation = LatLng(3.848, 11.502); // Douala, Cameroon
+  static const LatLng _defaultLocation =
+      LatLng(3.848, 11.502); // Douala, Cameroon
 
   @override
   void initState() {
@@ -58,7 +59,8 @@ class _PickMapScreenState extends State<PickMapScreen> {
             ),
           );
           setState(() {
-            _address = '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
+            _address =
+                '${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}';
           });
         }
       }
@@ -92,7 +94,8 @@ class _PickMapScreenState extends State<PickMapScreen> {
           _onLocationChanged(newLocation);
         },
       );
-      _address = '${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}';
+      _address =
+          '${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}';
     });
   }
 
@@ -150,10 +153,11 @@ class _PickMapScreenState extends State<PickMapScreen> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                borderRadius:
+                    const BorderRadius.vertical(top: Radius.circular(20)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),

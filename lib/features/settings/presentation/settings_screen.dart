@@ -44,15 +44,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _user = data;
         _nameController.text = data['name'] as String? ?? '';
       });
-    } catch (_) {}
-    finally {
+    } catch (_) {
+    } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
 
   Future<void> _pickPhoto() async {
     final picker = ImagePicker();
-    final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
+    final picked =
+        await picker.pickImage(source: ImageSource.gallery, imageQuality: 75);
     if (picked != null) {
       final bytes = await picked.readAsBytes();
       setState(() {
@@ -70,8 +71,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       if (_pickedPhoto != null) {
         // Upload photo as multipart
         final formData = await _buildFormData(name);
-        await ApiService.dio.put('/users/me', data: formData,
-            options: ApiService.multipartOptions());
+        await ApiService.dio.put('/users/me',
+            data: formData, options: ApiService.multipartOptions());
       } else {
         await ApiService.dio.put('/users/me', data: {'name': name});
       }
@@ -79,7 +80,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       setState(() {
         _user?['name'] = name;
         if (_pickedPhotoBytes != null) {
-          _user?['photoUrl'] = null; // Clear old URL, new one will be from server
+          _user?['photoUrl'] =
+              null; // Clear old URL, new one will be from server
         }
         _pickedPhoto = null;
         _pickedPhotoBytes = null;
@@ -116,22 +118,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final photoUrl = _user?['photoUrl'] as String? ?? _user?['photo_url'] as String?;
-    final initials = (_user?['name'] as String? ?? 'U').substring(0, 1).toUpperCase();
+    final photoUrl =
+        _user?['photoUrl'] as String? ?? _user?['photo_url'] as String?;
+    final initials =
+        (_user?['name'] as String? ?? 'U').substring(0, 1).toUpperCase();
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: GlayaColors.berry,
         foregroundColor: Colors.white,
-        title: const Text('Settings', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Settings',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
           TextButton(
             onPressed: _isSaving ? null : _save,
             child: _isSaving
-                ? const SizedBox(width: 20, height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                : const Text('Save', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white))
+                : const Text('Save',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -146,12 +156,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: [
                   CircleAvatar(
                     radius: 52,
-                    backgroundColor: GlayaColors.berry.withOpacity(0.15),
+                    backgroundColor: GlayaColors.berry.withValues(alpha: 0.15),
                     backgroundImage: _pickedPhotoBytes != null
-                        ? MemoryImage(_pickedPhotoBytes!) as ImageProvider<Object>
-                        : (photoUrl != null ? NetworkImage(ConfigService().replaceLocalhost(photoUrl)) : null),
+                        ? MemoryImage(_pickedPhotoBytes!)
+                            as ImageProvider<Object>
+                        : (photoUrl != null
+                            ? NetworkImage(
+                                ConfigService().replaceLocalhost(photoUrl))
+                            : null),
                     child: (_pickedPhotoBytes == null && photoUrl == null)
-                        ? Text(initials, style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, color: GlayaColors.berry))
+                        ? Text(initials,
+                            style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                                color: GlayaColors.berry))
                         : null,
                   ),
                   Positioned(
@@ -167,7 +185,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),
-                        child: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
+                        child: const Icon(Icons.camera_alt,
+                            color: Colors.white, size: 18),
                       ),
                     ),
                   ),
@@ -177,7 +196,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             const SizedBox(height: 28),
 
             // Name
-            const Text('Display Name', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87)),
+            const Text('Display Name',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: Colors.black87)),
             const SizedBox(height: 8),
             TextField(
               controller: _nameController,
@@ -185,14 +208,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               decoration: InputDecoration(
                 hintText: 'Enter your name',
                 hintStyle: const TextStyle(color: Colors.black87),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 prefixIcon: const Icon(Icons.person_outline),
               ),
             ),
             const SizedBox(height: 20),
 
             // Phone (read-only)
-            const Text('Phone Number', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: Colors.black87)),
+            const Text('Phone Number',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                    color: Colors.black87)),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -210,7 +238,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     style: const TextStyle(fontSize: 16, color: Colors.black87),
                   ),
                   const Spacer(),
-                  const Text('Cannot change', style: TextStyle(fontSize: 12, color: Colors.black54)),
+                  const Text('Cannot change',
+                      style: TextStyle(fontSize: 12, color: Colors.black54)),
                 ],
               ),
             ),
@@ -218,27 +247,43 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
             const Divider(),
             const SizedBox(height: 8),
-            const Text('Account', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
+            const Text('Account',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black)),
             const SizedBox(height: 12),
 
-            _buildTile(Icons.notifications_outlined, 'Notifications', () => context.push('/notifications')),
-            _buildTile(Icons.card_giftcard_outlined, 'Loyalty & Rewards', () => context.push('/loyalty')),
-            _buildTile(Icons.account_balance_wallet_outlined, 'Wallet', () => context.push('/wallet')),
+            _buildTile(Icons.notifications_outlined, 'Notifications',
+                () => context.push('/notifications')),
+            _buildTile(Icons.card_giftcard_outlined, 'Loyalty & Rewards',
+                () => context.push('/loyalty')),
+            _buildTile(Icons.account_balance_wallet_outlined, 'Wallet',
+                () => context.push('/wallet')),
             const SizedBox(height: 8),
             const Divider(),
             const SizedBox(height: 8),
-            const Text('Legal', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
+            const Text('Legal',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: Colors.black)),
             const SizedBox(height: 12),
-            _buildTile(Icons.description_outlined, 'Terms of Service', () => context.push('/cms/terms-of-service')),
-            _buildTile(Icons.privacy_tip_outlined, 'Privacy Policy', () => context.push('/cms/privacy-policy')),
-            _buildTile(Icons.info_outline, 'About Glaya', () => context.push('/cms/about-us')),
+            _buildTile(Icons.description_outlined, 'Terms of Service',
+                () => context.push('/cms/terms-of-service')),
+            _buildTile(Icons.privacy_tip_outlined, 'Privacy Policy',
+                () => context.push('/cms/privacy-policy')),
+            _buildTile(Icons.info_outline, 'About Glaya',
+                () => context.push('/cms/about-us')),
             const SizedBox(height: 8),
             const Divider(),
             const SizedBox(height: 8),
             ListTile(
               contentPadding: EdgeInsets.zero,
               leading: const Icon(Icons.logout, color: Colors.red),
-              title: const Text('Log Out', style: TextStyle(color: Colors.red, fontWeight: FontWeight.w600)),
+              title: const Text('Log Out',
+                  style: TextStyle(
+                      color: Colors.red, fontWeight: FontWeight.w600)),
               onTap: () async {
                 final confirm = await showDialog<bool>(
                   context: context,
@@ -246,17 +291,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: const Text('Log Out'),
                     content: const Text('Are you sure you want to log out?'),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+                      TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel')),
                       ElevatedButton(
                         onPressed: () => Navigator.pop(context, true),
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                        child: const Text('Log Out', style: TextStyle(color: Colors.white)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red),
+                        child: const Text('Log Out',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
                 );
                 if (confirm == true && mounted) {
-                  try { await ApiService.dio.post('/auth/logout'); } catch (_) {}
+                  try {
+                    await ApiService.dio.post('/auth/logout');
+                  } catch (_) {}
                   ref.read(authNotifierProvider.notifier).logout();
                   if (mounted) context.go('/login');
                 }
@@ -273,7 +324,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: GlayaColors.berry),
-      title: Text(label, style: const TextStyle(fontSize: 15, color: Colors.black)),
+      title: Text(label,
+          style: const TextStyle(fontSize: 15, color: Colors.black)),
       trailing: const Icon(Icons.chevron_right, color: Colors.black54),
       onTap: onTap,
     );

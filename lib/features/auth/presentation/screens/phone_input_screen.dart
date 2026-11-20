@@ -61,10 +61,10 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
 
     // Set loading state immediately without delay
     if (mounted) setState(() => _isLoading = true);
-    
+
     try {
       print('[LOGIN] Attempting login with phone: $phone');
-      
+
       // Use Future.microtask to prevent blocking the main thread
       await Future.microtask(() async {
         if (_useOtp) {
@@ -79,7 +79,7 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
               rememberMe: _staySignedIn,
             );
       });
-      
+
       print('[LOGIN] Login successful, navigating to home');
       if (mounted) {
         final from = GoRouterState.of(context).uri.queryParameters['from'];
@@ -89,11 +89,11 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
     } catch (e) {
       print('[LOGIN] Login failed: $e');
       String errorMessage = 'Login failed. Please try again.';
-      
+
       if (e is DioException) {
         final status = e.response?.statusCode;
         final data = e.response?.data;
-        
+
         if (status == 401) {
           errorMessage = 'Invalid phone number or password';
         } else if (status == 404) {
@@ -108,7 +108,7 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
       } else if (e.toString().contains('timeout')) {
         errorMessage = 'Request timed out. Please check your connection';
       }
-      
+
       if (mounted) _snack(errorMessage);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -173,7 +173,7 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
+                        color: Colors.black.withValues(alpha: 0.15),
                         blurRadius: 24,
                         offset: const Offset(0, 8),
                       ),
@@ -192,10 +192,18 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                           children: [
                             CountryCodePicker(
                               onChanged: (code) {
-                                setState(() => _countryCode = code.dialCode ?? '+234');
+                                setState(() =>
+                                    _countryCode = code.dialCode ?? '+234');
                               },
                               initialSelection: 'NG',
-                              favorite: const ['NG', 'GB', 'US', 'GH', 'KE', 'ZA'],
+                              favorite: const [
+                                'NG',
+                                'GB',
+                                'US',
+                                'GH',
+                                'KE',
+                                'ZA'
+                              ],
                               showFlag: true,
                               showFlagDialog: true,
                               showFlagMain: true,
@@ -203,23 +211,31 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                               showOnlyCountryWhenClosed: false,
                               alignLeft: false,
                               padding: EdgeInsets.zero,
-                              textStyle: const TextStyle(fontSize: 14, color: GlayaColors.textPrimary),
-                              dialogTextStyle: const TextStyle(fontSize: 14, color: Colors.black),
+                              textStyle: const TextStyle(
+                                  fontSize: 14, color: GlayaColors.textPrimary),
+                              dialogTextStyle: const TextStyle(
+                                  fontSize: 14, color: Colors.black),
                               dialogBackgroundColor: Colors.white,
                               searchDecoration: InputDecoration(
                                 hintText: 'Search country...',
-                                hintStyle: const TextStyle(color: Colors.black87),
-                                prefixIcon: const Icon(Icons.search, color: GlayaColors.berry),
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                                hintStyle:
+                                    const TextStyle(color: Colors.black87),
+                                prefixIcon: const Icon(Icons.search,
+                                    color: GlayaColors.berry),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8)),
                               ),
-                              barrierColor: Colors.black.withOpacity(0.5),
+                              barrierColor: Colors.black.withValues(alpha: 0.5),
                               boxDecoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               pickerStyle: PickerStyle.bottomSheet,
                             ),
-                            Container(width: 1, height: 40, color: Colors.grey.shade300),
+                            Container(
+                                width: 1,
+                                height: 40,
+                                color: Colors.grey.shade300),
                             Expanded(
                               child: TextField(
                                 controller: _phoneController,
@@ -229,7 +245,8 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                                   hintText: '7XX XXX XXX',
                                   hintStyle: TextStyle(color: Colors.black87),
                                   border: InputBorder.none,
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 12),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 12),
                                 ),
                               ),
                             ),
@@ -245,15 +262,23 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                           decoration: InputDecoration(
                             hintText: 'Enter password',
                             hintStyle: const TextStyle(color: Colors.black87),
-                            prefixIcon: const Icon(Icons.lock_outline, color: GlayaColors.berry),
+                            prefixIcon: const Icon(Icons.lock_outline,
+                                color: GlayaColors.berry),
                             suffixIcon: IconButton(
-                              icon: Icon(_obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined, color: GlayaColors.berry),
-                              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                              icon: Icon(
+                                  _obscurePassword
+                                      ? Icons.visibility_outlined
+                                      : Icons.visibility_off_outlined,
+                                  color: GlayaColors.berry),
+                              onPressed: () => setState(
+                                  () => _obscurePassword = !_obscurePassword),
                             ),
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12)),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: GlayaColors.berry, width: 2),
+                              borderSide: const BorderSide(
+                                  color: GlayaColors.berry, width: 2),
                             ),
                           ),
                         ),
@@ -269,9 +294,12 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                                 });
                               },
                               activeColor: GlayaColors.berry,
-                              side: const BorderSide(color: GlayaColors.berry, width: 2),
+                              side: const BorderSide(
+                                  color: GlayaColors.berry, width: 2),
                             ),
-                            const Text('Stay signed in', style: TextStyle(color: Color(0xFF6B7280), fontSize: 14)),
+                            const Text('Stay signed in',
+                                style: TextStyle(
+                                    color: Color(0xFF6B7280), fontSize: 14)),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -279,8 +307,13 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text('Sign in with OTP', style: TextStyle(color: Color(0xFF6B7280), fontSize: 14)),
-                          Switch(value: _useOtp, onChanged: (v) => setState(() => _useOtp = v), activeColor: GlayaColors.berry),
+                          const Text('Sign in with OTP',
+                              style: TextStyle(
+                                  color: Color(0xFF6B7280), fontSize: 14)),
+                          Switch(
+                              value: _useOtp,
+                              onChanged: (v) => setState(() => _useOtp = v),
+                              activeThumbColor: GlayaColors.berry),
                         ],
                       ),
                       const SizedBox(height: 8),
@@ -292,11 +325,19 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                             backgroundColor: GlayaColors.berry,
                             foregroundColor: Colors.white,
                             elevation: 0,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
                           ),
                           child: _isLoading
-                              ? const SizedBox(height: 22, width: 22, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                              : Text(_useOtp ? 'Send OTP' : 'Sign In', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                              ? const SizedBox(
+                                  height: 22,
+                                  width: 22,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2, color: Colors.white))
+                              : Text(_useOtp ? 'Send OTP' : 'Sign In',
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                         ),
                       ),
                     ],
@@ -306,7 +347,8 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text("Don't have an account?", style: TextStyle(color: Colors.white70, fontSize: 14)),
+                    const Text("Don't have an account?",
+                        style: TextStyle(color: Colors.white70, fontSize: 14)),
                     Container(
                       decoration: BoxDecoration(
                         border: Border.all(color: GlayaColors.berry, width: 1),
@@ -318,11 +360,16 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                           context.push('/signup-selection');
                         },
                         style: TextButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
                           minimumSize: Size.zero,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
-                        child: const Text('Sign Up', style: TextStyle(color: GlayaColors.berry, fontWeight: FontWeight.w700, fontSize: 14)),
+                        child: const Text('Sign Up',
+                            style: TextStyle(
+                                color: GlayaColors.berry,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 14)),
                       ),
                     ),
                   ],

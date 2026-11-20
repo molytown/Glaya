@@ -46,7 +46,8 @@ String _formatPrice(double price, String? currency) {
 class BookingFlowScreen extends ConsumerStatefulWidget {
   final String professionalId;
   final String? initialServiceId;
-  const BookingFlowScreen({super.key, required this.professionalId, this.initialServiceId});
+  const BookingFlowScreen(
+      {super.key, required this.professionalId, this.initialServiceId});
 
   @override
   _BookingFlowScreenState createState() => _BookingFlowScreenState();
@@ -54,7 +55,8 @@ class BookingFlowScreen extends ConsumerStatefulWidget {
 
 class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
   // ── Step tracking ────────────────────────────────────────────────────────────
-  int _step = 0; // 0=service 1=datetime 2=location 3=address/summary → send request
+  int _step =
+      0; // 0=service 1=datetime 2=location 3=address/summary → send request
 
   // ── Selections ───────────────────────────────────────────────────────────────
   Map<String, dynamic>? _selectedService;
@@ -72,9 +74,18 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
   bool _submitting = false;
 
   // ── Steps meta ───────────────────────────────────────────────────────────────
-  static const _stepTitles = ['Choose Service', 'Date & Time', 'Location', 'Address'];
-  static const _stepIcons  = [Icons.spa_outlined, Icons.calendar_today_outlined,
-                               Icons.location_on_outlined, Icons.home_outlined];
+  static const _stepTitles = [
+    'Choose Service',
+    'Date & Time',
+    'Location',
+    'Address'
+  ];
+  static const _stepIcons = [
+    Icons.spa_outlined,
+    Icons.calendar_today_outlined,
+    Icons.location_on_outlined,
+    Icons.home_outlined
+  ];
 
   @override
   void initState() {
@@ -92,12 +103,14 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     try {
       final results = await Future.wait([
         ApiService.dio.get('/professionals/${widget.professionalId}'),
-        ApiService.dio.get('/services', queryParameters: {'professional_id': widget.professionalId}),
+        ApiService.dio.get('/services',
+            queryParameters: {'professional_id': widget.professionalId}),
       ]);
       if (mounted) {
         setState(() {
           _professional = results[0].data['data'] as Map<String, dynamic>?;
-          _services = (results[1].data['data'] as List? ?? []).cast<Map<String, dynamic>>();
+          _services = (results[1].data['data'] as List? ?? [])
+              .cast<Map<String, dynamic>>();
           _loadingServices = false;
         });
         // Preselect service if provided
@@ -117,7 +130,11 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
   }
 
   Future<void> _loadSlots(DateTime date) async {
-    setState(() { _loadingSlots = true; _slots = []; _selectedTime = null; });
+    setState(() {
+      _loadingSlots = true;
+      _slots = [];
+      _selectedTime = null;
+    });
     try {
       final res = await ApiService.dio.get(
         '/professionals/${widget.professionalId}/availability',
@@ -157,7 +174,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         'status': 'requested',
         if (_selectedTime != null)
           'scheduledAt': DateTime(
-            _selectedDate!.year, _selectedDate!.month, _selectedDate!.day,
+            _selectedDate!.year,
+            _selectedDate!.month,
+            _selectedDate!.day,
             int.parse(_selectedTime!.split(':')[0]),
             int.parse(_selectedTime!.split(':')[1]),
           ).toIso8601String()
@@ -166,7 +185,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         if (_locationType == 'home' && _addressCtrl.text.trim().isNotEmpty)
           'address': _addressCtrl.text.trim(),
       };
-      final bookingRes = await ApiService.dio.post('/bookings', data: bookingData);
+      final bookingRes =
+          await ApiService.dio.post('/bookings', data: bookingData);
       final bookingId = bookingRes.data['data']['id'] as String;
 
       if (mounted) {
@@ -189,12 +209,14 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
   void _next() {
     if (_step == 0 && _selectedService == null) {
       HapticFeedback.error();
-      _snack('Please select a service'); return;
+      _snack('Please select a service');
+      return;
     }
     if (_step == 1) {
       if (_selectedDate == null) {
         HapticFeedback.error();
-        _snack('Please pick a date'); return;
+        _snack('Please pick a date');
+        return;
       }
       // Time is optional — the professional confirms the exact slot via chat
     }
@@ -202,7 +224,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
       // Address validation for home visits
       if (_locationType == 'home' && _addressCtrl.text.trim().isEmpty) {
         HapticFeedback.error();
-        _snack('Please enter your address'); return;
+        _snack('Please enter your address');
+        return;
       }
     }
     if (_step == 3) {
@@ -220,13 +243,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     setState(() => _step++);
   }
 
-  void _back() { 
+  void _back() {
     if (_step > 0) {
       HapticFeedback.light();
-      setState(() => _step--); 
+      setState(() => _step--);
     } else {
       HapticFeedback.light();
-      context.pop(); 
+      context.pop();
     }
   }
 
@@ -243,12 +266,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 72, height: 72,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
-                color: GlayaColors.berry.withOpacity(0.12),
+                color: GlayaColors.berry.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.person_outline,
+              child: const Icon(Icons.person_outline,
                   color: GlayaColors.berry, size: 40),
             ),
             const SizedBox(height: 16),
@@ -258,7 +282,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             const Text(
               'You need to create an account to submit booking requests.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: Color(0xFF555555), height: 1.5),
+              style: TextStyle(
+                  fontSize: 13, color: Color(0xFF555555), height: 1.5),
             ),
             const SizedBox(height: 24),
             Row(
@@ -269,7 +294,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF555555),
                       side: const BorderSide(color: Color(0xFFEEEEEE)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     child: const Text('Cancel',
@@ -287,7 +313,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                       backgroundColor: GlayaColors.berry,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     child: const Text('Sign In',
@@ -312,9 +339,10 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 72, height: 72,
+              width: 72,
+              height: 72,
               decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withOpacity(0.12),
+                color: const Color(0xFF10B981).withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.check_circle_outline,
@@ -327,7 +355,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             const Text(
               'The professional will review and confirm your booking. Once confirmed, you can complete the payment to validate it.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: Color(0xFF555555), height: 1.5),
+              style: TextStyle(
+                  fontSize: 13, color: Color(0xFF555555), height: 1.5),
             ),
             const SizedBox(height: 24),
             Row(
@@ -341,7 +370,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF555555),
                       side: const BorderSide(color: Color(0xFFEEEEEE)),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     child: const Text('Close',
@@ -360,7 +390,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                       backgroundColor: GlayaColors.berry,
                       foregroundColor: Colors.white,
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
                     child: const Text('View Booking',
@@ -378,7 +409,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
   // ── Build ────────────────────────────────────────────────────────────────────
   @override
   Widget build(BuildContext context) {
-    final proName = _professional?['user']?['name'] as String? ?? 'Professional';
+    final proName =
+        _professional?['user']?['name'] as String? ?? 'Professional';
 
     return Scaffold(
       backgroundColor: const Color(0xFFFCE4EC),
@@ -387,16 +419,21 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: Color(0xFF1A1A1A)),
+          icon: const Icon(Icons.arrow_back_ios_new,
+              size: 18, color: Color(0xFF1A1A1A)),
           onPressed: _back,
         ),
         title: Column(
           children: [
             Text('Book with $proName',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800,
+                style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
                     color: Color(0xFF1A1A1A))),
             Text(_stepTitles[_step],
-                style: TextStyle(fontSize: 12, color: GlayaColors.berry,
+                style: const TextStyle(
+                    fontSize: 12,
+                    color: GlayaColors.berry,
                     fontWeight: FontWeight.w600)),
           ],
         ),
@@ -406,7 +443,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
           _buildStepper(),
           Expanded(
             child: _loadingServices
-                ? const Center(child: CircularProgressIndicator(color: GlayaColors.berry))
+                ? const Center(
+                    child: CircularProgressIndicator(color: GlayaColors.berry))
                 : SingleChildScrollView(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
                     child: [
@@ -430,7 +468,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
       child: Row(
         children: List.generate(_stepTitles.length, (i) {
-          final done    = i < _step;
+          final done = i < _step;
           final current = i == _step;
           return Expanded(
             child: Row(
@@ -451,23 +489,26 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                           boxShadow: done || current
                               ? [
                                   BoxShadow(
-                                    color: GlayaColors.roseGold.withValues(alpha: 0.3),
+                                    color: GlayaColors.roseGold
+                                        .withValues(alpha: 0.3),
                                     blurRadius: 12,
                                     offset: const Offset(0, 4),
                                   ),
                                 ]
                               : [
-                                  BoxShadow(
+                                  const BoxShadow(
                                     color: GlayaColors.softShadow,
                                     blurRadius: 6,
-                                    offset: const Offset(0, 2),
+                                    offset: Offset(0, 2),
                                   ),
                                 ],
                         ),
                         child: Icon(
                           done ? Icons.check_rounded : _stepIcons[i],
                           size: current ? 20 : 16,
-                          color: done || current ? Colors.white : GlayaColors.berry,
+                          color: done || current
+                              ? Colors.white
+                              : GlayaColors.berry,
                         ),
                       ),
                       const SizedBox(height: 6),
@@ -475,8 +516,11 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 10,
-                            fontWeight: current ? FontWeight.w700 : FontWeight.w600,
-                            color: current ? GlayaColors.berry : GlayaColors.textSecondary,
+                            fontWeight:
+                                current ? FontWeight.w700 : FontWeight.w600,
+                            color: current
+                                ? GlayaColors.berry
+                                : GlayaColors.textSecondary,
                           )),
                     ],
                   ),
@@ -488,7 +532,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                       margin: const EdgeInsets.only(bottom: 24),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: i < _step 
+                          colors: i < _step
                               ? [GlayaColors.berry, GlayaColors.roseGold]
                               : [GlayaColors.blushPink, GlayaColors.blushPink],
                         ),
@@ -514,7 +558,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Select a Service',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800,
+            style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
                 color: Color(0xFF1A1A1A))),
         const SizedBox(height: 4),
         const Text('Choose the service you\'d like to book',
@@ -549,25 +595,25 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                         ),
                       ]
                     : [
-                        BoxShadow(
+                        const BoxShadow(
                           color: GlayaColors.softShadow,
                           blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          offset: Offset(0, 2),
                         ),
                       ],
               ),
               child: Row(
                 children: [
                   Container(
-                    width: 52, height: 52,
+                    width: 52,
+                    height: 52,
                     decoration: BoxDecoration(
-                      color: selected
-                          ? GlayaColors.berry
-                          : GlayaColors.blushPink,
+                      color:
+                          selected ? GlayaColors.berry : GlayaColors.blushPink,
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: selected 
+                          color: selected
                               ? GlayaColors.roseGold.withValues(alpha: 0.3)
                               : GlayaColors.softShadow,
                           blurRadius: 8,
@@ -586,16 +632,21 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                       children: [
                         Text(s['name'] as String? ?? 'Service',
                             style: TextStyle(
-                                fontSize: 15, fontWeight: FontWeight.w700,
-                                color: selected ? GlayaColors.berry : GlayaColors.textPrimary)),
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                                color: selected
+                                    ? GlayaColors.berry
+                                    : GlayaColors.textPrimary)),
                         if (duration != '') ...[
                           const SizedBox(height: 4),
                           Row(
                             children: [
-                              Icon(Icons.access_time, size: 12, color: GlayaColors.textSecondary),
+                              const Icon(Icons.access_time,
+                                  size: 12, color: GlayaColors.textSecondary),
                               const SizedBox(width: 4),
                               Text('$duration min',
-                                  style: const TextStyle(fontSize: 12,
+                                  style: const TextStyle(
+                                      fontSize: 12,
                                       color: GlayaColors.textSecondary)),
                             ],
                           ),
@@ -607,16 +658,26 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       PriceDisplay(
-                        amount: double.tryParse((s['price'] ?? s['basePrice'] ?? 0).toString()) ?? 0.0,
+                        amount: double.tryParse(
+                                (s['price'] ?? s['basePrice'] ?? 0)
+                                    .toString()) ??
+                            0.0,
                         fromCurrency: _professional?['currency'] as String?,
                         style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w800,
-                            color: selected ? GlayaColors.berry : GlayaColors.textPrimary),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            color: selected
+                                ? GlayaColors.berry
+                                : GlayaColors.textPrimary),
                       ),
                       const SizedBox(height: 4),
                       Icon(
-                        selected ? Icons.check_circle_rounded : Icons.radio_button_unchecked,
-                        color: selected ? GlayaColors.berry : GlayaColors.textTertiary,
+                        selected
+                            ? Icons.check_circle_rounded
+                            : Icons.radio_button_unchecked,
+                        color: selected
+                            ? GlayaColors.berry
+                            : GlayaColors.textTertiary,
                         size: 22,
                       ),
                     ],
@@ -637,7 +698,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Select Date & Time',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800,
+            style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
                 color: Color(0xFF1A1A1A))),
         const SizedBox(height: 16),
         // Horizontal date strip — next 14 days
@@ -664,11 +727,14 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     color: selected ? GlayaColors.berry : Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: selected ? GlayaColors.berry
+                        color: selected
+                            ? GlayaColors.berry
                             : const Color(0xFFEEEEEE)),
-                    boxShadow: [BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 6)],
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 6)
+                    ],
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -676,16 +742,23 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                       Text(DateFormat('EEE').format(date),
                           style: TextStyle(
                               fontSize: 11,
-                              color: selected ? Colors.white70 : const Color(0xFF9E9E9E))),
+                              color: selected
+                                  ? Colors.white70
+                                  : const Color(0xFF9E9E9E))),
                       const SizedBox(height: 4),
                       Text('${date.day}',
                           style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w800,
-                              color: selected ? Colors.white : const Color(0xFF1A1A1A))),
+                              fontSize: 20,
+                              fontWeight: FontWeight.w800,
+                              color: selected
+                                  ? Colors.white
+                                  : const Color(0xFF1A1A1A))),
                       Text(DateFormat('MMM').format(date),
                           style: TextStyle(
                               fontSize: 10,
-                              color: selected ? Colors.white70 : const Color(0xFF9E9E9E))),
+                              color: selected
+                                  ? Colors.white70
+                                  : const Color(0xFF9E9E9E))),
                     ],
                   ),
                 ),
@@ -695,17 +768,22 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         ),
         const SizedBox(height: 24),
         if (_selectedDate == null)
-          _infoBox(Icons.touch_app_outlined, 'Pick a date above to see available time slots')
+          _infoBox(Icons.touch_app_outlined,
+              'Pick a date above to see available time slots')
         else if (_loadingSlots)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 24),
-            child: Center(child: CircularProgressIndicator(color: GlayaColors.berry)),
+            child: Center(
+                child: CircularProgressIndicator(color: GlayaColors.berry)),
           )
         else if (_slots.isEmpty)
-          _infoBox(Icons.event_busy_outlined, 'No slots available for this date. Try another day.')
+          _infoBox(Icons.event_busy_outlined,
+              'No slots available for this date. Try another day.')
         else ...[
           const Text('Available Times',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700,
+              style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
                   color: Color(0xFF1A1A1A))),
           const SizedBox(height: 12),
           Wrap(
@@ -717,18 +795,24 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 onTap: () => setState(() => _selectedTime = slot),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   decoration: BoxDecoration(
                     color: sel ? GlayaColors.berry : Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                        color: sel ? GlayaColors.berry : const Color(0xFFEEEEEE)),
-                    boxShadow: [BoxShadow(
-                        color: Colors.black.withOpacity(0.04), blurRadius: 6)],
+                        color:
+                            sel ? GlayaColors.berry : const Color(0xFFEEEEEE)),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 6)
+                    ],
                   ),
                   child: Text(slot,
                       style: TextStyle(
-                          fontSize: 13, fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
                           color: sel ? Colors.white : const Color(0xFF333333))),
                 ),
               );
@@ -745,7 +829,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Where would you like the service?',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800,
+            style: TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.w800,
                 color: Color(0xFF1A1A1A))),
         const SizedBox(height: 4),
         const Text('Choose a location type',
@@ -767,7 +853,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         if (_locationType == 'home') ...[
           const SizedBox(height: 20),
           const Text('Your Address',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700,
+              style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
                   color: Color(0xFF1A1A1A))),
           const SizedBox(height: 8),
           TextField(
@@ -807,21 +895,24 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: sel ? GlayaColors.berry.withOpacity(0.07) : Colors.white,
+          color: sel ? GlayaColors.berry.withValues(alpha: 0.07) : Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
               color: sel ? GlayaColors.berry : const Color(0xFFEEEEEE),
               width: sel ? 2 : 1),
-          boxShadow: [BoxShadow(
-              color: Colors.black.withOpacity(0.04), blurRadius: 8)],
+          boxShadow: [
+            BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)
+          ],
         ),
         child: Row(
           children: [
             Container(
-              width: 44, height: 44,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 color: sel
-                    ? GlayaColors.berry.withOpacity(0.12)
+                    ? GlayaColors.berry.withValues(alpha: 0.12)
                     : const Color(0xFFF5F5F5),
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -836,11 +927,14 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 children: [
                   Text(title,
                       style: TextStyle(
-                          fontSize: 14, fontWeight: FontWeight.w700,
-                          color: sel ? GlayaColors.berry : const Color(0xFF1A1A1A))),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: sel
+                              ? GlayaColors.berry
+                              : const Color(0xFF1A1A1A))),
                   Text(subtitle,
-                      style: const TextStyle(fontSize: 12,
-                          color: Color(0xFF9E9E9E))),
+                      style: const TextStyle(
+                          fontSize: 12, color: Color(0xFF9E9E9E))),
                 ],
               ),
             ),
@@ -866,23 +960,36 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(
-                color: Colors.black.withOpacity(0.04), blurRadius: 10)],
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('BOOKING SUMMARY',
-                  style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700,
-                      color: Color(0xFF9E9E9E), letterSpacing: 0.8)),
+                  style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF9E9E9E),
+                      letterSpacing: 0.8)),
               const SizedBox(height: 14),
-              _summaryRow(Icons.spa_outlined,
+              _summaryRow(
+                  Icons.spa_outlined,
                   _selectedService?['name'] as String? ?? '—',
                   _selectedService != null
-                      ? _formatPrice(double.tryParse((_selectedService!['price'] ?? _selectedService!['basePrice'] ?? 0).toString()) ?? 0.0, _professional?['currency'] as String?)
+                      ? _formatPrice(
+                          double.tryParse((_selectedService!['price'] ??
+                                      _selectedService!['basePrice'] ??
+                                      0)
+                                  .toString()) ??
+                              0.0,
+                          _professional?['currency'] as String?)
                       : '—'),
               const Divider(height: 20),
-              _summaryRow(Icons.calendar_today_outlined,
+              _summaryRow(
+                  Icons.calendar_today_outlined,
                   _selectedDate != null
                       ? DateFormat('EEE, MMM d, y').format(_selectedDate!)
                       : '—',
@@ -905,7 +1012,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         // ── Address setup (for home visits) ─────────────────────────────────
         if (_locationType == 'home') ...[
           const Text('Your Address',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800,
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
                   color: Color(0xFF1A1A1A))),
           const SizedBox(height: 12),
           TextField(
@@ -918,7 +1027,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: GlayaColors.berry, width: 2),
+                borderSide:
+                    const BorderSide(color: GlayaColors.berry, width: 2),
               ),
               filled: true,
               fillColor: Colors.white,
@@ -934,7 +1044,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: GlayaColors.berry, width: 2),
+                borderSide:
+                    const BorderSide(color: GlayaColors.berry, width: 2),
               ),
               filled: true,
               fillColor: Colors.white,
@@ -950,7 +1061,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(color: GlayaColors.berry, width: 2),
+                borderSide:
+                    const BorderSide(color: GlayaColors.berry, width: 2),
               ),
               filled: true,
               fillColor: Colors.white,
@@ -958,7 +1070,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
           ),
         ] else ...[
           const Text('Service Location',
-              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800,
+              style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
                   color: Color(0xFF1A1A1A))),
           const SizedBox(height: 12),
           Container(
@@ -976,7 +1090,8 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        _professional?['businessName'] as String? ?? 'Professional\'s Salon',
+                        _professional?['businessName'] as String? ??
+                            'Professional\'s Salon',
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -984,10 +1099,11 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                         ),
                       ),
                       Text(
-                        _professional?['businessAddress'] as String? ?? 'Address will be provided',
-                        style: TextStyle(
+                        _professional?['businessAddress'] as String? ??
+                            'Address will be provided',
+                        style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF666666),
+                          color: const Color(0xFF666666),
                         ),
                       ),
                     ],
@@ -1008,7 +1124,9 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         const SizedBox(width: 10),
         Expanded(
           child: Text(label,
-              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600,
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
                   color: Color(0xFF1A1A1A))),
         ),
         Text(value,
@@ -1024,10 +1142,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 12,
-            offset: const Offset(0, -4))],
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.06),
+              blurRadius: 12,
+              offset: const Offset(0, -4))
+        ],
       ),
       child: SizedBox(
         height: 52,
@@ -1037,12 +1157,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             backgroundColor: GlayaColors.berry,
             foregroundColor: Colors.white,
             elevation: 0,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           ),
           child: _submitting
               ? const SizedBox(
-                  width: 22, height: 22,
+                  width: 22,
+                  height: 22,
                   child: CircularProgressIndicator(
                       strokeWidth: 2.5, color: Colors.white))
               : Row(
@@ -1054,9 +1175,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                           fontSize: 16, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(width: 8),
-                    Icon(isLastStep
-                        ? Icons.send
-                        : Icons.arrow_forward_rounded,
+                    Icon(isLastStep ? Icons.send : Icons.arrow_forward_rounded,
                         size: 20),
                   ],
                 ),
@@ -1067,36 +1186,40 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
   Widget _emptyState(IconData icon, String title, String sub) => Padding(
-    padding: const EdgeInsets.symmetric(vertical: 48),
-    child: Column(
-      children: [
-        Icon(icon, size: 48, color: Colors.grey.shade300),
-        const SizedBox(height: 12),
-        Text(title,
-            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700,
-                color: Color(0xFF555555))),
-        const SizedBox(height: 4),
-        Text(sub,
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 13, color: Color(0xFF9E9E9E))),
-      ],
-    ),
-  );
+        padding: const EdgeInsets.symmetric(vertical: 48),
+        child: Column(
+          children: [
+            Icon(icon, size: 48, color: Colors.grey.shade300),
+            const SizedBox(height: 12),
+            Text(title,
+                style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF555555))),
+            const SizedBox(height: 4),
+            Text(sub,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 13, color: Color(0xFF9E9E9E))),
+          ],
+        ),
+      );
 
   Widget _infoBox(IconData icon, String msg) => Container(
-    padding: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: GlayaColors.berry.withOpacity(0.06),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: GlayaColors.berry.withOpacity(0.15)),
-    ),
-    child: Row(
-      children: [
-        Icon(icon, color: GlayaColors.berry, size: 20),
-        const SizedBox(width: 10),
-        Expanded(child: Text(msg,
-            style: const TextStyle(fontSize: 13, color: Color(0xFF555555)))),
-      ],
-    ),
-  );
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: GlayaColors.berry.withValues(alpha: 0.06),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: GlayaColors.berry.withValues(alpha: 0.15)),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: GlayaColors.berry, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+                child: Text(msg,
+                    style: const TextStyle(
+                        fontSize: 13, color: Color(0xFF555555)))),
+          ],
+        ),
+      );
 }

@@ -46,7 +46,8 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
     super.initState();
     _aiMessages.add(const _ChatMessage(
       role: 'assistant',
-      content: "Hi! I'm Gigi, Glaya's support assistant. How can I help you today?",
+      content:
+          "Hi! I'm Gigi, Glaya's support assistant. How can I help you today?",
     ));
   }
 
@@ -74,14 +75,18 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
     _messageController.clear();
     setState(() {
       _aiSending = true;
-      _aiMessages.add(_ChatMessage(role: 'user', content: text, time: DateTime.now()));
+      _aiMessages
+          .add(_ChatMessage(role: 'user', content: text, time: DateTime.now()));
     });
     _scrollToBottom();
 
     try {
       final history = _aiMessages
           .where((m) => m.content.isNotEmpty)
-          .map((m) => {'role': m.role == 'user' ? 'user' : 'assistant', 'content': m.content})
+          .map((m) => {
+                'role': m.role == 'user' ? 'user' : 'assistant',
+                'content': m.content
+              })
           .toList();
       final user = ref.read(authNotifierProvider).valueOrNull;
       final isGuest = user == null;
@@ -108,7 +113,8 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
       setState(() {
         _aiMessages.add(const _ChatMessage(
           role: 'assistant',
-          content: "I'm having trouble connecting right now. Please try again in a moment.",
+          content:
+              "I'm having trouble connecting right now. Please try again in a moment.",
           escalated: true,
         ));
       });
@@ -150,7 +156,8 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
     });
     _scrollToBottom();
     try {
-      await ApiService.dio.post('/support-chat/message', data: {'content': text});
+      await ApiService.dio
+          .post('/support-chat/message', data: {'content': text});
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -189,7 +196,8 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                   width: 36,
                   height: 36,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const Icon(Icons.smart_toy_outlined, size: 24),
+                  errorBuilder: (_, __, ___) =>
+                      const Icon(Icons.smart_toy_outlined, size: 24),
                 ),
               )
             else
@@ -234,7 +242,8 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
     );
   }
 
-  Widget _modeButton(String mode, String label, IconData icon, {bool enabled = true}) {
+  Widget _modeButton(String mode, String label, IconData icon,
+      {bool enabled = true}) {
     final active = _mode == mode;
     return Expanded(
       child: GestureDetector(
@@ -251,15 +260,20 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 15,
-                  color: active ? Colors.white : (enabled ? GlayaColors.textSecondary : Colors.grey)),
+              Icon(icon,
+                  size: 15,
+                  color: active
+                      ? Colors.white
+                      : (enabled ? GlayaColors.textSecondary : Colors.grey)),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: active ? Colors.white : (enabled ? GlayaColors.textSecondary : Colors.grey),
+                  color: active
+                      ? Colors.white
+                      : (enabled ? GlayaColors.textSecondary : Colors.grey),
                 ),
               ),
             ],
@@ -299,7 +313,8 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
               ),
               Container(
                 constraints: const BoxConstraints(maxWidth: 300),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: isUser ? GlayaColors.berry : Colors.white,
                   borderRadius: BorderRadius.circular(16),
@@ -320,7 +335,10 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                         padding: EdgeInsets.only(top: 6),
                         child: Text(
                           'A support agent has been notified and will follow up.',
-                          style: TextStyle(fontSize: 11, color: Color(0xFF059669), fontStyle: FontStyle.italic),
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: Color(0xFF059669),
+                              fontStyle: FontStyle.italic),
                         ),
                       ),
                     const SizedBox(height: 4),
@@ -328,7 +346,8 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                       DateFormat('h:mm a').format(msg.time ?? DateTime.now()),
                       style: TextStyle(
                         fontSize: 10,
-                        color: isUser ? Colors.white70 : const Color(0xFF888888),
+                        color:
+                            isUser ? Colors.white70 : const Color(0xFF888888),
                       ),
                     ),
                   ],
@@ -349,7 +368,11 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
         children: [
           const Padding(
             padding: EdgeInsets.only(bottom: 4),
-            child: Text('Gigi', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF666666))),
+            child: Text('Gigi',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF666666))),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
@@ -365,7 +388,8 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                 child: SizedBox(
                   width: 24,
                   height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2, color: GlayaColors.berry),
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: GlayaColors.berry),
                 ),
               ),
             ),
@@ -399,9 +423,11 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
           children: [
             Icon(Icons.support_agent, size: 64, color: GlayaColors.berry),
             SizedBox(height: 16),
-            Text('No messages yet', style: TextStyle(fontSize: 16, color: Color(0xFF888888))),
+            Text('No messages yet',
+                style: TextStyle(fontSize: 16, color: Color(0xFF888888))),
             SizedBox(height: 8),
-            Text('Start a conversation with our support team', style: TextStyle(fontSize: 14, color: Color(0xFFAAAAAA))),
+            Text('Start a conversation with our support team',
+                style: TextStyle(fontSize: 14, color: Color(0xFFAAAAAA))),
           ],
         ),
       );
@@ -428,7 +454,10 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -2)),
+          BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, -2)),
         ],
       ),
       child: Column(
@@ -439,10 +468,13 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton.icon(
-                onPressed: () => setState(() => _guestFieldsExpanded = !_guestFieldsExpanded),
+                onPressed: () => setState(
+                    () => _guestFieldsExpanded = !_guestFieldsExpanded),
                 icon: const Icon(Icons.alternate_email, size: 16),
                 label: Text(
-                  _guestFieldsExpanded ? 'Hide contact info' : 'Leave email for follow-up',
+                  _guestFieldsExpanded
+                      ? 'Hide contact info'
+                      : 'Leave email for follow-up',
                   style: const TextStyle(fontSize: 12),
                 ),
               ),
@@ -486,7 +518,9 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                   decoration: InputDecoration(
                     hintText: humanBlocked
                         ? 'Sign in to message support'
-                        : (_mode == 'ai' ? 'Ask Gigi anything...' : 'Type a message...'),
+                        : (_mode == 'ai'
+                            ? 'Ask Gigi anything...'
+                            : 'Type a message...'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(24),
                       borderSide: const BorderSide(color: Color(0xFFEEEEEE)),
@@ -499,15 +533,18 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                       borderRadius: BorderRadius.circular(24),
                       borderSide: const BorderSide(color: GlayaColors.berry),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
                   ),
                   enabled: !sending && !humanBlocked,
-                  onSubmitted: (_) => _mode == 'ai' ? _sendAiMessage() : _sendHumanMessage(),
+                  onSubmitted: (_) =>
+                      _mode == 'ai' ? _sendAiMessage() : _sendHumanMessage(),
                 ),
               ),
               const SizedBox(width: 12),
               Container(
-                decoration: const BoxDecoration(color: GlayaColors.berry, shape: BoxShape.circle),
+                decoration: const BoxDecoration(
+                    color: GlayaColors.berry, shape: BoxShape.circle),
                 child: IconButton(
                   icon: const Icon(Icons.send, color: Colors.white),
                   onPressed: sending || humanBlocked
@@ -542,12 +579,17 @@ class _HumanBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
-        crossAxisAlignment: isOwn ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isOwn ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           if (!isOwn)
             const Padding(
               padding: EdgeInsets.only(bottom: 4),
-              child: Text('Support Team', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF666666))),
+              child: Text('Support Team',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF666666))),
             ),
           Container(
             constraints: const BoxConstraints(maxWidth: 280),
@@ -559,9 +601,16 @@ class _HumanBubble extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(content, style: TextStyle(fontSize: 14, color: isOwn ? Colors.white : const Color(0xFF1A1A1A))),
+                Text(content,
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: isOwn ? Colors.white : const Color(0xFF1A1A1A))),
                 const SizedBox(height: 4),
-                Text(timeStr, style: TextStyle(fontSize: 10, color: isOwn ? Colors.white70 : const Color(0xFF888888))),
+                Text(timeStr,
+                    style: TextStyle(
+                        fontSize: 10,
+                        color:
+                            isOwn ? Colors.white70 : const Color(0xFF888888))),
               ],
             ),
           ),

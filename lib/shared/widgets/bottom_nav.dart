@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../theme/colors.dart';
+import '../utils/responsive_helper.dart';
 import 'portfolio_upload_dialog.dart';
 import '../../features/reels/presentation/widgets/reel_upload_dialog.dart';
 
@@ -18,6 +19,9 @@ class GlayaBottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (ResponsiveHelper.isDesktop(context)) {
+      return const SizedBox.shrink();
+    }
     return _isPro
         ? _ProNav(currentIndex: currentIndex)
         : _CustomerNav(currentIndex: currentIndex, isLoggedIn: _isLoggedIn);

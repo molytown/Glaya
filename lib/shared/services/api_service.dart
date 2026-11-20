@@ -46,7 +46,11 @@ class ApiService {
   static bool _isCacheableGet(RequestOptions options) {
     if (options.method.toUpperCase() != 'GET') return false;
     final path = options.path;
-    return _cacheablePaths.any((p) => path == p || path.startsWith('$p/') || path.startsWith('/api/v1$p') || path.startsWith('/api/v1$p/'));
+    return _cacheablePaths.any((p) =>
+        path == p ||
+        path.startsWith('$p/') ||
+        path.startsWith('/api/v1$p') ||
+        path.startsWith('/api/v1$p/'));
   }
 
   static String _cacheKey(RequestOptions options) {
@@ -65,7 +69,8 @@ class ApiService {
       if (raw == null) return null;
       final entry = jsonDecode(raw) as Map<String, dynamic>;
       final ts = entry['ts'] as int? ?? 0;
-      if (DateTime.now().millisecondsSinceEpoch - ts > _cacheTtl.inMilliseconds) return null;
+      if (DateTime.now().millisecondsSinceEpoch - ts > _cacheTtl.inMilliseconds)
+        return null;
       return entry;
     } catch (_) {
       return null;
@@ -78,10 +83,12 @@ class ApiService {
       final raw = jsonEncode(data);
       if (raw.length > 400000) return; // skip very large payloads
       final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(key, jsonEncode({
-        'ts': DateTime.now().millisecondsSinceEpoch,
-        'data': data,
-      }));
+      await prefs.setString(
+          key,
+          jsonEncode({
+            'ts': DateTime.now().millisecondsSinceEpoch,
+            'data': data,
+          }));
     } catch (_) {}
   }
 
@@ -89,7 +96,8 @@ class ApiService {
   static Future<void> clearContentCache() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final keys = prefs.getKeys().where((k) => k.startsWith(_cachePrefix)).toList();
+      final keys =
+          prefs.getKeys().where((k) => k.startsWith(_cachePrefix)).toList();
       for (final k in keys) {
         await prefs.remove(k);
       }
@@ -125,7 +133,7 @@ class ApiService {
     required String fileField,
   }) async {
     final fileData = fileBytes != null
-        ? await MultipartFile.fromBytes(fileBytes, filename: fileName ?? 'upload.jpg')
+        ? MultipartFile.fromBytes(fileBytes, filename: fileName ?? 'upload.jpg')
         : (filePath != null ? await MultipartFile.fromFile(filePath) : null);
 
     return FormData.fromMap({
@@ -159,14 +167,16 @@ class ApiService {
               final age = DateTime.now().millisecondsSinceEpoch - ts;
               // Only revalidate in the background once the entry is older than
               // _revalidateAfter — fresh entries resolve with zero network I/O.
-              if (data != null && age > _revalidateAfter.inMilliseconds &&
+              if (data != null &&
+                  age > _revalidateAfter.inMilliseconds &&
                   !_inflightRefreshes.contains(key)) {
                 _inflightRefreshes.add(key);
                 try {
                   final refreshOptions = options.copyWith();
                   refreshOptions.extra['__skipCacheRead'] = true;
                   refreshOptions.extra['__cacheKey'] = key;
-                  dio.fetch(refreshOptions)
+                  dio
+                      .fetch(refreshOptions)
                       .catchError((_) => Response(
                             requestOptions: refreshOptions,
                             statusCode: 0,
@@ -203,13 +213,17 @@ class ApiService {
           final refreshToken = await StorageService.getRefreshToken();
           if (refreshToken != null) {
             try {
-              final response = await dio.post('/auth/refresh', data: {'refreshToken': refreshToken});
-              final newAccessToken = response.data['data']['accessToken'] as String;
-              final newRefreshToken = response.data['data']['refreshToken'] as String;
+              final response = await dio
+                  .post('/auth/refresh', data: {'refreshToken': refreshToken});
+              final newAccessToken =
+                  response.data['data']['accessToken'] as String;
+              final newRefreshToken =
+                  response.data['data']['refreshToken'] as String;
               await StorageService.setToken(newAccessToken);
               await StorageService.setRefreshToken(newRefreshToken);
 
-              error.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer $newAccessToken';
               final retryResponse = await dio.request(
                 error.requestOptions.path,
                 options: Options(method: error.requestOptions.method),

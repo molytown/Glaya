@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../shared/theme/colors.dart';
 
 class HomeLoadingPlaceholder extends StatelessWidget {
   final double height;

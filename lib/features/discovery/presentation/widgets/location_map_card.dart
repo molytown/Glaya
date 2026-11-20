@@ -65,13 +65,13 @@ class _LocationMapCardState extends ConsumerState<LocationMapCard> {
     });
   }
 
-  double _calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+  double _calculateDistance(
+      double lat1, double lng1, double lat2, double lng2) {
     const double earthRadius = 6371; // km
     final dLat = _degToRadians(lat2 - lat1);
     final dLng = _degToRadians(lng2 - lng1);
     final a = math.pow(dLat / 2, 2) +
-        _degToRadians(lat1) * _degToRadians(lat2) *
-            math.pow(dLng / 2, 2);
+        _degToRadians(lat1) * _degToRadians(lat2) * math.pow(dLng / 2, 2);
     final c = 2 * math.asin(math.sqrt(a));
     return earthRadius * c;
   }
@@ -106,13 +106,19 @@ class _LocationMapCardState extends ConsumerState<LocationMapCard> {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Card(
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: const Color(0xFFEEEEEE))),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: Color(0xFFEEEEEE))),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Location', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A))),
+              const Text('Location',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1A1A1A))),
               const SizedBox(height: 12),
               Container(
                 height: 150,
@@ -147,7 +153,8 @@ class _LocationMapCardState extends ConsumerState<LocationMapCard> {
                               child: SizedBox(
                                 width: 24,
                                 height: 24,
-                                child: CircularProgressIndicator(strokeWidth: 2),
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
                               ),
                             ),
                           if (distanceText.isNotEmpty)
@@ -155,13 +162,23 @@ class _LocationMapCardState extends ConsumerState<LocationMapCard> {
                               bottom: 8,
                               right: 8,
                               child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 4),
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(8),
-                                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4)],
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color:
+                                            Colors.black.withValues(alpha: 0.1),
+                                        blurRadius: 4)
+                                  ],
                                 ),
-                                child: Text(distanceText, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A))),
+                                child: Text(distanceText,
+                                    style: const TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                        color: Color(0xFF1A1A1A))),
                               ),
                             ),
                         ],
@@ -170,9 +187,14 @@ class _LocationMapCardState extends ConsumerState<LocationMapCard> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.map_outlined, size: 48, color: GlayaColors.berry.withOpacity(0.5)),
+                            Icon(Icons.map_outlined,
+                                size: 48,
+                                color:
+                                    GlayaColors.berry.withValues(alpha: 0.5)),
                             const SizedBox(height: 8),
-                            Text(address, style: const TextStyle(fontSize: 12, color: Color(0xFF888888))),
+                            Text(address,
+                                style: const TextStyle(
+                                    fontSize: 12, color: Color(0xFF888888))),
                           ],
                         ),
                       ),
@@ -182,17 +204,27 @@ class _LocationMapCardState extends ConsumerState<LocationMapCard> {
                 width: double.infinity,
                 child: OutlinedButton.icon(
                   onPressed: () async {
-                    final Uri mapUri = Uri(scheme: 'https', host: 'maps.google.com', path: '/search', queryParameters: {'api': '1', 'query': address});
+                    final Uri mapUri = Uri(
+                        scheme: 'https',
+                        host: 'maps.google.com',
+                        path: '/search',
+                        queryParameters: {'api': '1', 'query': address});
                     if (await canLaunchUrl(mapUri)) {
                       launchUrl(mapUri, mode: LaunchMode.externalApplication);
                     }
                   },
-                  icon: const Icon(Icons.directions_outlined, size: 18, color: GlayaColors.berry),
-                  label: const Text('Get Directions', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: GlayaColors.berry)),
+                  icon: const Icon(Icons.directions_outlined,
+                      size: 18, color: GlayaColors.berry),
+                  label: const Text('Get Directions',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: GlayaColors.berry)),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: GlayaColors.berry),
                     padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
                   ),
                 ),
               ),

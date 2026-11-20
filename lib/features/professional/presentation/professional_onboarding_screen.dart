@@ -81,7 +81,7 @@ class _AnimatedGradientPainter extends CustomPainter {
     canvas.drawCircle(
       ripple1Center,
       80 + 30 * math.sin(phase * 2 * math.pi),
-      Paint()..color = Colors.white.withOpacity(0.12),
+      Paint()..color = Colors.white.withValues(alpha: 0.12),
     );
 
     final ripple2Center = Offset(
@@ -91,7 +91,7 @@ class _AnimatedGradientPainter extends CustomPainter {
     canvas.drawCircle(
       ripple2Center,
       50 + 20 * math.cos(phase * 2 * math.pi * 1.1),
-      Paint()..color = Colors.white.withOpacity(0.08),
+      Paint()..color = Colors.white.withValues(alpha: 0.08),
     );
   }
 
@@ -155,7 +155,7 @@ class _ProfessionalOnboardingScreenState
       if (user != null) {
         setState(() {
           if (user.name != null) _nameController.text = user.name!;
-          if (user.phone != null) _phoneController.text = user.phone!;
+          _phoneController.text = user.phone!;
           // Note: User entity doesn't have email, address fields in current implementation
           // These would need to be fetched from a full profile API or added to User entity
         });
@@ -201,7 +201,7 @@ class _ProfessionalOnboardingScreenState
     setState(() => _isUploadingPhoto = true);
     try {
       final formData = FormData.fromMap({
-        'photo': await MultipartFile.fromBytes(
+        'photo': MultipartFile.fromBytes(
           _profilePhotoBytes!,
           filename: _profilePhoto!.name,
         ),
@@ -427,7 +427,7 @@ class _ProfessionalOnboardingScreenState
                                 width: 36,
                                 height: 36,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.25),
+                                  color: Colors.white.withValues(alpha: 0.25),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(Icons.arrow_back,
@@ -456,7 +456,7 @@ class _ProfessionalOnboardingScreenState
                       const SizedBox(height: 20),
                       Container(
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.4),
+                          color: Colors.white.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(16),
                         ),
                         padding: const EdgeInsets.all(20),
@@ -692,7 +692,8 @@ class _ProfessionalOnboardingScreenState
                                     horizontal: 14, vertical: 14),
                                 decoration: BoxDecoration(
                                   color: _selectedLocation != null
-                                      ? const Color(0xFFD6006E).withOpacity(0.1)
+                                      ? const Color(0xFFD6006E)
+                                          .withValues(alpha: 0.1)
                                       : const Color(0xFFF9F9F9),
                                   borderRadius: BorderRadius.circular(10),
                                   border: Border.all(
@@ -804,7 +805,7 @@ class _ProfessionalOnboardingScreenState
       ),
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: DropdownButtonFormField<T>(
-        value: value,
+        initialValue: value,
         hint: Text(hint,
             style: const TextStyle(fontSize: 14, color: Colors.black87)),
         icon: const Icon(Icons.keyboard_arrow_down, size: 20),
@@ -857,7 +858,8 @@ class _ProfessionalOnboardingScreenState
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                          color: const Color(0xFFD6006E).withOpacity(0.25),
+                          color:
+                              const Color(0xFFD6006E).withValues(alpha: 0.25),
                           blurRadius: 8)
                     ]
                   : [],
@@ -924,7 +926,7 @@ class _ProfessionalOnboardingScreenState
                         border: Border.all(
                           color: isSelected
                               ? const Color(0xFFD6006E)
-                              : Colors.white.withOpacity(0.6),
+                              : Colors.white.withValues(alpha: 0.6),
                           width: 1.5,
                         ),
                       ),
@@ -966,7 +968,7 @@ class _ProfessionalOnboardingScreenState
               ),
               boxShadow: [
                 BoxShadow(
-                    color: const Color(0xFF5C3D2E).withOpacity(0.3),
+                    color: const Color(0xFF5C3D2E).withValues(alpha: 0.3),
                     blurRadius: 12,
                     offset: const Offset(0, 4)),
               ],
