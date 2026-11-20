@@ -178,8 +178,8 @@ class _HeroSlide extends StatelessWidget {
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                     colors: [
-                      Colors.black.withValues(alpha: 0.75),
-                      Colors.black.withValues(alpha: 0.3),
+                      Color(0xFF000000).withValues(alpha: 0.75),
+                      Color(0xFF000000).withValues(alpha: 0.3),
                       Colors.transparent,
                     ],
                     stops: const [0.0, 0.5, 1.0],

@@ -38,7 +38,7 @@ class SimilarProfessionalsCarousel extends ConsumerWidget {
                   : professionals.where((p) => p.id != excludeId).toList();
               if (filtered.isEmpty) {
                 return const Text('No similar professionals found',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF888888)));
+                    style: TextStyle(fontSize: 14, color: Color(0xFF000000)));
               }
               return SizedBox(
                 height: 160,
@@ -56,7 +56,7 @@ class SimilarProfessionalsCarousel extends ConsumerWidget {
             loading: () => const Center(
                 child: CircularProgressIndicator(color: GlayaColors.berry)),
             error: (_, __) => const Text('Failed to load similar professionals',
-                style: TextStyle(fontSize: 14, color: Color(0xFF888888))),
+                style: TextStyle(fontSize: 14, color: Color(0xFF000000))),
           ),
         ],
       ),
@@ -81,7 +81,7 @@ class _ProfessionalCard extends StatelessWidget {
           border: Border.all(color: const Color(0xFFEEEEEE)),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)
+                color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 8)
           ],
         ),
         child: Column(
@@ -117,7 +117,7 @@ class _ProfessionalCard extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(professional.category,
                       style: const TextStyle(
-                          fontSize: 10, color: Color(0xFF888888))),
+                          fontSize: 10, color: Color(0xFF000000))),
                   const SizedBox(height: 4),
                   Row(
                     children: [

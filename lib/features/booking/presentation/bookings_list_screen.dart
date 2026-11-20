@@ -156,7 +156,7 @@ class _BookingsListScreenState extends ConsumerState<BookingsListScreen>
                         Text(
                           DateFormat('EEE, MMM d • h:mm a').format(scheduledAt),
                           style: const TextStyle(
-                              fontSize: 12, color: Color(0xFF888888)),
+                              fontSize: 12, color: Color(0xFF000000)),
                         ),
                         const SizedBox(height: 5),
                         Container(

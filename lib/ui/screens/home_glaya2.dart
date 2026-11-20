@@ -33,7 +33,7 @@ class HomeGlaya2 extends StatelessWidget {
                             fontSize: 20, fontWeight: FontWeight.w700)),
                     SizedBox(height: 10),
                     Text('Top picks for you',
-                        style: TextStyle(fontSize: 14, color: Colors.black54)),
+                        style: TextStyle(fontSize: 14, color: Color(0xFF000000))),
                     SizedBox(height: 14),
                     GlayaHeroCard(
                         title: 'Glow More, Pay Less',

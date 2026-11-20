@@ -101,7 +101,7 @@ class _CategoryGalleriesCarouselState
     if (mediaItems.isNotEmpty && professionalId != null) {
       showDialog(
         context: context,
-        barrierColor: Colors.black.withValues(alpha: 0.9),
+        barrierColor: Color(0xFF000000).withValues(alpha: 0.9),
         builder: (context) => GalleryImageViewer(
           mediaItems: mediaItems,
           professionalId: professionalId,
@@ -212,7 +212,7 @@ class _CategoryGalleriesCarouselState
                             child: Container(
                               padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
-                                color: Colors.black.withValues(alpha: 0.6),
+                                color: Color(0xFF000000).withValues(alpha: 0.6),
                                 shape: BoxShape.circle,
                               ),
                               child: const Icon(
@@ -235,7 +235,7 @@ class _CategoryGalleriesCarouselState
                                 end: Alignment.bottomCenter,
                                 colors: [
                                   Colors.transparent,
-                                  Colors.black.withValues(alpha: 0.7),
+                                  Color(0xFF000000).withValues(alpha: 0.7),
                                 ],
                               ),
                             ),

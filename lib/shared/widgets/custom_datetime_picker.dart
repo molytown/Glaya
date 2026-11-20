@@ -114,7 +114,7 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: GlayaColors.textSecondary,
+                color: Color(0xFF000000),
               ),
             ),
             const SizedBox(height: 8),
@@ -155,7 +155,7 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: GlayaColors.textSecondary,
+                color: Color(0xFF000000),
               ),
             ),
             const SizedBox(height: 8),
@@ -197,7 +197,7 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: GlayaColors.textSecondary,
+                color: Color(0xFF000000),
               ),
             ),
             const SizedBox(height: 8),
@@ -236,7 +236,7 @@ class _CustomDateTimePickerState extends State<CustomDateTimePicker> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: GlayaColors.berry,
                   foregroundColor: Colors.white,
-                  disabledBackgroundColor: GlayaColors.textTertiary,
+                  disabledBackgroundColor: Color(0xFF000000),
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

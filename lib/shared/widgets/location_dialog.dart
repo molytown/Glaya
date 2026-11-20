@@ -181,7 +181,7 @@ class _LocationDialogState extends State<LocationDialog> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.25),
+                color: Color(0xFF000000).withValues(alpha: 0.25),
                 blurRadius: 30,
                 offset: const Offset(0, 10),
               ),

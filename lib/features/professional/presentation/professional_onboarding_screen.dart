@@ -492,7 +492,7 @@ class _ProfessionalOnboardingScreenState
                                               )
                                             : const Icon(Icons.person,
                                                 size: 32,
-                                                color: Color(0xFF9E9E9E)),
+                                                color: Color(0xFF000000)),
                                       ),
                                       if (!_isUploadingPhoto)
                                         Positioned(
@@ -720,7 +720,7 @@ class _ProfessionalOnboardingScreenState
                                           fontSize: 14,
                                           color: _selectedLocation != null
                                               ? const Color(0xFFD6006E)
-                                              : Colors.black87,
+                                              : Color(0xFF000000),
                                         ),
                                       ),
                                     ),
@@ -767,7 +767,7 @@ class _ProfessionalOnboardingScreenState
       keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.black87),
+        hintStyle: const TextStyle(color: Color(0xFF000000)),
         prefixIcon: Icon(icon, size: 20, color: const Color(0xFF757575)),
         filled: true,
         fillColor: const Color(0xFFF9F9F9),
@@ -807,7 +807,7 @@ class _ProfessionalOnboardingScreenState
       child: DropdownButtonFormField<T>(
         initialValue: value,
         hint: Text(hint,
-            style: const TextStyle(fontSize: 14, color: Colors.black87)),
+            style: const TextStyle(fontSize: 14, color: Color(0xFF000000))),
         icon: const Icon(Icons.keyboard_arrow_down, size: 20),
         decoration: InputDecoration(
           prefixIcon: Icon(icon, size: 20, color: const Color(0xFF757575)),

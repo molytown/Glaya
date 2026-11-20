@@ -262,11 +262,11 @@ class _ServiceManagementScreenState
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(Icons.add_photo_alternate_outlined,
-                                size: 32, color: Color(0xFF9E9E9E)),
+                                size: 32, color: Color(0xFF000000)),
                             SizedBox(height: 8),
                             Text('Tap to add service photo',
                                 style: TextStyle(
-                                    fontSize: 12, color: Color(0xFF9E9E9E))),
+                                    fontSize: 12, color: Color(0xFF000000))),
                           ],
                         ),
                 ),
@@ -276,8 +276,8 @@ class _ServiceManagementScreenState
                 initialValue: categoryId.isEmpty ? null : categoryId,
                 decoration: InputDecoration(
                   labelText: 'Category',
-                  labelStyle: const TextStyle(color: Colors.black87),
-                  hintStyle: const TextStyle(color: Colors.black87),
+                  labelStyle: const TextStyle(color: Color(0xFF000000)),
+                  hintStyle: const TextStyle(color: Color(0xFF000000)),
                   filled: true,
                   fillColor: const Color(0xFFFAFAFA),
                   border: OutlineInputBorder(
@@ -299,8 +299,8 @@ class _ServiceManagementScreenState
                   controller: nameController,
                   decoration: InputDecoration(
                       labelText: 'Name',
-                      labelStyle: const TextStyle(color: Colors.black87),
-                      hintStyle: const TextStyle(color: Colors.black87),
+                      labelStyle: const TextStyle(color: Color(0xFF000000)),
+                      hintStyle: const TextStyle(color: Color(0xFF000000)),
                       filled: true,
                       fillColor: const Color(0xFFFAFAFA),
                       border: OutlineInputBorder(
@@ -311,8 +311,8 @@ class _ServiceManagementScreenState
                   controller: priceController,
                   decoration: InputDecoration(
                       labelText: 'Price',
-                      labelStyle: const TextStyle(color: Colors.black87),
-                      hintStyle: const TextStyle(color: Colors.black87),
+                      labelStyle: const TextStyle(color: Color(0xFF000000)),
+                      hintStyle: const TextStyle(color: Color(0xFF000000)),
                       filled: true,
                       fillColor: const Color(0xFFFAFAFA),
                       border: OutlineInputBorder(
@@ -324,8 +324,8 @@ class _ServiceManagementScreenState
                   controller: durationController,
                   decoration: InputDecoration(
                       labelText: 'Duration (mins)',
-                      labelStyle: const TextStyle(color: Colors.black87),
-                      hintStyle: const TextStyle(color: Colors.black87),
+                      labelStyle: const TextStyle(color: Color(0xFF000000)),
+                      hintStyle: const TextStyle(color: Color(0xFF000000)),
                       filled: true,
                       fillColor: const Color(0xFFFAFAFA),
                       border: OutlineInputBorder(
@@ -337,8 +337,8 @@ class _ServiceManagementScreenState
                   controller: depositController,
                   decoration: InputDecoration(
                       labelText: 'Deposit',
-                      labelStyle: const TextStyle(color: Colors.black87),
-                      hintStyle: const TextStyle(color: Colors.black87),
+                      labelStyle: const TextStyle(color: Color(0xFF000000)),
+                      hintStyle: const TextStyle(color: Color(0xFF000000)),
                       filled: true,
                       fillColor: const Color(0xFFFAFAFA),
                       border: OutlineInputBorder(
@@ -350,8 +350,8 @@ class _ServiceManagementScreenState
                 initialValue: locationType,
                 decoration: InputDecoration(
                   labelText: 'Location Type',
-                  labelStyle: const TextStyle(color: Colors.black87),
-                  hintStyle: const TextStyle(color: Colors.black87),
+                  labelStyle: const TextStyle(color: Color(0xFF000000)),
+                  hintStyle: const TextStyle(color: Color(0xFF000000)),
                   filled: true,
                   fillColor: const Color(0xFFFAFAFA),
                   border: OutlineInputBorder(

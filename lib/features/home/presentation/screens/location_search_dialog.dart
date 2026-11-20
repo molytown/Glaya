@@ -65,9 +65,9 @@ class _LocationSearchDialogState extends State<LocationSearchDialog> {
       data: Theme.of(context).copyWith(
         brightness: Brightness.light,
         textTheme: Theme.of(context).textTheme.copyWith(
-              bodyLarge: const TextStyle(color: Colors.black),
-              bodyMedium: const TextStyle(color: Colors.black),
-              titleMedium: const TextStyle(color: Colors.black),
+              bodyLarge: const TextStyle(color: Color(0xFF000000)),
+              bodyMedium: const TextStyle(color: Color(0xFF000000)),
+              titleMedium: const TextStyle(color: Color(0xFF000000)),
             ),
         inputDecorationTheme: const InputDecorationTheme(
           hintStyle: TextStyle(color: Colors.grey),
@@ -126,7 +126,7 @@ class _LocationSearchDialogState extends State<LocationSearchDialog> {
                     ? const Center(
                         child: Text(
                           'Search for a location',
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Color(0xFF000000)),
                         ),
                       )
                     : ListView.builder(
@@ -137,7 +137,7 @@ class _LocationSearchDialogState extends State<LocationSearchDialog> {
                                 color: Color(0xFFD6006E)),
                             title: Text(
                               _predictionList[index].description ?? '',
-                              style: const TextStyle(color: Colors.black),
+                              style: const TextStyle(color: Color(0xFF000000)),
                             ),
                             onTap: () {
                               Get.find<LocationController>()

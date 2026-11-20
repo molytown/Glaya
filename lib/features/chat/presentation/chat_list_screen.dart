@@ -131,7 +131,7 @@ class ChatListScreen extends ConsumerWidget {
                         last?['content'] as String? ?? 'No messages yet',
                         style: TextStyle(
                           fontSize: 13,
-                          color: unread > 0 ? Colors.black87 : Colors.grey[600],
+                          color: unread > 0 ? Color(0xFF000000) : Colors.grey[600],
                           fontWeight:
                               unread > 0 ? FontWeight.w600 : FontWeight.normal,
                         ),

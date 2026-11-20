@@ -173,7 +173,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               border: Border.all(color: Colors.grey.shade200),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: Color(0xFF000000).withValues(alpha: 0.04),
                     blurRadius: 6,
                     offset: const Offset(0, 2))
               ],
@@ -259,7 +259,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               border: Border.all(color: Colors.grey.shade200),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.04),
+                    color: Color(0xFF000000).withValues(alpha: 0.04),
                     blurRadius: 6,
                     offset: const Offset(0, 2))
               ],

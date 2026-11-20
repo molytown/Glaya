@@ -124,7 +124,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
               const SizedBox(height: 16),
               Text(
                 _formatTime(_secondsRemaining),
-                style: GlayaTextStyles.titleMedium(color: GlayaColors.textSecondary),
+                style: GlayaTextStyles.titleMedium(color: Color(0xFF000000)),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),

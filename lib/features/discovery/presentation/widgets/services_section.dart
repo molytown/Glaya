@@ -76,7 +76,7 @@ class ServicesSection extends StatelessWidget {
           if (shown.isEmpty)
             const Text('No services yet',
                 style: TextStyle(
-                    fontSize: 14, color: GlayaColors.textSecondary))
+                    fontSize: 14, color: Color(0xFF000000)))
           else
             SizedBox(
               height: 150,
@@ -161,7 +161,7 @@ class ServiceCard extends ConsumerWidget {
         border: Border.all(color: GlayaColors.pinkBorder),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Color(0xFF000000).withValues(alpha: 0.05),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -215,7 +215,7 @@ class ServiceCard extends ConsumerWidget {
                     const SizedBox(height: 4),
                     Text('${service.durationMins} min',
                         style: const TextStyle(
-                            fontSize: 11, color: GlayaColors.textSecondary)),
+                            fontSize: 11, color: Color(0xFF000000))),
                     const SizedBox(height: 2),
                     Text('$currencySymbol $displayPrice',
                         style: const TextStyle(
@@ -226,7 +226,7 @@ class ServiceCard extends ConsumerWidget {
                       const SizedBox(height: 2),
                       Text('Deposit: $currencySymbol $depositDisplay',
                           style: const TextStyle(
-                              fontSize: 10, color: GlayaColors.textTertiary)),
+                              fontSize: 10, color: Color(0xFF000000))),
                     ],
                     const Spacer(),
                     SizedBox(

@@ -578,7 +578,7 @@ class _ProfessionalDashboardScreenState
         color: _surface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 8),
+          BoxShadow(color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 8),
         ],
       ),
       child: Column(
@@ -1938,7 +1938,7 @@ class _ProfessionalDashboardScreenState
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Color(0xFF000000).withValues(alpha: 0.04),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

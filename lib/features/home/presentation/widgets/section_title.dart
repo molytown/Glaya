@@ -48,7 +48,7 @@ class HomeSectionTitle extends StatelessWidget {
                       subtitle!,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: GlayaColors.textSecondary,
+                        color: Color(0xFF000000),
                       ),
                     ),
                   ),

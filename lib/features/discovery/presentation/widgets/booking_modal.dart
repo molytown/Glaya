@@ -120,7 +120,7 @@ class _BookingModalState extends ConsumerState<BookingModal> {
                     ),
                   ),
                   IconButton(
-                    icon: const Icon(Icons.close, color: Color(0xFF888888)),
+                    icon: const Icon(Icons.close, color: Color(0xFF000000)),
                     onPressed: widget.onClose,
                   ),
                 ],
@@ -163,7 +163,7 @@ class _BookingModalState extends ConsumerState<BookingModal> {
         Text(
           'Your request has been sent to ${widget.professional.name}. You\'ll be notified once confirmed.',
           textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 14, color: Color(0xFF666666)),
+          style: const TextStyle(fontSize: 14, color: Color(0xFF000000)),
         ),
         const SizedBox(height: 20),
         Row(
@@ -207,7 +207,7 @@ class _BookingModalState extends ConsumerState<BookingModal> {
       return Column(
         children: [
           const SizedBox(height: 20),
-          const Icon(Icons.lock_outline, size: 48, color: Color(0xFF888888)),
+          const Icon(Icons.lock_outline, size: 48, color: Color(0xFF000000)),
           const SizedBox(height: 16),
           const Text(
             'Sign in to book',
@@ -216,7 +216,7 @@ class _BookingModalState extends ConsumerState<BookingModal> {
           const SizedBox(height: 8),
           const Text(
             'Please sign in to book an appointment',
-            style: TextStyle(fontSize: 14, color: Color(0xFF666666)),
+            style: TextStyle(fontSize: 14, color: Color(0xFF000000)),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
@@ -275,7 +275,7 @@ class _BookingModalState extends ConsumerState<BookingModal> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.calendar_today, size: 16, color: Color(0xFF888888)),
+                const Icon(Icons.calendar_today, size: 16, color: Color(0xFF000000)),
                 const SizedBox(width: 8),
                 Text(
                   _selectedDate != null
@@ -283,7 +283,7 @@ class _BookingModalState extends ConsumerState<BookingModal> {
                       : 'Select date',
                   style: TextStyle(
                     fontSize: 14,
-                    color: _selectedDate != null ? const Color(0xFF1A1A1A) : const Color(0xFF888888),
+                    color: _selectedDate != null ? const Color(0xFF1A1A1A) : const Color(0xFF000000),
                   ),
                 ),
               ],
@@ -301,7 +301,7 @@ class _BookingModalState extends ConsumerState<BookingModal> {
           ),
           child: const Text(
             'Time will be confirmed with the professional via chat after booking.',
-            style: TextStyle(fontSize: 13, color: Color(0xFF666666)),
+            style: TextStyle(fontSize: 13, color: Color(0xFF000000)),
           ),
         ),
         const SizedBox(height: 16),
@@ -393,7 +393,7 @@ class _BookingModalState extends ConsumerState<BookingModal> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: Color(0xFF888888), fontSize: 13)),
+          Text(label, style: const TextStyle(color: Color(0xFF000000), fontSize: 13)),
           Text(value, style: const TextStyle(color: Color(0xFF1A1A1A), fontSize: 13, fontWeight: FontWeight.w600)),
         ],
       ),

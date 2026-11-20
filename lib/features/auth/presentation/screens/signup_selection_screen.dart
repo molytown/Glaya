@@ -52,8 +52,8 @@ class _SignupSelectionScreenState extends State<SignupSelectionScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0.3),
-                        Colors.black.withValues(alpha: 0.6),
+                        Color(0xFF000000).withValues(alpha: 0.3),
+                        Color(0xFF000000).withValues(alpha: 0.6),
                       ],
                     ),
                   ),
@@ -112,7 +112,7 @@ class _SignupSelectionScreenState extends State<SignupSelectionScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
+                          color: Color(0xFF000000).withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -124,7 +124,7 @@ class _SignupSelectionScreenState extends State<SignupSelectionScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Colors.black,
+                        color: Color(0xFF000000),
                       ),
                     ),
                   ),
@@ -150,8 +150,8 @@ class _SignupSelectionScreenState extends State<SignupSelectionScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0.3),
-                        Colors.black.withValues(alpha: 0.6),
+                        Color(0xFF000000).withValues(alpha: 0.3),
+                        Color(0xFF000000).withValues(alpha: 0.6),
                       ],
                     ),
                   ),
@@ -211,7 +211,7 @@ class _SignupSelectionScreenState extends State<SignupSelectionScreen> {
                       border: Border.all(color: Colors.white, width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
+                          color: Color(0xFF000000).withValues(alpha: 0.3),
                           blurRadius: 8,
                           offset: const Offset(0, 4),
                         ),
@@ -223,7 +223,7 @@ class _SignupSelectionScreenState extends State<SignupSelectionScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
-                        color: Colors.black,
+                        color: Color(0xFF000000),
                       ),
                     ),
                   ),

@@ -80,7 +80,7 @@ class _NearbyProfessionalsMapPageState
       appBar: AppBar(
         title: const Text('Nearby Professionals'),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        foregroundColor: Color(0xFF000000),
         elevation: 0,
       ),
       body: nearbyAsync.when(

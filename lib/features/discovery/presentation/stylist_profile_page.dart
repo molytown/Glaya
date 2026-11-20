@@ -122,9 +122,9 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: .20),
-                    Colors.black.withValues(alpha: .05),
-                    Colors.black.withValues(alpha: .30),
+                    Color(0xFF000000).withValues(alpha: .20),
+                    Color(0xFF000000).withValues(alpha: .05),
+                    Color(0xFF000000).withValues(alpha: .30),
                   ],
                 ),
               ),
@@ -184,7 +184,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(26)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: .04),
+              color: Color(0xFF000000).withValues(alpha: .04),
               blurRadius: 12,
               offset: const Offset(0, -3),
             ),
@@ -342,7 +342,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
           fit: BoxFit.cover,
         ),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: .15), blurRadius: 10),
+          BoxShadow(color: Color(0xFF000000).withValues(alpha: .15), blurRadius: 10),
         ],
       ),
       child: Align(
@@ -1260,7 +1260,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
       border: Border.all(color: const Color(0xFFF0E8EC)),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: .025),
+          color: Color(0xFF000000).withValues(alpha: .025),
           blurRadius: 8,
           offset: const Offset(0, 3),
         ),
@@ -1384,7 +1384,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                         t.$4!,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF888888),
+                          color: Color(0xFF000000),
                         ),
                       ),
                     if (t.$3 != null)
@@ -1446,7 +1446,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                         t.$4!,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF888888),
+                          color: Color(0xFF000000),
                         ),
                       ),
                     if (t.$3 != null && t.$2 != 'Contact Support')

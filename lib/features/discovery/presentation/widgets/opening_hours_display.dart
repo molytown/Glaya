@@ -89,7 +89,7 @@ class _OpeningHoursDisplayState extends ConsumerState<OpeningHoursDisplay> {
           ),
           const SizedBox(height: 12),
           if (_availability.isEmpty)
-            const Text('No schedule available', style: TextStyle(fontSize: 13, color: Color(0xFF888888)))
+            const Text('No schedule available', style: TextStyle(fontSize: 13, color: Color(0xFF000000)))
           else
             Column(
               children: List.generate(7, (dayIndex) {
@@ -148,7 +148,7 @@ class _OpeningHoursDisplayState extends ConsumerState<OpeningHoursDisplay> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: isToday ? FontWeight.w700 : FontWeight.w500,
-                color: isToday ? GlayaColors.berry : const Color(0xFF666666),
+                color: isToday ? GlayaColors.berry : const Color(0xFF000000),
               ),
             ),
           ),

@@ -224,7 +224,7 @@ class _PickMapScreenState extends State<PickMapScreen> {
                           borderRadius: BorderRadius.circular(8),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.3),
+                              color: Color(0xFF000000).withValues(alpha: 0.3),
                               spreadRadius: 2,
                               blurRadius: 5,
                             ),
@@ -256,7 +256,7 @@ class _PickMapScreenState extends State<PickMapScreen> {
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.2),
+                          color: Color(0xFF000000).withValues(alpha: 0.2),
                           spreadRadius: 1,
                           blurRadius: 3,
                         ),

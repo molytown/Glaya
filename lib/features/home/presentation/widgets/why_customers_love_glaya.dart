@@ -46,7 +46,7 @@ class _WhyCustomersLoveGlayaSectionState
         border: Border.all(color: const Color(0xFFEEEEEE)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Color(0xFF000000).withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -185,7 +185,7 @@ class _ReviewCard extends StatelessWidget {
         border: Border.all(color: const Color(0xFFEEEEEE)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
+            color: Color(0xFF000000).withValues(alpha: 0.03),
             blurRadius: 6,
             offset: const Offset(0, 2),
           ),
@@ -248,7 +248,7 @@ class _ReviewCard extends StatelessWidget {
                 review.createdAt,
                 style: const TextStyle(
                   fontSize: 11,
-                  color: Color(0xFF9E9E9E),
+                  color: Color(0xFF000000),
                 ),
               ),
             ],
@@ -289,7 +289,7 @@ class _NavButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 14,
-          color: const Color(0xFF9E9E9E),
+          color: const Color(0xFF000000),
         ),
       ),
     );

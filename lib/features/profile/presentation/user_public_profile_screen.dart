@@ -150,7 +150,7 @@ class _UserPublicProfileScreenState extends State<UserPublicProfileScreen> {
                             'Member since ${_memberSince()}',
                             style: const TextStyle(
                               fontSize: 13,
-                              color: GlayaColors.textSecondary,
+                              color: Color(0xFF000000),
                             ),
                           ),
                         ],
@@ -174,7 +174,7 @@ class _UserPublicProfileScreenState extends State<UserPublicProfileScreen> {
                     child: Center(
                       child: Text(
                         'No reels or photos yet',
-                        style: TextStyle(color: GlayaColors.textSecondary),
+                        style: TextStyle(color: Color(0xFF000000)),
                       ),
                     ),
                   ),
@@ -201,7 +201,7 @@ class _UserPublicProfileScreenState extends State<UserPublicProfileScreen> {
             fontSize: 13,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.8,
-            color: GlayaColors.textSecondary,
+            color: Color(0xFF000000),
           ),
         ),
       );
@@ -271,7 +271,7 @@ class _UserPublicProfileScreenState extends State<UserPublicProfileScreen> {
       showDialog(
         context: context,
         builder: (ctx) => Dialog(
-          backgroundColor: Colors.black,
+          backgroundColor: Color(0xFF000000),
           insetPadding: EdgeInsets.zero,
           child: Stack(
             children: [

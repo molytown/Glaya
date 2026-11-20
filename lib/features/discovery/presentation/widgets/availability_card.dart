@@ -36,7 +36,7 @@ class AvailabilityCard extends StatelessWidget {
               const SizedBox(height: 12),
               if ((availability ?? []).isEmpty)
                 const Text('No schedule available',
-                    style: TextStyle(fontSize: 14, color: Color(0xFF888888)))
+                    style: TextStyle(fontSize: 14, color: Color(0xFF000000)))
               else
                 GridView.builder(
                   shrinkWrap: true,
@@ -61,7 +61,7 @@ class AvailabilityCard extends StatelessWidget {
                             style: const TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF9E9E9E))),
+                                color: Color(0xFF000000))),
                         const SizedBox(height: 6),
                         Expanded(
                           child: Container(

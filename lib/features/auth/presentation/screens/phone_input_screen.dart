@@ -173,7 +173,7 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
+                        color: Color(0xFF000000).withValues(alpha: 0.15),
                         blurRadius: 24,
                         offset: const Offset(0, 8),
                       ),
@@ -214,18 +214,18 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                               textStyle: const TextStyle(
                                   fontSize: 14, color: GlayaColors.textPrimary),
                               dialogTextStyle: const TextStyle(
-                                  fontSize: 14, color: Colors.black),
+                                  fontSize: 14, color: Color(0xFF000000)),
                               dialogBackgroundColor: Colors.white,
                               searchDecoration: InputDecoration(
                                 hintText: 'Search country...',
                                 hintStyle:
-                                    const TextStyle(color: Colors.black87),
+                                    const TextStyle(color: Color(0xFF000000)),
                                 prefixIcon: const Icon(Icons.search,
                                     color: GlayaColors.berry),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8)),
                               ),
-                              barrierColor: Colors.black.withValues(alpha: 0.5),
+                              barrierColor: Color(0xFF000000).withValues(alpha: 0.5),
                               boxDecoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
@@ -240,10 +240,10 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                               child: TextField(
                                 controller: _phoneController,
                                 keyboardType: TextInputType.phone,
-                                style: const TextStyle(color: Colors.black),
+                                style: const TextStyle(color: Color(0xFF000000)),
                                 decoration: const InputDecoration(
                                   hintText: '7XX XXX XXX',
-                                  hintStyle: TextStyle(color: Colors.black87),
+                                  hintStyle: TextStyle(color: Color(0xFF000000)),
                                   border: InputBorder.none,
                                   contentPadding:
                                       EdgeInsets.symmetric(horizontal: 12),
@@ -258,10 +258,10 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                         TextField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          style: const TextStyle(color: Colors.black),
+                          style: const TextStyle(color: Color(0xFF000000)),
                           decoration: InputDecoration(
                             hintText: 'Enter password',
-                            hintStyle: const TextStyle(color: Colors.black87),
+                            hintStyle: const TextStyle(color: Color(0xFF000000)),
                             prefixIcon: const Icon(Icons.lock_outline,
                                 color: GlayaColors.berry),
                             suffixIcon: IconButton(

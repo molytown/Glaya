@@ -65,7 +65,7 @@ class BottomStickyBookingBar extends ConsumerWidget {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: Color(0xFF000000).withValues(alpha: 0.08),
               blurRadius: 10,
               offset: const Offset(0, -2))
         ],
@@ -78,7 +78,7 @@ class BottomStickyBookingBar extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const Text('Starting from',
-                    style: TextStyle(fontSize: 11, color: Color(0xFF888888))),
+                    style: TextStyle(fontSize: 11, color: Color(0xFF000000))),
                 Text('$currencySymbol $displayPrice',
                     style: const TextStyle(
                         fontSize: 18,

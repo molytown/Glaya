@@ -200,14 +200,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
-                    color: Colors.black87)),
+                    color: Color(0xFF000000))),
             const SizedBox(height: 8),
             TextField(
               controller: _nameController,
               textCapitalization: TextCapitalization.words,
               decoration: InputDecoration(
                 hintText: 'Enter your name',
-                hintStyle: const TextStyle(color: Colors.black87),
+                hintStyle: const TextStyle(color: Color(0xFF000000)),
                 border:
                     OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                 prefixIcon: const Icon(Icons.person_outline),
@@ -220,7 +220,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,
-                    color: Colors.black87)),
+                    color: Color(0xFF000000))),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
@@ -231,15 +231,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.phone_outlined, color: Colors.black87),
+                  const Icon(Icons.phone_outlined, color: Color(0xFF000000)),
                   const SizedBox(width: 12),
                   Text(
                     _user?['phone'] as String? ?? '',
-                    style: const TextStyle(fontSize: 16, color: Colors.black87),
+                    style: const TextStyle(fontSize: 16, color: Color(0xFF000000)),
                   ),
                   const Spacer(),
                   const Text('Cannot change',
-                      style: TextStyle(fontSize: 12, color: Colors.black54)),
+                      style: TextStyle(fontSize: 12, color: Color(0xFF000000))),
                 ],
               ),
             ),
@@ -251,7 +251,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Colors.black)),
+                    color: Color(0xFF000000))),
             const SizedBox(height: 12),
 
             _buildTile(Icons.notifications_outlined, 'Notifications',
@@ -267,7 +267,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
-                    color: Colors.black)),
+                    color: Color(0xFF000000))),
             const SizedBox(height: 12),
             _buildTile(Icons.description_outlined, 'Terms of Service',
                 () => context.push('/cms/terms-of-service')),
@@ -325,8 +325,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       contentPadding: EdgeInsets.zero,
       leading: Icon(icon, color: GlayaColors.berry),
       title: Text(label,
-          style: const TextStyle(fontSize: 15, color: Colors.black)),
-      trailing: const Icon(Icons.chevron_right, color: Colors.black54),
+          style: const TextStyle(fontSize: 15, color: Color(0xFF000000))),
+      trailing: const Icon(Icons.chevron_right, color: Color(0xFF000000)),
       onTap: onTap,
     );
   }

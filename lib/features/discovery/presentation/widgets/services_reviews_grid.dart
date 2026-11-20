@@ -129,7 +129,7 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.55),
+                    color: Color(0xFF000000).withValues(alpha: 0.55),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Row(
@@ -152,7 +152,7 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.55),
+                    color: Color(0xFF000000).withValues(alpha: 0.55),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
@@ -173,8 +173,8 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0.75),
-                        Colors.black.withValues(alpha: 0.35),
+                        Color(0xFF000000).withValues(alpha: 0.75),
+                        Color(0xFF000000).withValues(alpha: 0.35),
                         Colors.transparent,
                       ],
                     ),
@@ -308,7 +308,7 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
               if (review.createdAt != null)
                 Text(
                   _formatDate(review.createdAt!),
-                  style: const TextStyle(fontSize: 11, color: Color(0xFF888888)),
+                  style: const TextStyle(fontSize: 11, color: Color(0xFF000000)),
                 ),
             ],
           ),
@@ -340,7 +340,7 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
         children: [
           Icon(icon, size: 32, color: const Color(0xFFCCCCCC)),
           const SizedBox(height: 12),
-          Text(message, style: const TextStyle(fontSize: 14, color: Color(0xFF888888))),
+          Text(message, style: const TextStyle(fontSize: 14, color: Color(0xFF000000))),
         ],
       ),
     );

@@ -101,7 +101,7 @@ class GlayaAppTheme {
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: GlayaColors.surface,
         selectedItemColor: GlayaColors.berry,
-        unselectedItemColor: GlayaColors.textTertiary,
+        unselectedItemColor: Color(0xFF000000),
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),

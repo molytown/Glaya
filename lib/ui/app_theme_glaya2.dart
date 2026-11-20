@@ -5,7 +5,7 @@ class GlayaTheme2 {
   static const Color accent = Color(0xFFE91E63);
   static const Color background = Color(0xFFF7F7F9);
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color muted = Color(0xFF9E9E9E);
+  static const Color muted = Color(0xFF000000);
 
   static ThemeData get theme {
     final base = ThemeData.light();
@@ -20,14 +20,14 @@ class GlayaTheme2 {
       appBarTheme: const AppBarTheme(
         backgroundColor: surface,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.black87),
-        titleTextStyle: TextStyle(color: Colors.black87, fontSize: 18, fontWeight: FontWeight.w700),
+        iconTheme: IconThemeData(color: Color(0xFF000000)),
+        titleTextStyle: TextStyle(color: Color(0xFF000000), fontSize: 18, fontWeight: FontWeight.w700),
       ),
       textTheme: const TextTheme(
         headlineSmall: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         titleMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         bodyMedium: TextStyle(fontSize: 13),
-        bodySmall: TextStyle(fontSize: 11, color: Colors.black54),
+        bodySmall: TextStyle(fontSize: 11, color: Color(0xFF000000)),
       ),
       cardTheme: CardThemeData(
         color: surface,

@@ -170,7 +170,7 @@ class _LocationMapCardState extends ConsumerState<LocationMapCard> {
                                   boxShadow: [
                                     BoxShadow(
                                         color:
-                                            Colors.black.withValues(alpha: 0.1),
+                                            Color(0xFF000000).withValues(alpha: 0.1),
                                         blurRadius: 4)
                                   ],
                                 ),
@@ -194,7 +194,7 @@ class _LocationMapCardState extends ConsumerState<LocationMapCard> {
                             const SizedBox(height: 8),
                             Text(address,
                                 style: const TextStyle(
-                                    fontSize: 12, color: Color(0xFF888888))),
+                                    fontSize: 12, color: Color(0xFF000000))),
                           ],
                         ),
                       ),

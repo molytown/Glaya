@@ -79,7 +79,7 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              color: Colors.black.withValues(alpha: 0.9),
+              color: Color(0xFF000000).withValues(alpha: 0.9),
             ),
           ),
           // Content
@@ -88,7 +88,7 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
               width: 300,
               height: 400, // 3:4 aspect ratio
               decoration: BoxDecoration(
-                color: Colors.black,
+                color: Color(0xFF000000),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: ClipRRect(
@@ -115,7 +115,7 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
                           width: 32,
                           height: 32,
                           decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.5),
+                            color: Color(0xFF000000).withValues(alpha: 0.5),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -159,7 +159,7 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
-                            color: Colors.black.withValues(alpha: 0.5),
+                            color: Color(0xFF000000).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: const Row(
@@ -220,7 +220,7 @@ class _PortfolioViewerState extends State<PortfolioViewer> {
         width: 300,
         height: 400,
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: Color(0xFF000000),
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Center(

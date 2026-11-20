@@ -42,7 +42,7 @@ class SalonProfileHeader extends StatelessWidget {
                   border: Border.all(color: Colors.white, width: 3),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
+                      color: Color(0xFF000000).withValues(alpha: 0.1),
                       blurRadius: 10,
                     ),
                   ],
@@ -112,7 +112,7 @@ class SalonProfileHeader extends StatelessWidget {
                           '($reviewCount reviews)',
                           style: const TextStyle(
                             fontSize: 13,
-                            color: Color(0xFF888888),
+                            color: Color(0xFF000000),
                           ),
                         ),
                       ],
@@ -130,7 +130,7 @@ class SalonProfileHeader extends StatelessWidget {
                           professional.displayArea ?? 'Location not set',
                           style: const TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF666666),
+                            color: Color(0xFF000000),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -146,7 +146,7 @@ class SalonProfileHeader extends StatelessWidget {
                                 : isBusy
                                     ? const Color(0xFFF59E0B)
                                         .withValues(alpha: 0.15)
-                                    : const Color(0xFF9E9E9E)
+                                    : const Color(0xFF000000)
                                         .withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -163,7 +163,7 @@ class SalonProfileHeader extends StatelessWidget {
                                   ? const Color(0xFF10B981)
                                   : isBusy
                                       ? const Color(0xFFF59E0B)
-                                      : const Color(0xFF9E9E9E),
+                                      : const Color(0xFF000000),
                             ),
                           ),
                         ),
@@ -175,7 +175,7 @@ class SalonProfileHeader extends StatelessWidget {
                         '${professional.totalBookings} bookings completed',
                         style: const TextStyle(
                           fontSize: 11,
-                          color: Color(0xFF888888),
+                          color: Color(0xFF000000),
                         ),
                       ),
                   ],

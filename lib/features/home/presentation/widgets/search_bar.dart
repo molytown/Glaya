@@ -150,7 +150,7 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                     decoration: const InputDecoration(
                       hintText: 'Search services, professionals...',
                       hintStyle:
-                          TextStyle(color: Color(0xFF9E9E9E), fontSize: 14),
+                          TextStyle(color: Color(0xFF000000), fontSize: 14),
                       border: InputBorder.none,
                       isDense: true,
                       contentPadding:
@@ -204,7 +204,7 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: Color(0xFF000000).withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -317,7 +317,7 @@ class _DropdownSection extends StatelessWidget {
             style: const TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF9E9E9E),
+              color: Color(0xFF000000),
             ),
           ),
         ),
@@ -382,7 +382,7 @@ class _DropdownItem extends StatelessWidget {
                     category,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Color(0xFF9E9E9E),
+                      color: Color(0xFF000000),
                     ),
                   ),
                 ],

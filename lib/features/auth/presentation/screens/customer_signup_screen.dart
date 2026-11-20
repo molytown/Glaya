@@ -178,7 +178,7 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
+                            color: Color(0xFF000000).withValues(alpha: 0.15),
                             blurRadius: 24,
                             offset: const Offset(0, 8),
                           ),
@@ -192,11 +192,11 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                           TextField(
                             controller: _nameController,
                             textCapitalization: TextCapitalization.words,
-                            style: const TextStyle(color: Colors.black),
+                            style: const TextStyle(color: Color(0xFF000000)),
                             decoration: InputDecoration(
                               labelText: 'Full Name',
                               hintText: 'Jane Doe',
-                              hintStyle: const TextStyle(color: Colors.black87),
+                              hintStyle: const TextStyle(color: Color(0xFF000000)),
                               prefixIcon: const Icon(Icons.person_outline,
                                   color: GlayaColors.berry),
                               border: OutlineInputBorder(
@@ -246,20 +246,20 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                                   ),
                                   dialogTextStyle: const TextStyle(
                                     fontSize: 14,
-                                    color: Colors.black,
+                                    color: Color(0xFF000000),
                                   ),
                                   dialogBackgroundColor: Colors.white,
                                   searchDecoration: InputDecoration(
                                     hintText: 'Search country...',
                                     hintStyle:
-                                        const TextStyle(color: Colors.black87),
+                                        const TextStyle(color: Color(0xFF000000)),
                                     prefixIcon: const Icon(Icons.search,
                                         color: GlayaColors.berry),
                                     border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(8)),
                                   ),
                                   barrierColor:
-                                      Colors.black.withValues(alpha: 0.5),
+                                      Color(0xFF000000).withValues(alpha: 0.5),
                                   boxDecoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(12),
@@ -275,11 +275,11 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                                   child: TextField(
                                     controller: _phoneController,
                                     keyboardType: TextInputType.phone,
-                                    style: const TextStyle(color: Colors.black),
+                                    style: const TextStyle(color: Color(0xFF000000)),
                                     decoration: const InputDecoration(
                                       hintText: '7XX XXX XXX',
                                       hintStyle:
-                                          TextStyle(color: Colors.black87),
+                                          TextStyle(color: Color(0xFF000000)),
                                       border: InputBorder.none,
                                       contentPadding:
                                           EdgeInsets.symmetric(horizontal: 12),
@@ -295,10 +295,10 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                           TextField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
-                            style: const TextStyle(color: Colors.black),
+                            style: const TextStyle(color: Color(0xFF000000)),
                             decoration: InputDecoration(
                               hintText: 'Enter password',
-                              hintStyle: const TextStyle(color: Colors.black87),
+                              hintStyle: const TextStyle(color: Color(0xFF000000)),
                               prefixIcon: const Icon(Icons.lock_outline,
                                   color: GlayaColors.berry),
                               suffixIcon: IconButton(
@@ -324,10 +324,10 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                           // ── Referral code (optional) ───────
                           TextField(
                             controller: _referralController,
-                            style: const TextStyle(color: Colors.black),
+                            style: const TextStyle(color: Color(0xFF000000)),
                             decoration: InputDecoration(
                               hintText: 'Enter referral code (optional)',
-                              hintStyle: const TextStyle(color: Colors.black87),
+                              hintStyle: const TextStyle(color: Color(0xFF000000)),
                               prefixIcon: const Icon(
                                   Icons.card_giftcard_outlined,
                                   color: GlayaColors.berry),
@@ -377,7 +377,7 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                                         fontSize: 14,
                                         color: _selectedLocation != null
                                             ? GlayaColors.berry
-                                            : Colors.black87,
+                                            : Color(0xFF000000),
                                       ),
                                     ),
                                   ),

@@ -20,7 +20,7 @@ class ExclusiveOffersSection extends ConsumerWidget {
         border: Border.all(color: const Color(0xFFEEEEEE)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Color(0xFF000000).withValues(alpha: 0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),

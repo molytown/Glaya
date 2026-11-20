@@ -74,7 +74,7 @@ class AboutSection extends StatelessWidget {
           const SizedBox(height: 12),
           if (establishedYear.isNotEmpty)
             Text('Established $establishedYear',
-                style: const TextStyle(fontSize: 12, color: Color(0xFF888888))),
+                style: const TextStyle(fontSize: 12, color: Color(0xFF000000))),
         ],
       ),
     );

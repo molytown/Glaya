@@ -202,7 +202,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
                     decoration: BoxDecoration(
                       color: _accountIndex == i
                           ? GlayaColors.berry
-                          : GlayaColors.textSecondary.withValues(alpha: 0.3),
+                          : Color(0xFF000000).withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(3),
                     ),
                     child: cur.isEmpty ? null : null,
@@ -266,7 +266,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
               child: Center(
                 child: Text('No transactions yet',
                     style: GlayaTextStyles.bodyMedium()
-                        .copyWith(color: GlayaColors.textSecondary)),
+                        .copyWith(color: Color(0xFF000000))),
               ),
             )
           else
@@ -320,7 +320,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         child: Text('No withdrawal requests yet',
             style: GlayaTextStyles.bodyMedium()
-                .copyWith(color: GlayaColors.textSecondary)),
+                .copyWith(color: Color(0xFF000000))),
       );
     }
     return Column(
@@ -394,7 +394,7 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             const SizedBox(height: 2),
             Text(subtitle,
                 style: GlayaTextStyles.bodyMedium()
-                    .copyWith(color: GlayaColors.textSecondary, fontSize: 11)),
+                    .copyWith(color: Color(0xFF000000), fontSize: 11)),
           ],
         ],
       ),

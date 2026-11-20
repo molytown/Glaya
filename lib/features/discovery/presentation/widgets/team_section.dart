@@ -124,7 +124,7 @@ class _TeamMemberCard extends StatelessWidget {
           ),
           Text(
             role,
-            style: const TextStyle(fontSize: 10, color: Color(0xFF888888)),
+            style: const TextStyle(fontSize: 10, color: Color(0xFF000000)),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

@@ -194,7 +194,7 @@ class _FloatingChatBubbleState extends ConsumerState<FloatingChatBubble>
             ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.2),
+                color: Color(0xFF000000).withValues(alpha: 0.2),
                 blurRadius: 12,
                 offset: const Offset(0, 4),
               ),
@@ -214,7 +214,7 @@ class _FloatingChatBubbleState extends ConsumerState<FloatingChatBubble>
             fontSize: 12,
             fontWeight: FontWeight.w600,
             shadows: const [
-              Shadow(color: Colors.black54, blurRadius: 4),
+              Shadow(color: Color(0xFF000000), blurRadius: 4),
             ],
           ),
         ),
@@ -286,7 +286,7 @@ class _FloatingChatBubbleState extends ConsumerState<FloatingChatBubble>
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.15),
+              color: Color(0xFF000000).withValues(alpha: 0.15),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -322,7 +322,7 @@ class _FloatingChatBubbleState extends ConsumerState<FloatingChatBubble>
                     state.popupMessage ?? '',
                     style: const TextStyle(
                       fontSize: 11,
-                      color: GlayaColors.textSecondary,
+                      color: Color(0xFF000000),
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

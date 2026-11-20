@@ -111,7 +111,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
         child: Text(
           label,
           style: TextStyle(
-            color: active ? Colors.white : Colors.black,
+            color: active ? Colors.white : Color(0xFF000000),
             fontWeight: FontWeight.w600,
           ),
         ),

@@ -52,7 +52,7 @@ class CategoryProfessionalsPage extends ConsumerWidget {
             child: Text(
               'Could not load professionals. Pull down to retry.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: GlayaColors.textSecondary),
+              style: TextStyle(color: Color(0xFF000000)),
             ),
           ),
         ),
@@ -140,7 +140,7 @@ class _ProfessionalTile extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                        fontSize: 12, color: GlayaColors.textSecondary),
+                        fontSize: 12, color: Color(0xFF000000)),
                   ),
                   const SizedBox(height: 6),
                   Row(
@@ -196,7 +196,7 @@ class _EmptyState extends StatelessWidget {
           SizedBox(height: 12),
           Text(
             'No professionals in this category yet',
-            style: TextStyle(fontSize: 15, color: GlayaColors.textSecondary),
+            style: TextStyle(fontSize: 15, color: Color(0xFF000000)),
           ),
         ],
       ),

@@ -80,7 +80,7 @@ class _UpcomingAppointmentState extends ConsumerState<UpcomingAppointment> {
           children: [
             const Icon(Icons.calendar_today_outlined, size: 32, color: Color(0xFFCCCCCC)),
             const SizedBox(height: 8),
-            const Text('No upcoming appointments', style: TextStyle(fontSize: 14, color: Color(0xFF888888))),
+            const Text('No upcoming appointments', style: TextStyle(fontSize: 14, color: Color(0xFF000000))),
             const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () => context.push('/bookings'),
@@ -184,19 +184,19 @@ class _UpcomingAppointmentState extends ConsumerState<UpcomingAppointment> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(customerName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A))),
-                Text(serviceName, style: const TextStyle(fontSize: 12, color: Color(0xFF666666))),
+                Text(serviceName, style: const TextStyle(fontSize: 12, color: Color(0xFF000000))),
                 Row(
                   children: [
-                    const Icon(Icons.location_on_outlined, size: 12, color: Color(0xFF888888)),
+                    const Icon(Icons.location_on_outlined, size: 12, color: Color(0xFF000000)),
                     const SizedBox(width: 4),
-                    Expanded(child: Text(location, style: const TextStyle(fontSize: 11, color: Color(0xFF888888)), overflow: TextOverflow.ellipsis)),
+                    Expanded(child: Text(location, style: const TextStyle(fontSize: 11, color: Color(0xFF000000)), overflow: TextOverflow.ellipsis)),
                   ],
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.access_time, size: 12, color: Color(0xFF888888)),
+                    const Icon(Icons.access_time, size: 12, color: Color(0xFF000000)),
                     const SizedBox(width: 4),
-                    Text('$dateText · $timeText', style: const TextStyle(fontSize: 11, color: Color(0xFF888888))),
+                    Text('$dateText · $timeText', style: const TextStyle(fontSize: 11, color: Color(0xFF000000))),
                   ],
                 ),
               ],

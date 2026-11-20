@@ -118,7 +118,7 @@ class _ProfessionalProfileScreenState
             children: [
               const Text(
                 'Error loading profile',
-                style: TextStyle(fontSize: 16, color: Color(0xFF888888)),
+                style: TextStyle(fontSize: 16, color: Color(0xFF000000)),
               ),
               const SizedBox(height: 12),
               ElevatedButton(
@@ -301,7 +301,7 @@ class _ProfessionalProfileScreenState
                       border: Border.all(color: Colors.white, width: 4),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
+                          color: Color(0xFF000000).withValues(alpha: 0.1),
                           blurRadius: 12,
                         ),
                       ],
@@ -346,7 +346,7 @@ class _ProfessionalProfileScreenState
                         const SizedBox(height: 4),
                         Text(
                           category,
-                          style: const TextStyle(fontSize: 14, color: Color(0xFF666666)),
+                          style: const TextStyle(fontSize: 14, color: Color(0xFF000000)),
                         ),
                         const SizedBox(height: 8),
                         // Rating
@@ -356,17 +356,17 @@ class _ProfessionalProfileScreenState
                             const SizedBox(width: 4),
                             Text(rating, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A))),
                             const SizedBox(width: 4),
-                            Text('($reviewCount reviews)', style: const TextStyle(fontSize: 13, color: Color(0xFF888888))),
+                            Text('($reviewCount reviews)', style: const TextStyle(fontSize: 13, color: Color(0xFF000000))),
                           ],
                         ),
                         const SizedBox(height: 12),
                         // Location
                         Row(
                           children: [
-                            const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF666666)),
+                            const Icon(Icons.location_on_outlined, size: 14, color: Color(0xFF000000)),
                             const SizedBox(width: 6),
                             Expanded(
-                              child: Text(location, style: const TextStyle(fontSize: 13, color: Color(0xFF666666))),
+                              child: Text(location, style: const TextStyle(fontSize: 13, color: Color(0xFF000000))),
                             ),
                             if (isOwnProfile)
                               IconButton(
@@ -415,7 +415,7 @@ class _ProfessionalProfileScreenState
                   border: Border.all(color: Colors.white, width: 3),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
+                      color: Color(0xFF000000).withValues(alpha: 0.1),
                       blurRadius: 8,
                     ),
                   ],
@@ -453,7 +453,7 @@ class _ProfessionalProfileScreenState
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(category, style: const TextStyle(fontSize: 13, color: Color(0xFF666666))),
+                    Text(category, style: const TextStyle(fontSize: 13, color: Color(0xFF000000))),
                     const SizedBox(height: 6),
                     Row(
                       children: [
@@ -461,15 +461,15 @@ class _ProfessionalProfileScreenState
                         const SizedBox(width: 4),
                         Text(rating, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A))),
                         const SizedBox(width: 4),
-                        Text('($reviewCount)', style: const TextStyle(fontSize: 12, color: Color(0xFF888888))),
+                        Text('($reviewCount)', style: const TextStyle(fontSize: 12, color: Color(0xFF000000))),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, size: 13, color: Color(0xFF666666)),
+                        const Icon(Icons.location_on_outlined, size: 13, color: Color(0xFF000000)),
                         const SizedBox(width: 4),
-                        Expanded(child: Text(location, style: const TextStyle(fontSize: 12, color: Color(0xFF666666)), overflow: TextOverflow.ellipsis)),
+                        Expanded(child: Text(location, style: const TextStyle(fontSize: 12, color: Color(0xFF000000)), overflow: TextOverflow.ellipsis)),
                       ],
                     ),
                   ],
@@ -534,8 +534,8 @@ class _ProfessionalProfileScreenState
                       rating,
                       style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A)),
                     ),
-                    const Text('OUT OF 5', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF888888), letterSpacing: 0.5)),
-                    Text('Based on $totalReviews reviews', style: const TextStyle(fontSize: 11, color: Color(0xFF666666))),
+                    const Text('OUT OF 5', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Color(0xFF000000), letterSpacing: 0.5)),
+                    Text('Based on $totalReviews reviews', style: const TextStyle(fontSize: 11, color: Color(0xFF000000))),
                   ],
                 ),
               ),
@@ -563,7 +563,7 @@ class _ProfessionalProfileScreenState
           Icon(icon, size: 20, color: GlayaColors.berry),
           const SizedBox(height: 4),
           Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A))),
-          Text(label, style: const TextStyle(fontSize: 10, color: Color(0xFF888888))),
+          Text(label, style: const TextStyle(fontSize: 10, color: Color(0xFF000000))),
         ],
       ),
     );
@@ -603,7 +603,7 @@ class _ProfessionalProfileScreenState
           const SizedBox(height: 12),
           Text(
             bio.isNotEmpty ? bio : 'No bio added yet.',
-            style: const TextStyle(fontSize: 14, color: Color(0xFF666666), height: 1.6),
+            style: const TextStyle(fontSize: 14, color: Color(0xFF000000), height: 1.6),
           ),
           const SizedBox(height: 20),
           // Stats grid
@@ -631,7 +631,7 @@ class _ProfessionalProfileScreenState
           children: [
             Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700, color: GlayaColors.berry)),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(fontSize: 12, color: Color(0xFF888888))),
+            Text(label, style: const TextStyle(fontSize: 12, color: Color(0xFF000000))),
           ],
         ),
       ),
@@ -691,7 +691,7 @@ class _ProfessionalProfileScreenState
           if (_isLoadingReels)
             const Center(child: CircularProgressIndicator(color: GlayaColors.berry))
           else if (_reels.isEmpty)
-            const Text('No reels yet', style: TextStyle(fontSize: 13, color: Color(0xFF888888)))
+            const Text('No reels yet', style: TextStyle(fontSize: 13, color: Color(0xFF000000)))
           else
             SizedBox(
               height: 200,
@@ -749,7 +749,7 @@ class _ProfessionalProfileScreenState
         children: [
           Icon(icon, size: 32, color: const Color(0xFFCCCCCC)),
           const SizedBox(height: 12),
-          Text(message, style: const TextStyle(fontSize: 14, color: Color(0xFF888888))),
+          Text(message, style: const TextStyle(fontSize: 14, color: Color(0xFF000000))),
         ],
       ),
     );

@@ -573,7 +573,7 @@ class _JustFinishedCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.6),
+                    color: Color(0xFF000000).withValues(alpha: 0.6),
                     shape: BoxShape.circle,
                   ),
                   child: const Icon(
@@ -594,7 +594,7 @@ class _JustFinishedCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.6),
+                    color: Color(0xFF000000).withValues(alpha: 0.6),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -620,7 +620,7 @@ class _JustFinishedCard extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: [
                       Colors.transparent,
-                      Colors.black.withValues(alpha: 0.7),
+                      Color(0xFF000000).withValues(alpha: 0.7),
                     ],
                   ),
                 ),
@@ -704,7 +704,7 @@ class _JustFinishedCard extends StatelessWidget {
   ) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.9),
+      barrierColor: Color(0xFF000000).withValues(alpha: 0.9),
       builder: (context) => GalleryImageViewer(
         mediaItems: items,
         professionalId: upload.professionalId,
@@ -771,7 +771,7 @@ class _GalleryImageViewerState extends State<GalleryImageViewer> {
         width: dialogW,
         height: dialogH,
         decoration: BoxDecoration(
-          color: Colors.black,
+          color: Color(0xFF000000),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -932,7 +932,7 @@ class _VideoPlayerItem extends StatelessWidget {
         ),
         Container(
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.3),
+            color: Color(0xFF000000).withValues(alpha: 0.3),
             shape: BoxShape.circle,
           ),
           child: const Icon(Icons.play_arrow, color: Colors.white, size: 64),

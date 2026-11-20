@@ -57,7 +57,7 @@ class _ReviewsListScreenState extends ConsumerState<ReviewsListScreen> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator(color: GlayaColors.berry))
           : _reviews.isEmpty
-              ? const Center(child: Text('No reviews yet', style: TextStyle(fontSize: 14, color: Color(0xFF888888))))
+              ? const Center(child: Text('No reviews yet', style: TextStyle(fontSize: 14, color: Color(0xFF000000))))
               : ListView.builder(
                   padding: const EdgeInsets.all(16),
                   itemCount: _reviews.length,
@@ -89,13 +89,13 @@ class _ReviewsListScreenState extends ConsumerState<ReviewsListScreen> {
                                   );
                                 }),
                                 const Spacer(),
-                                Text(dateStr, style: const TextStyle(fontSize: 12, color: Color(0xFF888888))),
+                                Text(dateStr, style: const TextStyle(fontSize: 12, color: Color(0xFF000000))),
                               ],
                             ),
                             const SizedBox(height: 10),
                             Text(comment, style: const TextStyle(fontSize: 14, color: Color(0xFF333333))),
                             const SizedBox(height: 8),
-                            Text('By $reviewerName', style: const TextStyle(fontSize: 12, color: Color(0xFF888888))),
+                            Text('By $reviewerName', style: const TextStyle(fontSize: 12, color: Color(0xFF000000))),
                           ],
                         ),
                       ),

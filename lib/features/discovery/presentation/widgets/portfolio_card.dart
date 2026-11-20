@@ -73,7 +73,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
+              color: Color(0xFF000000).withValues(alpha: 0.08),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -119,7 +119,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.6),
+                      color: Color(0xFF000000).withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: const Row(
@@ -149,7 +149,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withValues(alpha: 0.7),
+                          Color(0xFF000000).withValues(alpha: 0.7),
                         ],
                       ),
                     ),
@@ -191,7 +191,7 @@ class _PortfolioCardState extends State<PortfolioCard> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.6),
+                      color: Color(0xFF000000).withValues(alpha: 0.6),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(

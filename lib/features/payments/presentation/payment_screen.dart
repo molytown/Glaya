@@ -184,7 +184,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           child: Row(
             children: [
               Icon(icon,
-                  color: sel ? GlayaColors.berry : const Color(0xFF9E9E9E),
+                  color: sel ? GlayaColors.berry : const Color(0xFF000000),
                   size: 26),
               const SizedBox(width: 14),
               Expanded(
@@ -201,7 +201,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     const SizedBox(height: 2),
                     Text(subtitle,
                         style: const TextStyle(
-                            fontSize: 12, color: Color(0xFF666666))),
+                            fontSize: 12, color: Color(0xFF000000))),
                   ],
                 ),
               ),
@@ -250,7 +250,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
           child: Row(
             children: [
               Icon(icon,
-                  color: sel ? GlayaColors.berry : const Color(0xFF9E9E9E),
+                  color: sel ? GlayaColors.berry : const Color(0xFF000000),
                   size: 26),
               const SizedBox(width: 14),
               Expanded(
@@ -267,7 +267,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                     const SizedBox(height: 2),
                     Text(subtitle,
                         style: const TextStyle(
-                            fontSize: 12, color: Color(0xFF666666))),
+                            fontSize: 12, color: Color(0xFF000000))),
                   ],
                 ),
               ),
@@ -301,7 +301,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
             alignment: Alignment.centerRight,
             child: Text(
               'Wallet balance: ${_formatAmount(_walletBalance!)}',
-              style: const TextStyle(fontSize: 12, color: Color(0xFF888888)),
+              style: const TextStyle(fontSize: 12, color: Color(0xFF000000)),
             ),
           ),
         ],
@@ -378,7 +378,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                                   Text(
                                     'Remaining ${_formatAmount(_servicePrice - _depositAmount)} due at your appointment',
                                     style: const TextStyle(
-                                        fontSize: 12, color: Color(0xFF888888)),
+                                        fontSize: 12, color: Color(0xFF000000)),
                                   ),
                                 ],
                               ],
@@ -587,7 +587,7 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
                     const BorderRadius.vertical(bottom: Radius.circular(20)),
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
+                      color: Color(0xFF000000).withValues(alpha: 0.05),
                       blurRadius: 8,
                       offset: const Offset(0, -2))
                 ],

@@ -70,7 +70,7 @@ class _NotificationPopupState extends ConsumerState<NotificationPopup> {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
+            color: Color(0xFF000000).withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),
@@ -262,7 +262,7 @@ class _NotificationItem extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: read ? FontWeight.w500 : FontWeight.w700,
-              color: read ? const Color(0xFF666666) : const Color(0xFF1A1A1A),
+              color: read ? const Color(0xFF000000) : const Color(0xFF1A1A1A),
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -272,7 +272,7 @@ class _NotificationItem extends StatelessWidget {
             children: [
               Text(
                 notification['body'] ?? '',
-                style: const TextStyle(fontSize: 11, color: Color(0xFF888888)),
+                style: const TextStyle(fontSize: 11, color: Color(0xFF000000)),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),

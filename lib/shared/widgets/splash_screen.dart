@@ -116,7 +116,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Color(0xFF000000),
       body: GestureDetector(
         onTap: () {
           if (!_navigated) {
@@ -169,7 +169,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       letterSpacing: 1.0,
                       shadows: [
                         Shadow(
-                          color: Colors.black54,
+                          color: Color(0xFF000000),
                           offset: Offset(0, 2),
                           blurRadius: 4,
                         ),
@@ -187,7 +187,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       letterSpacing: 1.0,
                       shadows: [
                         Shadow(
-                          color: Colors.black54,
+                          color: Color(0xFF000000),
                           offset: Offset(0, 2),
                           blurRadius: 4,
                         ),
@@ -205,7 +205,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       letterSpacing: 1.0,
                       shadows: [
                         Shadow(
-                          color: Colors.black54,
+                          color: Color(0xFF000000),
                           offset: Offset(0, 2),
                           blurRadius: 4,
                         ),

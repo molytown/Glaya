@@ -444,7 +444,7 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
                                       end: Alignment.bottomCenter,
                                       colors: [
                                         Colors.transparent,
-                                        Colors.black.withValues(alpha: 0.7),
+                                        Color(0xFF000000).withValues(alpha: 0.7),
                                       ],
                                     ),
                                     borderRadius: const BorderRadius.only(

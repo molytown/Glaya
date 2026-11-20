@@ -56,7 +56,7 @@ class _MessagesDropdownState extends ConsumerState<MessagesDropdown> {
   }
 
   Color _getSenderColor(Map<String, dynamic>? message) {
-    if (message == null) return const Color(0xFF666666);
+    if (message == null) return const Color(0xFF000000);
     final type = message['messageType'] as String?;
     if (type == 'booking') return const Color(0xFFE91E8C);
     if (type == 'support') {
@@ -65,7 +65,7 @@ class _MessagesDropdownState extends ConsumerState<MessagesDropdown> {
       return const Color(0xFF4CAF50);
     }
     if (type == 'system') return const Color(0xFF000000);
-    return const Color(0xFF666666);
+    return const Color(0xFF000000);
   }
 
   void _handleMessageTap(Map<String, dynamic> message) {
@@ -96,7 +96,7 @@ class _MessagesDropdownState extends ConsumerState<MessagesDropdown> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
+            color: Color(0xFF000000).withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),

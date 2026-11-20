@@ -370,7 +370,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 size: 48, color: Colors.grey.shade300),
             const SizedBox(height: 12),
             const Text('Booking not found',
-                style: TextStyle(color: Color(0xFF9E9E9E))),
+                style: TextStyle(color: Color(0xFF000000))),
           ],
         ),
       );
@@ -460,7 +460,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                           'Waiting for stylist to confirm',
                           style: TextStyle(
                               fontSize: 11,
-                              color: Color(0xFF888888),
+                              color: Color(0xFF000000),
                               fontStyle: FontStyle.italic),
                         )
                       else
@@ -471,7 +471,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                         const SizedBox(height: 1),
                         Text(dateStr,
                             style: const TextStyle(
-                                fontSize: 11, color: Color(0xFF888888))),
+                                fontSize: 11, color: Color(0xFF000000))),
                       ],
                     ],
                   ),
@@ -513,7 +513,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                       if (proCategory.isNotEmpty)
                         Text(proCategory,
                             style: const TextStyle(
-                                fontSize: 12, color: Color(0xFF9E9E9E))),
+                                fontSize: 12, color: Color(0xFF000000))),
                     ],
                   ),
                 ),
@@ -723,7 +723,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)
+                color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 10)
           ],
         ),
         child: Column(
@@ -734,7 +734,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF9E9E9E),
+          color: Color(0xFF000000),
           letterSpacing: 0.8));
 
   Widget _infoRow(IconData icon, String title, {String? sub}) => Row(
@@ -753,7 +753,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               if (sub != null)
                 Text(sub,
                     style: const TextStyle(
-                        fontSize: 12, color: Color(0xFF9E9E9E))),
+                        fontSize: 12, color: Color(0xFF000000))),
             ]),
           ),
         ],
@@ -1090,7 +1090,7 @@ class _GlayaScoreDialogState extends State<_GlayaScoreDialog> {
         children: [
           const Text('How was the customer? This becomes their Glaya Score.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13, color: Color(0xFF666666))),
+              style: TextStyle(fontSize: 13, color: Color(0xFF000000))),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,

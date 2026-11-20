@@ -209,7 +209,7 @@ class _PortfolioUploadDialogState extends ConsumerState<PortfolioUploadDialog> {
             child: Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
+                color: Color(0xFF000000).withValues(alpha: 0.7),
                 shape: BoxShape.circle,
               ),
               child: const Icon(Icons.close, color: Colors.white, size: 16),
@@ -376,8 +376,8 @@ class _PortfolioUploadDialogState extends ConsumerState<PortfolioUploadDialog> {
                           style: TextStyle(
                             fontSize: 14,
                             color: _selectedCategory != null
-                                ? Colors.black
-                                : Colors.black38,
+                                ? Color(0xFF000000)
+                                : Color(0xFF000000),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -387,7 +387,7 @@ class _PortfolioUploadDialogState extends ConsumerState<PortfolioUploadDialog> {
                             ? Icons.keyboard_arrow_up
                             : Icons.keyboard_arrow_down,
                         size: 20,
-                        color: Colors.black54,
+                        color: Color(0xFF000000),
                       ),
                     ],
                   ),
@@ -430,11 +430,11 @@ class _PortfolioUploadDialogState extends ConsumerState<PortfolioUploadDialog> {
               const SizedBox(height: 8),
               TextField(
                 controller: _searchController,
-                style: const TextStyle(color: Colors.black),
+                style: const TextStyle(color: Color(0xFF000000)),
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: 'Search customers by name',
-                  hintStyle: TextStyle(color: Colors.black38),
+                  hintStyle: TextStyle(color: Color(0xFF000000)),
                   prefixIcon: Icon(Icons.search),
                 ),
                 onChanged: (value) => _searchUsers(value),
@@ -539,7 +539,7 @@ class _PortfolioUploadDialogState extends ConsumerState<PortfolioUploadDialog> {
                   const SizedBox(height: 4),
                   Text(
                     'Uploading… ${(_uploadProgress * 100).toStringAsFixed(0)}%',
-                    style: const TextStyle(fontSize: 12, color: Colors.black54),
+                    style: const TextStyle(fontSize: 12, color: Color(0xFF000000)),
                   ),
                 ],
                 const SizedBox(height: 16),

@@ -98,7 +98,7 @@ class _NotificationDropdownState extends ConsumerState<NotificationDropdown> {
         showDialog(
           context: context,
           builder: (_) => Dialog(
-            backgroundColor: Colors.black,
+            backgroundColor: Color(0xFF000000),
             insetPadding: EdgeInsets.zero,
             child: Stack(
               children: [
@@ -190,7 +190,7 @@ class _NotificationDropdownState extends ConsumerState<NotificationDropdown> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
+            color: Color(0xFF000000).withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -333,7 +333,7 @@ class _NotificationDropdownState extends ConsumerState<NotificationDropdown> {
                                               'Notification',
                                           style: GlayaTextStyles.titleMedium(
                                             color: read
-                                                ? GlayaColors.textSecondary
+                                                ? Color(0xFF000000)
                                                 : GlayaColors.textPrimary,
                                           ),
                                         ),

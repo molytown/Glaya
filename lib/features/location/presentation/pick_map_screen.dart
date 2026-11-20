@@ -115,7 +115,7 @@ class _PickMapScreenState extends State<PickMapScreen> {
       appBar: AppBar(
         title: const Text('Pick Location'),
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        foregroundColor: Color(0xFF000000),
         elevation: 0,
       ),
       body: Stack(
@@ -157,7 +157,7 @@ class _PickMapScreenState extends State<PickMapScreen> {
                     const BorderRadius.vertical(top: Radius.circular(20)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
+                    color: Color(0xFF000000).withValues(alpha: 0.1),
                     blurRadius: 10,
                     offset: const Offset(0, -2),
                   ),

@@ -530,7 +530,7 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
                     showDialog(
                       context: navContext,
                       builder: (ctx) => Dialog(
-                        backgroundColor: Colors.black,
+                        backgroundColor: Color(0xFF000000),
                         insetPadding: EdgeInsets.zero,
                         child: Stack(
                           children: [

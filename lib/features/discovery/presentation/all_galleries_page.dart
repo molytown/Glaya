@@ -177,7 +177,7 @@ class _AllGalleriesPageState extends ConsumerState<AllGalleriesPage> {
     if (items.isNotEmpty) {
       showDialog(
         context: context,
-        barrierColor: Colors.black.withValues(alpha: 0.9),
+        barrierColor: Color(0xFF000000).withValues(alpha: 0.9),
         builder: (context) => GalleryImageViewer(
           mediaItems: items,
           professionalId: professionalId ?? '',

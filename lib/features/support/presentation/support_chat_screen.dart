@@ -135,7 +135,7 @@ class _SupportChatScreenState extends ConsumerState<SupportChatScreen> {
                               'No messages yet',
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Color(0xFF888888),
+                                color: Color(0xFF000000),
                               ),
                             ),
                             SizedBox(height: 8),
@@ -170,7 +170,7 @@ class _SupportChatScreenState extends ConsumerState<SupportChatScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Color(0xFF000000).withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -2),
                 ),
@@ -261,7 +261,7 @@ class _MessageBubble extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF666666),
+                  color: Color(0xFF000000),
                 ),
               ),
             ),
@@ -294,7 +294,7 @@ class _MessageBubble extends StatelessWidget {
                       timeStr,
                       style: TextStyle(
                         fontSize: 10,
-                        color: isOwn ? Colors.white70 : const Color(0xFF888888),
+                        color: isOwn ? Colors.white70 : const Color(0xFF000000),
                       ),
                     ),
                   ],

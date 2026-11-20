@@ -164,7 +164,7 @@ class _WithdrawSheetState extends State<WithdrawSheet> {
             Text(
               'Available: ${_money(widget.availableBalance)}',
               style: GlayaTextStyles.bodyMedium()
-                  .copyWith(color: GlayaColors.textSecondary),
+                  .copyWith(color: Color(0xFF000000)),
             ),
             const SizedBox(height: 16),
 
@@ -227,7 +227,7 @@ class _WithdrawSheetState extends State<WithdrawSheet> {
               const SizedBox(height: 8),
               Text('Full balance of ${_money(widget.availableBalance)} will be requested.',
                   style: GlayaTextStyles.bodySmall()
-                      .copyWith(color: GlayaColors.textSecondary)),
+                      .copyWith(color: Color(0xFF000000))),
             ],
             const SizedBox(height: 14),
 
@@ -339,7 +339,7 @@ class _WithdrawSheetState extends State<WithdrawSheet> {
           children: [
             Icon(icon,
                 size: 20,
-                color: selected ? GlayaColors.berry : GlayaColors.textSecondary),
+                color: selected ? GlayaColors.berry : Color(0xFF000000)),
             const SizedBox(height: 4),
             Text(label,
                 style: TextStyle(
@@ -347,7 +347,7 @@ class _WithdrawSheetState extends State<WithdrawSheet> {
                     fontWeight: FontWeight.w600,
                     color: selected
                         ? GlayaColors.berry
-                        : GlayaColors.textSecondary)),
+                        : Color(0xFF000000))),
           ],
         ),
       ),

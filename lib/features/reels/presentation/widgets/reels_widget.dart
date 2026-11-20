@@ -437,7 +437,7 @@ class _ReelCardState extends State<_ReelCard> {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.7),
+                    Color(0xFF000000).withOpacity(0.7),
                   ],
                 ),
               ),
@@ -481,7 +481,7 @@ class _ReelCardState extends State<_ReelCard> {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: Colors.black.withOpacity(0.5),
+                  color: Color(0xFF000000).withOpacity(0.5),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

@@ -233,7 +233,7 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
         child: Row(
           children: [
             Icon(icon,
-                color: sel ? GlayaColors.berry : const Color(0xFF9E9E9E),
+                color: sel ? GlayaColors.berry : const Color(0xFF000000),
                 size: 24),
             const SizedBox(width: 12),
             Expanded(
@@ -250,7 +250,7 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
                   const SizedBox(height: 2),
                   Text(subtitle,
                       style: const TextStyle(
-                          fontSize: 12, color: Color(0xFF666666))),
+                          fontSize: 12, color: Color(0xFF000000))),
                 ],
               ),
             ),
@@ -311,7 +311,7 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
                         children: [
                           Text(_payLabel,
                               style: const TextStyle(
-                                  fontSize: 12, color: Color(0xFF666666))),
+                                  fontSize: 12, color: Color(0xFF000000))),
                           const SizedBox(height: 4),
                           Text(_format(_payAmount),
                               style: const TextStyle(
@@ -324,13 +324,13 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
                             Text(
                                 'of ${_format(_totalAmount)} — rest due at your appointment',
                                 style: const TextStyle(
-                                    fontSize: 11, color: Color(0xFF888888))),
+                                    fontSize: 11, color: Color(0xFF000000))),
                           ],
                           if (_isRemaining) ...[
                             const SizedBox(height: 4),
                             const Text('Due after your service',
                                 style: TextStyle(
-                                    fontSize: 11, color: Color(0xFF888888))),
+                                    fontSize: 11, color: Color(0xFF000000))),
                           ],
                         ],
                       ),
@@ -362,7 +362,7 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
                         child: Text(
                           'Wallet balance: ${_format(_walletBalance!)}',
                           style: const TextStyle(
-                              fontSize: 12, color: Color(0xFF888888)),
+                              fontSize: 12, color: Color(0xFF000000)),
                         ),
                       ),
                     ],

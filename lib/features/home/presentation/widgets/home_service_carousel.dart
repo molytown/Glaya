@@ -152,7 +152,7 @@ class _HomeServiceListCard extends ConsumerWidget {
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
-                              color: Colors.black,
+                              color: Color(0xFF000000),
                             ),
                           ),
                         ),
@@ -167,7 +167,7 @@ class _HomeServiceListCard extends ConsumerWidget {
                         const Icon(
                           Icons.person_outline,
                           size: 12,
-                          color: Colors.black,
+                          color: Color(0xFF000000),
                         ),
                         const SizedBox(width: 4),
                         Expanded(
@@ -177,7 +177,7 @@ class _HomeServiceListCard extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 12,
-                              color: Colors.black,
+                              color: Color(0xFF000000),
                             ),
                           ),
                         ),
@@ -189,7 +189,7 @@ class _HomeServiceListCard extends ConsumerWidget {
                         const Icon(
                           Icons.work_outline,
                           size: 12,
-                          color: Colors.black,
+                          color: Color(0xFF000000),
                         ),
                         const SizedBox(width: 4),
                         Expanded(
@@ -199,7 +199,7 @@ class _HomeServiceListCard extends ConsumerWidget {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 12,
-                              color: Colors.black,
+                              color: Color(0xFF000000),
                             ),
                           ),
                         ),
@@ -211,7 +211,7 @@ class _HomeServiceListCard extends ConsumerWidget {
                         const Icon(
                           Icons.star,
                           size: 14,
-                          color: Colors.black,
+                          color: Color(0xFF000000),
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -219,7 +219,7 @@ class _HomeServiceListCard extends ConsumerWidget {
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                            color: Color(0xFF000000),
                           ),
                         ),
                         const SizedBox(width: 8),

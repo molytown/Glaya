@@ -127,7 +127,7 @@ class ProfessionalCard extends ConsumerWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
+                          color: Color(0xFF000000).withValues(alpha: 0.3),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -165,19 +165,19 @@ class ProfessionalCard extends ConsumerWidget {
                     Text(
                       professional.category,
                       style: const TextStyle(
-                          fontSize: 12, color: GlayaColors.textSecondary),
+                          fontSize: 12, color: Color(0xFF000000)),
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
                         const Icon(Icons.location_on,
-                            size: 12, color: GlayaColors.textSecondary),
+                            size: 12, color: Color(0xFF000000)),
                         const SizedBox(width: 3),
                         Expanded(
                           child: Text(
                             distanceLabel,
                             style: const TextStyle(
-                                fontSize: 11, color: GlayaColors.textSecondary),
+                                fontSize: 11, color: Color(0xFF000000)),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -528,8 +528,8 @@ class _TopRatedFullImageCard extends StatelessWidget {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          Colors.black.withValues(alpha: 0.3),
-                          Colors.black.withValues(alpha: 0.7),
+                          Color(0xFF000000).withValues(alpha: 0.3),
+                          Color(0xFF000000).withValues(alpha: 0.7),
                         ],
                         stops: const [0.0, 0.5, 1.0],
                       ),
@@ -547,7 +547,7 @@ class _TopRatedFullImageCard extends StatelessWidget {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.3),
+                          color: Color(0xFF000000).withValues(alpha: 0.3),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -772,7 +772,7 @@ class RecommendedProfessionalRow extends StatelessWidget {
                       Text(
                         ' ${rating.toStringAsFixed(1)}',
                         style: const TextStyle(
-                            fontSize: 11, color: GlayaColors.textSecondary),
+                            fontSize: 11, color: Color(0xFF000000)),
                       ),
                     ],
                   ),

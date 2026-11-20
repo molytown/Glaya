@@ -330,7 +330,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: Color(0xFF000000),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -501,7 +501,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                           fontSize: 14,
                           color: _selectedLocation != null
                               ? GlayaColors.berry
-                              : Colors.black87,
+                              : Color(0xFF000000),
                         ),
                       ),
                     ),
@@ -570,7 +570,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
           style: const TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: Color(0xFF000000),
           ),
         ),
         const SizedBox(height: 6),
@@ -608,7 +608,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: Color(0xFF000000),
           ),
         ),
         const SizedBox(height: 6),
@@ -662,7 +662,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: Color(0xFF000000),
           ),
         ),
         const SizedBox(height: 6),
@@ -1156,7 +1156,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             border: Border.all(color: Colors.white, width: 3),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.2),
+                                color: Color(0xFF000000).withValues(alpha: 0.2),
                                 blurRadius: 12,
                               ),
                             ],
@@ -1502,7 +1502,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Color(0xFF000000).withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -1675,7 +1675,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       'Trust Score',
                       style: TextStyle(
                         fontSize: 11,
-                        color: Color(0xFF888888),
+                        color: Color(0xFF000000),
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -1839,7 +1839,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(height: 2),
           Text(
             label,
-            style: const TextStyle(fontSize: 11, color: Color(0xFF888888)),
+            style: const TextStyle(fontSize: 11, color: Color(0xFF000000)),
           ),
         ],
       ),
@@ -2080,7 +2080,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       'with $stylistName',
                       style: const TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF888888),
+                        color: Color(0xFF000000),
                       ),
                     ),
                   ],
@@ -2110,12 +2110,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const Icon(
                 Icons.access_time_outlined,
                 size: 13,
-                color: Color(0xFF888888),
+                color: Color(0xFF000000),
               ),
               const SizedBox(width: 4),
               Text(
                 dateStr,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF888888)),
+                style: const TextStyle(fontSize: 12, color: Color(0xFF000000)),
               ),
             ],
           ),
@@ -2247,7 +2247,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(height: 12),
           const Text(
             'Available Balance',
-            style: TextStyle(fontSize: 12, color: Color(0xFF888888)),
+            style: TextStyle(fontSize: 12, color: Color(0xFF000000)),
           ),
           const SizedBox(height: 4),
           Text(
@@ -2591,7 +2591,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           if (_recentActivity.isEmpty)
             const Text(
               'No recent activity',
-              style: TextStyle(fontSize: 13, color: Color(0xFF888888)),
+              style: TextStyle(fontSize: 13, color: Color(0xFF000000)),
             )
           else
             ..._recentActivity.map((a) {
@@ -2634,7 +2634,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             a['subtitle'] as String,
                             style: const TextStyle(
                               fontSize: 11,
-                              color: Color(0xFF888888),
+                              color: Color(0xFF000000),
                             ),
                           ),
                         ],
@@ -2644,7 +2644,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       dateStr,
                       style: const TextStyle(
                         fontSize: 11,
-                        color: Color(0xFF888888),
+                        color: Color(0xFF000000),
                       ),
                     ),
                   ],
@@ -2794,7 +2794,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         t.$4!,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF888888),
+                          color: Color(0xFF000000),
                         ),
                       ),
                     if (t.$3 != null)
@@ -2848,7 +2848,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Color(0xFF000000).withValues(alpha: 0.04),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -2942,13 +2942,13 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
   // Glaya color scheme — mirrors the React app palette
   static const ground = GlayaColors.pinkBg; // #FFF0F5
   static const ink = GlayaColors.textPrimary; // #1A1A2E
-  static const muted = GlayaColors.textSecondary; // #6B7280
+  static const muted = Color(0xFF000000); // #6B7280
   static const accent = GlayaColors.berry; // #E91E8C
   static const accentDark = GlayaColors.pinkDark; // #C2185B
   static const accentSoft = GlayaColors.pinkLight; // #FCE4EC
   static const line = GlayaColors.divider; // #E5E7EB
   static const segment = GlayaColors.pinkBg;
-  static const switchOff = GlayaColors.textTertiary; // #9CA3AF
+  static const switchOff = Color(0xFF000000); // #9CA3AF
 
   List<BookingItem> get _upcomingList {
     if (widget.upcomingBooking == null) return [];
@@ -3479,7 +3479,7 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
       showDialog(
         context: context,
         builder: (ctx) => Dialog(
-          backgroundColor: Colors.black,
+          backgroundColor: Color(0xFF000000),
           insetPadding: EdgeInsets.zero,
           child: Stack(
             children: [

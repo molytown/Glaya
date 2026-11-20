@@ -47,7 +47,7 @@ class ProServicesPage extends ConsumerWidget {
           if (services.isEmpty) {
             return const Center(
               child: Text('No services listed yet',
-                  style: TextStyle(color: GlayaColors.textSecondary)),
+                  style: TextStyle(color: Color(0xFF000000))),
             );
           }
           return GridView.builder(
@@ -67,7 +67,7 @@ class ProServicesPage extends ConsumerWidget {
             const Center(child: CircularProgressIndicator(color: GlayaColors.berry)),
         error: (_, __) => const Center(
           child: Text('Could not load services',
-              style: TextStyle(color: GlayaColors.textSecondary)),
+              style: TextStyle(color: Color(0xFF000000))),
         ),
       ),
     );
@@ -108,7 +108,7 @@ class _ServiceImageCard extends ConsumerWidget {
           border: Border.all(color: GlayaColors.pinkBorder),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: Color(0xFF000000).withValues(alpha: 0.06),
               blurRadius: 8,
               offset: const Offset(0, 3),
             ),
@@ -152,8 +152,8 @@ class _ServiceImageCard extends ConsumerWidget {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Colors.black.withValues(alpha: 0),
-                        Colors.black.withValues(alpha: 0.75),
+                        Color(0xFF000000).withValues(alpha: 0),
+                        Color(0xFF000000).withValues(alpha: 0.75),
                       ],
                     ),
                   ),

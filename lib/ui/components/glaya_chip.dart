@@ -24,7 +24,7 @@ class GlayaChip extends StatelessWidget {
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? GlayaTheme2.primary : Colors.black87,
+            color: selected ? GlayaTheme2.primary : Color(0xFF000000),
             fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
             fontSize: 12,
           ),

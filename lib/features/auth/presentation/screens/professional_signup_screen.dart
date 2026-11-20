@@ -328,7 +328,7 @@ class _ProfessionalSignupScreenState
                                           ),
                                         )
                                       : const Icon(Icons.person,
-                                          size: 32, color: Color(0xFF9E9E9E)),
+                                          size: 32, color: Color(0xFF000000)),
                                 ),
                                 Positioned(
                                   bottom: 0,
@@ -543,7 +543,7 @@ class _ProfessionalSignupScreenState
                                     fontSize: 14,
                                     color: _selectedLocation != null
                                         ? const Color(0xFFD4AF37)
-                                        : Colors.black87,
+                                        : Color(0xFF000000),
                                   ),
                                 ),
                               ),
@@ -589,7 +589,7 @@ class _ProfessionalSignupScreenState
       obscureText: obscureText ? _obscurePassword : false,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.black87),
+        hintStyle: const TextStyle(color: Color(0xFF000000)),
         prefixIcon: Icon(icon, size: 20, color: const Color(0xFF757575)),
         suffixIcon: obscureText
             ? IconButton(
@@ -640,7 +640,7 @@ class _ProfessionalSignupScreenState
       child: DropdownButtonFormField<T>(
         initialValue: value,
         hint: Text(hint,
-            style: const TextStyle(fontSize: 14, color: Colors.black87)),
+            style: const TextStyle(fontSize: 14, color: Color(0xFF000000))),
         icon: const Icon(Icons.keyboard_arrow_down, size: 20),
         decoration: InputDecoration(
           prefixIcon: Icon(icon, size: 20, color: const Color(0xFF757575)),
@@ -682,7 +682,7 @@ class _ProfessionalSignupScreenState
                 style: TextStyle(
                   fontSize: 14,
                   color: selectedNames.isEmpty
-                      ? Colors.black87
+                      ? Color(0xFF000000)
                       : const Color(0xFF1A1A2E),
                   fontWeight: selectedNames.isEmpty
                       ? FontWeight.normal

@@ -357,7 +357,7 @@ class _LocationPickerDialogContentState
                         'Find beauty professionals near you',
                         style: TextStyle(
                           fontSize: 14,
-                          color: GlayaColors.textSecondary,
+                          color: Color(0xFF000000),
                         ),
                       ),
                     ],
@@ -409,7 +409,7 @@ class _LocationPickerDialogContentState
                           'We\'ll use your GPS to find nearby services',
                           style: TextStyle(
                             fontSize: 14,
-                            color: GlayaColors.textSecondary,
+                            color: Color(0xFF000000),
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -515,7 +515,7 @@ class _LocationPickerDialogContentState
                           'Select your location manually on the map',
                           style: TextStyle(
                             fontSize: 14,
-                            color: GlayaColors.textSecondary,
+                            color: Color(0xFF000000),
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -555,7 +555,7 @@ class _LocationPickerDialogContentState
                         'Skip for now',
                         style: TextStyle(
                           fontSize: 14,
-                          color: GlayaColors.textSecondary,
+                          color: Color(0xFF000000),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -591,7 +591,7 @@ class _LocationPickerDialogContentState
                                   '${locationState.lat!.toStringAsFixed(4)}, ${locationState.lng!.toStringAsFixed(4)}',
                                   style: const TextStyle(
                                     fontSize: 12,
-                                    color: GlayaColors.textSecondary,
+                                    color: Color(0xFF000000),
                                   ),
                                 ),
                               ],
@@ -890,7 +890,7 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.3),
+                  color: Color(0xFF000000).withValues(alpha: 0.3),
                   spreadRadius: 2,
                   blurRadius: 5,
                 ),
@@ -915,7 +915,7 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.2),
+                  color: Color(0xFF000000).withValues(alpha: 0.2),
                   spreadRadius: 1,
                   blurRadius: 3,
                 ),
@@ -965,7 +965,7 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
+                  color: Color(0xFF000000).withValues(alpha: 0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 ),
@@ -978,7 +978,7 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
                   'Selected Location',
                   style: const TextStyle(
                     fontSize: 12,
-                    color: GlayaColors.textSecondary,
+                    color: Color(0xFF000000),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -997,7 +997,7 @@ class _SimpleMapPickerState extends ConsumerState<SimpleMapPicker> {
                   '${_selectedLocation!.latitude.toStringAsFixed(6)}, ${_selectedLocation!.longitude.toStringAsFixed(6)}',
                   style: const TextStyle(
                     fontSize: 12,
-                    color: GlayaColors.textSecondary,
+                    color: Color(0xFF000000),
                   ),
                 ),
                 const SizedBox(height: 16),

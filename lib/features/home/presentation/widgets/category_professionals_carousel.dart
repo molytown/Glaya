@@ -143,7 +143,7 @@ class _CategoryProfessionalCard extends ConsumerWidget {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
-                            color: Colors.black,
+                            color: Color(0xFF000000),
                           ),
                         ),
                       ),
@@ -176,7 +176,7 @@ class _CategoryProfessionalCard extends ConsumerWidget {
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black87,
+                          color: Color(0xFF000000),
                         ),
                       ),
                       const SizedBox(width: 8),

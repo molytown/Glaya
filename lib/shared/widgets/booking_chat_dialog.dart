@@ -9,7 +9,7 @@ Future<void> showBookingChatDialog(BuildContext context, String bookingId) {
     context: context,
     barrierDismissible: true,
     barrierLabel: 'Close chat',
-    barrierColor: Colors.black54,
+    barrierColor: Color(0xFF000000),
     transitionDuration: const Duration(milliseconds: 250),
     pageBuilder: (context, animation, secondaryAnimation) =>
         BookingChatDialog(bookingId: bookingId),
@@ -64,7 +64,7 @@ class BookingChatDialog extends StatelessWidget {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
+                    color: Color(0xFF000000).withValues(alpha: 0.2),
                     blurRadius: 30,
                     offset: const Offset(0, 10),
                   ),

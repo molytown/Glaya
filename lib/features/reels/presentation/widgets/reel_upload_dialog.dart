@@ -360,7 +360,7 @@ class _ReelUploadDialogState extends State<ReelUploadDialog> {
                       Icon(Icons.error_outline, size: 40, color: Colors.grey),
                       SizedBox(height: 8),
                       Text('Could not preview this video',
-                          style: TextStyle(color: Colors.black54)),
+                          style: TextStyle(color: Color(0xFF000000))),
                     ],
                   ),
                 ),
@@ -447,28 +447,28 @@ class _ReelUploadDialogState extends State<ReelUploadDialog> {
               const SizedBox(height: 4),
               Text(
                 'Uploading… ${(_uploadProgress * 100).toStringAsFixed(0)}%',
-                style: const TextStyle(fontSize: 12, color: Colors.black54),
+                style: const TextStyle(fontSize: 12, color: Color(0xFF000000)),
               ),
             ],
             const SizedBox(height: 16),
             TextField(
               controller: _titleController,
-              style: const TextStyle(color: Colors.black),
+              style: const TextStyle(color: Color(0xFF000000)),
               decoration: const InputDecoration(
                 labelText: 'Title *',
-                labelStyle: TextStyle(color: Colors.black54),
-                hintStyle: TextStyle(color: Colors.black38),
+                labelStyle: TextStyle(color: Color(0xFF000000)),
+                hintStyle: TextStyle(color: Color(0xFF000000)),
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _descriptionController,
-              style: const TextStyle(color: Colors.black),
+              style: const TextStyle(color: Color(0xFF000000)),
               decoration: const InputDecoration(
                 labelText: 'Description *',
-                labelStyle: TextStyle(color: Colors.black54),
-                hintStyle: TextStyle(color: Colors.black38),
+                labelStyle: TextStyle(color: Color(0xFF000000)),
+                hintStyle: TextStyle(color: Color(0xFF000000)),
                 border: OutlineInputBorder(),
               ),
               maxLines: 3,
@@ -487,7 +487,7 @@ class _ReelUploadDialogState extends State<ReelUploadDialog> {
                         SizedBox(height: 12),
                         Text('Loading professionals...',
                             style:
-                                TextStyle(fontSize: 13, color: Colors.black54)),
+                                TextStyle(fontSize: 13, color: Color(0xFF000000))),
                       ],
                     ),
                   ),
@@ -500,7 +500,7 @@ class _ReelUploadDialogState extends State<ReelUploadDialog> {
                       const Expanded(
                         child: Text(
                           'Could not load professionals. Check your connection.',
-                          style: TextStyle(fontSize: 13, color: Colors.black54),
+                          style: TextStyle(fontSize: 13, color: Color(0xFF000000)),
                         ),
                       ),
                       TextButton(
@@ -548,10 +548,10 @@ class _ReelUploadDialogState extends State<ReelUploadDialog> {
                           setState(() => _selectedPro = null);
                         }
                       },
-                      style: const TextStyle(color: Colors.black, fontSize: 14),
+                      style: const TextStyle(color: Color(0xFF000000), fontSize: 14),
                       decoration: InputDecoration(
                         hintText: 'Search professionals...',
-                        hintStyle: const TextStyle(color: Colors.black38),
+                        hintStyle: const TextStyle(color: Color(0xFF000000)),
                         prefixIcon: const Icon(Icons.search, size: 20),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -576,7 +576,7 @@ class _ReelUploadDialogState extends State<ReelUploadDialog> {
                                     child: Text('No professionals found',
                                         style: TextStyle(
                                             fontSize: 13,
-                                            color: Colors.black54)),
+                                            color: Color(0xFF000000))),
                                   ),
                                 )
                               : SizedBox(
@@ -647,8 +647,8 @@ class _ReelUploadDialogState extends State<ReelUploadDialog> {
                             style: TextStyle(
                               fontSize: 14,
                               color: _selectedService != null
-                                  ? Colors.black
-                                  : Colors.black38,
+                                  ? Color(0xFF000000)
+                                  : Color(0xFF000000),
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -658,7 +658,7 @@ class _ReelUploadDialogState extends State<ReelUploadDialog> {
                               ? Icons.keyboard_arrow_up
                               : Icons.keyboard_arrow_down,
                           size: 20,
-                          color: Colors.black54,
+                          color: Color(0xFF000000),
                         ),
                       ],
                     ),
@@ -679,7 +679,7 @@ class _ReelUploadDialogState extends State<ReelUploadDialog> {
                               child: Text(
                                 'No services booked with this professional',
                                 style: TextStyle(
-                                    fontSize: 13, color: Colors.black54),
+                                    fontSize: 13, color: Color(0xFF000000)),
                               ),
                             ),
                           )

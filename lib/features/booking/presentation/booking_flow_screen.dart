@@ -520,7 +520,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                                 current ? FontWeight.w700 : FontWeight.w600,
                             color: current
                                 ? GlayaColors.berry
-                                : GlayaColors.textSecondary,
+                                : Color(0xFF000000),
                           )),
                     ],
                   ),
@@ -564,7 +564,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 color: Color(0xFF1A1A1A))),
         const SizedBox(height: 4),
         const Text('Choose the service you\'d like to book',
-            style: TextStyle(fontSize: 13, color: Color(0xFF9E9E9E))),
+            style: TextStyle(fontSize: 13, color: Color(0xFF000000))),
         const SizedBox(height: 16),
         ..._services.map((s) {
           final selected = _selectedService?['id'] == s['id'];
@@ -642,12 +642,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                           Row(
                             children: [
                               const Icon(Icons.access_time,
-                                  size: 12, color: GlayaColors.textSecondary),
+                                  size: 12, color: Color(0xFF000000)),
                               const SizedBox(width: 4),
                               Text('$duration min',
                                   style: const TextStyle(
                                       fontSize: 12,
-                                      color: GlayaColors.textSecondary)),
+                                      color: Color(0xFF000000))),
                             ],
                           ),
                         ],
@@ -677,7 +677,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                             : Icons.radio_button_unchecked,
                         color: selected
                             ? GlayaColors.berry
-                            : GlayaColors.textTertiary,
+                            : Color(0xFF000000),
                         size: 22,
                       ),
                     ],
@@ -732,7 +732,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                             : const Color(0xFFEEEEEE)),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
+                          color: Color(0xFF000000).withValues(alpha: 0.04),
                           blurRadius: 6)
                     ],
                   ),
@@ -744,7 +744,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                               fontSize: 11,
                               color: selected
                                   ? Colors.white70
-                                  : const Color(0xFF9E9E9E))),
+                                  : const Color(0xFF000000))),
                       const SizedBox(height: 4),
                       Text('${date.day}',
                           style: TextStyle(
@@ -758,7 +758,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                               fontSize: 10,
                               color: selected
                                   ? Colors.white70
-                                  : const Color(0xFF9E9E9E))),
+                                  : const Color(0xFF000000))),
                     ],
                   ),
                 ),
@@ -805,7 +805,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                             sel ? GlayaColors.berry : const Color(0xFFEEEEEE)),
                     boxShadow: [
                       BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.04),
+                          color: Color(0xFF000000).withValues(alpha: 0.04),
                           blurRadius: 6)
                     ],
                   ),
@@ -835,7 +835,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 color: Color(0xFF1A1A1A))),
         const SizedBox(height: 4),
         const Text('Choose a location type',
-            style: TextStyle(fontSize: 13, color: Color(0xFF9E9E9E))),
+            style: TextStyle(fontSize: 13, color: Color(0xFF000000))),
         const SizedBox(height: 20),
         _locationOption(
           icon: Icons.store_outlined,
@@ -863,7 +863,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             maxLines: 3,
             decoration: InputDecoration(
               hintText: 'Enter your full address...',
-              hintStyle: const TextStyle(color: Colors.black87),
+              hintStyle: const TextStyle(color: Color(0xFF000000)),
               prefixIcon: const Icon(Icons.location_on_outlined,
                   color: GlayaColors.berry),
               border: OutlineInputBorder(
@@ -902,7 +902,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
               width: sel ? 2 : 1),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04), blurRadius: 8)
+                color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 8)
           ],
         ),
         child: Row(
@@ -917,7 +917,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Icon(icon,
-                  color: sel ? GlayaColors.berry : const Color(0xFF9E9E9E),
+                  color: sel ? GlayaColors.berry : const Color(0xFF000000),
                   size: 22),
             ),
             const SizedBox(width: 14),
@@ -934,7 +934,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                               : const Color(0xFF1A1A1A))),
                   Text(subtitle,
                       style: const TextStyle(
-                          fontSize: 12, color: Color(0xFF9E9E9E))),
+                          fontSize: 12, color: Color(0xFF000000))),
                 ],
               ),
             ),
@@ -962,7 +962,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04), blurRadius: 10)
+                  color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 10)
             ],
           ),
           child: Column(
@@ -972,7 +972,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                   style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: Color(0xFF9E9E9E),
+                      color: Color(0xFF000000),
                       letterSpacing: 0.8)),
               const SizedBox(height: 14),
               _summaryRow(
@@ -1103,7 +1103,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                             'Address will be provided',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: const Color(0xFF666666),
+                          color: const Color(0xFF000000),
                         ),
                       ),
                     ],
@@ -1144,7 +1144,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.06),
+              color: Color(0xFF000000).withValues(alpha: 0.06),
               blurRadius: 12,
               offset: const Offset(0, -4))
         ],
@@ -1199,7 +1199,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
             const SizedBox(height: 4),
             Text(sub,
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 13, color: Color(0xFF9E9E9E))),
+                style: const TextStyle(fontSize: 13, color: Color(0xFF000000))),
           ],
         ),
       );

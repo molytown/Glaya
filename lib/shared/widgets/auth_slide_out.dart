@@ -143,7 +143,7 @@ class _AuthSlideOutState extends ConsumerState<AuthSlideOut>
               child: GestureDetector(
                 onTap: widget.onClose,
                 child: Container(
-                  color: Colors.black.withValues(alpha: 0.45),
+                  color: Color(0xFF000000).withValues(alpha: 0.45),
                 ),
               ),
             );
@@ -176,7 +176,7 @@ class _AuthSlideOutState extends ConsumerState<AuthSlideOut>
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.15),
+                        color: Color(0xFF000000).withValues(alpha: 0.15),
                         blurRadius: 30,
                         offset: const Offset(-8, 0),
                       ),

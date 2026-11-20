@@ -6,7 +6,7 @@ import 'portfolio_upload_dialog.dart';
 import '../../features/reels/presentation/widgets/reel_upload_dialog.dart';
 
 const Color _navPink = GlayaColors.vibrantPink;
-const Color _navGray = Color(0xFF9E9E9E);
+const Color _navGray = Color(0xFF000000);
 
 class GlayaBottomNav extends StatelessWidget {
   final int currentIndex;
@@ -318,7 +318,7 @@ class _NavShell extends StatelessWidget {
         borderRadius: BorderRadius.circular(30),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
+            color: Color(0xFF000000).withValues(alpha: 0.15),
             blurRadius: 20,
             offset: const Offset(0, 10),
           ),

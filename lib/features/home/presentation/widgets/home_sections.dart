@@ -180,7 +180,7 @@ class PopularServicesRow extends ConsumerWidget {
                 border: Border.all(color: GlayaColors.pinkBorder),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.06),
+                    color: Color(0xFF000000).withValues(alpha: 0.06),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -227,8 +227,8 @@ class PopularServicesRow extends ConsumerWidget {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Colors.black.withValues(alpha: 0),
-                              Colors.black.withValues(alpha: 0.72),
+                              Color(0xFF000000).withValues(alpha: 0),
+                              Color(0xFF000000).withValues(alpha: 0.72),
                             ],
                           ),
                         ),
@@ -519,7 +519,7 @@ class _MiniPromoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: GlayaColors.vibrantPink),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6)
+          BoxShadow(color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 6)
         ],
       ),
       child: Column(
@@ -575,7 +575,7 @@ class NearbyProfessionalsList extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: Color(0xFF000000).withValues(alpha: 0.05),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -747,7 +747,7 @@ class CustomerReviewsRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05), blurRadius: 6)
+                    color: Color(0xFF000000).withValues(alpha: 0.05), blurRadius: 6)
               ],
             ),
             child: Column(
@@ -893,7 +893,7 @@ class TrendingNowRow extends StatelessWidget {
                             bottom: Radius.circular(14)),
                         gradient: LinearGradient(
                           colors: [
-                            Colors.black.withValues(alpha: 0.6),
+                            Color(0xFF000000).withValues(alpha: 0.6),
                             Colors.transparent
                           ],
                           begin: Alignment.bottomCenter,

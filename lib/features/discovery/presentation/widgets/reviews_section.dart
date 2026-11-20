@@ -35,7 +35,7 @@ class ReviewsSection extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     '($totalReviews)',
-                    style: const TextStyle(fontSize: 14, color: Color(0xFF888888)),
+                    style: const TextStyle(fontSize: 14, color: Color(0xFF000000)),
                   ),
                 ],
               ),
@@ -43,7 +43,7 @@ class ReviewsSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (reviews.isEmpty)
-            const Text('No reviews yet', style: TextStyle(fontSize: 14, color: Color(0xFF888888)))
+            const Text('No reviews yet', style: TextStyle(fontSize: 14, color: Color(0xFF000000)))
           else
             ListView.separated(
               shrinkWrap: true,
@@ -117,7 +117,7 @@ class _ReviewCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(reviewerName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A))),
-                    if (dateStr.isNotEmpty) Text(dateStr, style: const TextStyle(fontSize: 11, color: Color(0xFF888888))),
+                    if (dateStr.isNotEmpty) Text(dateStr, style: const TextStyle(fontSize: 11, color: Color(0xFF000000))),
                   ],
                 ),
               ),

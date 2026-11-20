@@ -41,19 +41,19 @@ class GlayaTextStyles {
   static TextStyle bodyLarge({Color? color}) => _base.copyWith(
         fontSize: 16,
         fontWeight: FontWeight.normal,
-        color: color ?? GlayaColors.textSecondary,
+        color: color ?? Color(0xFF000000),
       );
 
   static TextStyle bodyMedium({Color? color}) => _base.copyWith(
         fontSize: 14,
         fontWeight: FontWeight.normal,
-        color: color ?? GlayaColors.textSecondary,
+        color: color ?? Color(0xFF000000),
       );
 
   static TextStyle bodySmall({Color? color}) => _base.copyWith(
         fontSize: 12,
         fontWeight: FontWeight.normal,
-        color: color ?? GlayaColors.textTertiary,
+        color: color ?? Color(0xFF000000),
       );
 
   static TextStyle labelLarge({Color? color}) => _base.copyWith(

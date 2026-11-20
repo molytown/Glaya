@@ -213,7 +213,7 @@ class _ServicePortfolioPageState extends ConsumerState<ServicePortfolioPage> {
     if (mediaItems.isNotEmpty && professionalId != null) {
       showDialog(
         context: context,
-        barrierColor: Colors.black.withValues(alpha: 0.9),
+        barrierColor: Color(0xFF000000).withValues(alpha: 0.9),
         builder: (context) => GalleryImageViewer(
           mediaItems: mediaItems,
           professionalId: professionalId,

@@ -131,7 +131,7 @@ class _OnboardingChatScreenState extends ConsumerState<OnboardingChatScreen> {
                   Text(
                     'Glaya',
                     style: GlayaTextStyles.bodySmall(
-                      color: GlayaColors.textSecondary,
+                      color: Color(0xFF000000),
                     ).copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -148,7 +148,7 @@ class _OnboardingChatScreenState extends ConsumerState<OnboardingChatScreen> {
             Text(
               _formatTime(message.createdAt),
               style: GlayaTextStyles.bodySmall(
-                color: isSystem ? GlayaColors.textSecondary : Colors.white70,
+                color: isSystem ? Color(0xFF000000) : Colors.white70,
               ),
             ),
           ],
@@ -164,7 +164,7 @@ class _OnboardingChatScreenState extends ConsumerState<OnboardingChatScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Color(0xFF000000).withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),

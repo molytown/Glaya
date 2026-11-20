@@ -87,7 +87,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     notification['title'] ?? 'Notification',
                     style: GlayaTextStyles.titleMedium(
                       color: read
-                          ? GlayaColors.textSecondary
+                          ? Color(0xFF000000)
                           : GlayaColors.textPrimary,
                     ),
                   ),
@@ -140,7 +140,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         showDialog(
           context: context,
           builder: (_) => Dialog(
-            backgroundColor: Colors.black,
+            backgroundColor: Color(0xFF000000),
             insetPadding: EdgeInsets.zero,
             child: Stack(
               children: [

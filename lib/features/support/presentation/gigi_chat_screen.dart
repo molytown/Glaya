@@ -264,7 +264,7 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                   size: 15,
                   color: active
                       ? Colors.white
-                      : (enabled ? GlayaColors.textSecondary : Colors.grey)),
+                      : (enabled ? Color(0xFF000000) : Colors.grey)),
               const SizedBox(width: 6),
               Text(
                 label,
@@ -273,7 +273,7 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                   fontWeight: FontWeight.w600,
                   color: active
                       ? Colors.white
-                      : (enabled ? GlayaColors.textSecondary : Colors.grey),
+                      : (enabled ? Color(0xFF000000) : Colors.grey),
                 ),
               ),
             ],
@@ -307,7 +307,7 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF666666),
+                    color: Color(0xFF000000),
                   ),
                 ),
               ),
@@ -347,7 +347,7 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                       style: TextStyle(
                         fontSize: 10,
                         color:
-                            isUser ? Colors.white70 : const Color(0xFF888888),
+                            isUser ? Colors.white70 : const Color(0xFF000000),
                       ),
                     ),
                   ],
@@ -372,7 +372,7 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
                 style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF666666))),
+                    color: Color(0xFF000000))),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
@@ -408,7 +408,7 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
           child: Text(
             'Sign in to chat with a human support agent.',
             textAlign: TextAlign.center,
-            style: TextStyle(color: GlayaColors.textSecondary),
+            style: TextStyle(color: Color(0xFF000000)),
           ),
         ),
       );
@@ -424,7 +424,7 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
             Icon(Icons.support_agent, size: 64, color: GlayaColors.berry),
             SizedBox(height: 16),
             Text('No messages yet',
-                style: TextStyle(fontSize: 16, color: Color(0xFF888888))),
+                style: TextStyle(fontSize: 16, color: Color(0xFF000000))),
             SizedBox(height: 8),
             Text('Start a conversation with our support team',
                 style: TextStyle(fontSize: 14, color: Color(0xFFAAAAAA))),
@@ -455,7 +455,7 @@ class _GigiChatScreenState extends ConsumerState<GigiChatScreen> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Color(0xFF000000).withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, -2)),
         ],
@@ -589,7 +589,7 @@ class _HumanBubble extends StatelessWidget {
                   style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF666666))),
+                      color: Color(0xFF000000))),
             ),
           Container(
             constraints: const BoxConstraints(maxWidth: 280),
@@ -610,7 +610,7 @@ class _HumanBubble extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 10,
                         color:
-                            isOwn ? Colors.white70 : const Color(0xFF888888))),
+                            isOwn ? Colors.white70 : const Color(0xFF000000))),
               ],
             ),
           ),

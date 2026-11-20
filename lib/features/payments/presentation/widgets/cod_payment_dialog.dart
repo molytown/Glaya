@@ -89,7 +89,7 @@ class _CodCodeDisplayDialogState extends State<CodCodeDisplayDialog> {
                   children: [
                     const Text('Give this code to the customer — they enter it to confirm cash payment.',
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 12, color: Color(0xFF666666))),
+                        style: TextStyle(fontSize: 12, color: Color(0xFF000000))),
                     const SizedBox(height: 16),
                     GestureDetector(
                       onTap: () {
@@ -126,7 +126,7 @@ class _CodCodeDisplayDialogState extends State<CodCodeDisplayDialog> {
                     if (_expiresAt != null) ...[
                       const SizedBox(height: 4),
                       Text('Valid until ${_expiresAt!.replaceFirst('T', ' ').substring(0, 16)}',
-                          style: const TextStyle(fontSize: 11, color: Color(0xFF888888))),
+                          style: const TextStyle(fontSize: 11, color: Color(0xFF000000))),
                     ],
                   ],
                 ),
@@ -222,7 +222,7 @@ class _CodCodeEntryDialogState extends State<CodCodeEntryDialog> {
           const Text(
             'Enter the 5-digit code your professional gave you to confirm your cash payment.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 13, color: Color(0xFF666666)),
+            style: TextStyle(fontSize: 13, color: Color(0xFF000000)),
           ),
           const SizedBox(height: 16),
           TextField(

@@ -136,7 +136,7 @@ class _GuestLocationPickerScreenState
                           'Find beauty professionals near you',
                           style: const TextStyle(
                             fontSize: 16,
-                            color: GlayaColors.textSecondary,
+                            color: Color(0xFF000000),
                           ),
                         ),
                       ],
@@ -182,7 +182,7 @@ class _GuestLocationPickerScreenState
                       'We\'ll use your GPS to find nearby services',
                       style: const TextStyle(
                         fontSize: 14,
-                        color: GlayaColors.textSecondary,
+                        color: Color(0xFF000000),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -288,7 +288,7 @@ class _GuestLocationPickerScreenState
                       'Select your location manually on the map',
                       style: const TextStyle(
                         fontSize: 14,
-                        color: GlayaColors.textSecondary,
+                        color: Color(0xFF000000),
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -328,7 +328,7 @@ class _GuestLocationPickerScreenState
                     'Skip for now',
                     style: const TextStyle(
                       fontSize: 14,
-                      color: GlayaColors.textSecondary,
+                      color: Color(0xFF000000),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -366,7 +366,7 @@ class _GuestLocationPickerScreenState
                               '${locationState.lat!.toStringAsFixed(4)}, ${locationState.lng!.toStringAsFixed(4)}',
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: GlayaColors.textSecondary,
+                                color: Color(0xFF000000),
                               ),
                             ),
                           ],

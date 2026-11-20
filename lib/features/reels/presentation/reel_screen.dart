@@ -311,13 +311,13 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
       dialogH = dialogW * 16 / 9;
     }
     return Scaffold(
-      backgroundColor: Colors.black.withValues(alpha: 0.75),
+      backgroundColor: Color(0xFF000000).withValues(alpha: 0.75),
       body: Center(
         child: Container(
           width: dialogW,
           height: dialogH,
           decoration: BoxDecoration(
-            color: Colors.black,
+            color: Color(0xFF000000),
             borderRadius: BorderRadius.circular(16),
           ),
           clipBehavior: Clip.antiAlias,
@@ -431,7 +431,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.3),
+                  color: Color(0xFF000000).withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -643,7 +643,7 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.black.withValues(alpha: 0.5),
+              color: Color(0xFF000000).withValues(alpha: 0.5),
               shape: BoxShape.circle,
             ),
             child: Icon(

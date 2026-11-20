@@ -115,7 +115,7 @@ class _DepositInvoiceFormState extends State<DepositInvoiceForm> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
-                  color: GlayaColors.textSecondary,
+                  color: Color(0xFF000000),
                 ),
               ),
               const SizedBox(height: 8),
@@ -143,7 +143,7 @@ class _DepositInvoiceFormState extends State<DepositInvoiceForm> {
                 'This amount will be required as a deposit to confirm the booking.',
                 style: const TextStyle(
                   fontSize: 11,
-                  color: GlayaColors.textSecondary,
+                  color: Color(0xFF000000),
                   fontStyle: FontStyle.italic,
                 ),
               ),

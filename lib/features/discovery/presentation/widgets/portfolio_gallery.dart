@@ -153,7 +153,7 @@ class PortfolioGallery extends ConsumerWidget {
               child: const Center(
                 child: Text(
                   'No portfolio images',
-                  style: TextStyle(fontSize: 14, color: Color(0xFF888888)),
+                  style: TextStyle(fontSize: 14, color: Color(0xFF000000)),
                 ),
               ),
             )
@@ -253,7 +253,7 @@ class PortfolioGallery extends ConsumerWidget {
   void _showGalleryViewer(BuildContext context, Album album) {
     showDialog(
       context: context,
-      barrierColor: Colors.black.withValues(alpha: 0.9),
+      barrierColor: Color(0xFF000000).withValues(alpha: 0.9),
       builder: (context) => GalleryImageViewer(
         mediaItems: album.mediaItems,
         professionalId: professionalId,

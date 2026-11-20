@@ -412,7 +412,7 @@ class _ProfessionalBookingsScreenState
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
           const Text('Try adjusting your filters',
-              style: TextStyle(color: Color(0xFF9E9E9E))),
+              style: TextStyle(color: Color(0xFF000000))),
         ],
       ),
     );
@@ -436,7 +436,7 @@ class _ProfessionalBookingsScreenState
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: _getStatusColor(status), width: 2),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10)
+          BoxShadow(color: Color(0xFF000000).withValues(alpha: 0.05), blurRadius: 10)
         ],
       ),
       child: Column(
@@ -466,7 +466,7 @@ class _ProfessionalBookingsScreenState
                 Text(
                   booking['id'] as String? ?? '',
                   style:
-                      const TextStyle(fontSize: 12, color: Color(0xFF9E9E9E)),
+                      const TextStyle(fontSize: 12, color: Color(0xFF000000)),
                 ),
               ],
             ),
@@ -502,7 +502,7 @@ class _ProfessionalBookingsScreenState
                           Text(
                             service?['category'] as String? ?? 'Beauty',
                             style: const TextStyle(
-                                fontSize: 12, color: Color(0xFF9E9E9E)),
+                                fontSize: 12, color: Color(0xFF000000)),
                           ),
                         ],
                       ),
@@ -538,7 +538,7 @@ class _ProfessionalBookingsScreenState
                           Text(
                             user?['phone'] as String? ?? '',
                             style: const TextStyle(
-                                fontSize: 12, color: Color(0xFF9E9E9E)),
+                                fontSize: 12, color: Color(0xFF000000)),
                           ),
                         ],
                       ),
@@ -598,7 +598,7 @@ class _ProfessionalBookingsScreenState
                       icon: const Icon(Icons.edit, size: 16),
                       label: const Text('Edit Date/Time'),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF9E9E9E)),
+                        side: const BorderSide(color: Color(0xFF000000)),
                         foregroundColor: const Color(0xFF374151),
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),

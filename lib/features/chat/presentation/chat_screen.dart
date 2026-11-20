@@ -302,7 +302,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 child: TextField(
                   controller: _messageController,
                   style: const TextStyle(
-                    color: Colors.black,
+                    color: Color(0xFF000000),
                     fontSize: 16,
                   ),
                   cursorColor: GlayaColors.berry,
@@ -910,7 +910,7 @@ class _ProposeTermsDialogState extends State<_ProposeTermsDialog> {
             const SizedBox(height: 4),
             const Text(
                 'Set the schedule and agreed price — the customer pays the deposit to confirm.',
-                style: TextStyle(fontSize: 12, color: Color(0xFF888888))),
+                style: TextStyle(fontSize: 12, color: Color(0xFF000000))),
             const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,

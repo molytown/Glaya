@@ -100,7 +100,7 @@ class _StepItem extends StatelessWidget {
                 description,
                 style: const TextStyle(
                   fontSize: 13,
-                  color: GlayaColors.textSecondary,
+                  color: Color(0xFF000000),
                 ),
               ),
             ],

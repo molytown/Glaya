@@ -32,7 +32,7 @@ class PopularServicesPage extends ConsumerWidget {
           if (services.isEmpty) {
             return const Center(
               child: Text('No services found',
-                  style: TextStyle(color: GlayaColors.textSecondary)),
+                  style: TextStyle(color: Color(0xFF000000))),
             );
           }
           return RefreshIndicator(
@@ -57,7 +57,7 @@ class PopularServicesPage extends ConsumerWidget {
             child: Text(
               'Could not load services. Pull down to retry.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: GlayaColors.textSecondary),
+              style: TextStyle(color: Color(0xFF000000)),
             ),
           ),
         ),
@@ -106,7 +106,7 @@ class _ServiceTile extends StatelessWidget {
           border: Border.all(color: GlayaColors.pinkBorder),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
+              color: Color(0xFF000000).withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -194,7 +194,7 @@ class _ServiceTile extends StatelessWidget {
                           proName,
                           style: const TextStyle(
                             fontSize: 12,
-                            color: GlayaColors.textSecondary,
+                            color: Color(0xFF000000),
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -225,7 +225,7 @@ class _ServiceTile extends StatelessWidget {
                           '${NumberFormat('#,##0').format(num.tryParse(bookings.toString()) ?? 0)} bookings',
                           style: const TextStyle(
                             fontSize: 11,
-                            color: GlayaColors.textTertiary,
+                            color: Color(0xFF000000),
                           ),
                         ),
                     ],
@@ -245,7 +245,7 @@ class _ServiceTile extends StatelessWidget {
                 ),
               ),
             const Icon(Icons.chevron_right,
-                size: 20, color: GlayaColors.textTertiary),
+                size: 20, color: Color(0xFF000000)),
           ],
         ),
       ),

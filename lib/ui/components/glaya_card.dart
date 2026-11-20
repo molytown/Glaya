@@ -18,7 +18,7 @@ class GlayaCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
-            BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, 4)),
+            BoxShadow(color: Color(0xFF000000).withValues(alpha: 0.06), blurRadius: 10, offset: const Offset(0, 4)),
           ],
         ),
         child: Padding(
