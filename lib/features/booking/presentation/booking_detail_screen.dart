@@ -12,7 +12,9 @@ import '../../payments/presentation/widgets/cod_payment_dialog.dart';
 
 class BookingDetailScreen extends ConsumerStatefulWidget {
   final String bookingId;
-  const BookingDetailScreen({super.key, required this.bookingId});
+  final bool embedded;
+  const BookingDetailScreen(
+      {super.key, required this.bookingId, this.embedded = false});
 
   @override
   ConsumerState<BookingDetailScreen> createState() =>
@@ -336,6 +338,21 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.embedded) {
+      return Column(
+        children: [
+          _embeddedHeader(),
+          Expanded(
+            child: _isLoading
+                ? const Center(
+                    child: CircularProgressIndicator(color: GlayaColors.berry))
+                : _booking == null
+                    ? _buildEmpty()
+                    : _buildContent(),
+          ),
+        ],
+      );
+    }
     return Scaffold(
       backgroundColor: const Color(0xFFFCE4EC),
       appBar: AppBar(
@@ -359,6 +376,33 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           : _booking == null
               ? _buildEmpty()
               : _buildContent(),
+    );
+  }
+
+  Widget _embeddedHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            icon: const Icon(Icons.close, color: Color(0xFF1A1A1A)),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          const Expanded(
+            child: Text('Booking Details',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1A1A1A))),
+          ),
+          const SizedBox(width: 48),
+        ],
+      ),
     );
   }
 
@@ -723,7 +767,8 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-                color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 10)
+                color: Color(0xFF000000).withValues(alpha: 0.04),
+                blurRadius: 10)
           ],
         ),
         child: Column(

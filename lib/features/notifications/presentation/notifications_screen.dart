@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../shared/services/api_service.dart';
 import '../../../../shared/providers/notification_provider.dart';
@@ -10,6 +9,7 @@ import '../../../../shared/theme/text_styles.dart';
 import '../../reels/data/models/reel_model.dart';
 import '../../reels/presentation/reel_screen.dart';
 import '../../../../shared/services/config_service.dart';
+import '../../../../shared/widgets/booking_detail_slide_out.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -86,9 +86,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   title: Text(
                     notification['title'] ?? 'Notification',
                     style: GlayaTextStyles.titleMedium(
-                      color: read
-                          ? Color(0xFF000000)
-                          : GlayaColors.textPrimary,
+                      color: read ? Color(0xFF000000) : GlayaColors.textPrimary,
                     ),
                   ),
                   subtitle: Text(
@@ -120,7 +118,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       if (reelId != null) {
                         _openReelFromNotification(reelId);
                       } else if (bookingId != null) {
-                        context.push('/bookings/$bookingId');
+                        showBookingDetailSlideOut(context, bookingId);
                       }
                     }
                   },

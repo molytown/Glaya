@@ -8,7 +8,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
 
 import 'shared/router/app_router.dart';
 import 'shared/services/api_service.dart';
@@ -22,6 +21,7 @@ import 'features/home/controller/location_controller.dart';
 import 'shared/widgets/floating_chat_bubble.dart';
 import 'shared/widgets/glaya_scroll_behavior.dart';
 import 'shared/widgets/booking_chat_dialog.dart';
+import 'shared/widgets/booking_detail_slide_out.dart';
 import 'shared/providers/chat_bubble_provider.dart';
 import 'shared/providers/location_provider.dart';
 import 'shared/providers/notification_provider.dart';
@@ -52,6 +52,7 @@ final fcmTokenProvider = StateProvider<String?>((_) => null);
 String? _cachedFcmToken;
 String? pendingNotificationRoute;
 String? pendingNotificationBookingId;
+String? pendingNotificationBookingDetailId;
 
 Future<void> _registerFcmToken(String? token) async {
   if (token == null || token.isEmpty) return;
@@ -211,6 +212,8 @@ Future<void> _setupFCM() async {
     if (parsed != null) {
       if (parsed['bookingId'] != null && parsed['isChat'] == true) {
         pendingNotificationBookingId = parsed['bookingId'];
+      } else if (parsed['bookingId'] != null) {
+        pendingNotificationBookingDetailId = parsed['bookingId'];
       } else if (parsed['route'] != null) {
         pendingNotificationRoute = parsed['route'];
       }
@@ -225,6 +228,8 @@ Future<void> _setupFCM() async {
   if (initialParsed != null) {
     if (initialParsed['bookingId'] != null && initialParsed['isChat'] == true) {
       pendingNotificationBookingId = initialParsed['bookingId'];
+    } else if (initialParsed['bookingId'] != null) {
+      pendingNotificationBookingDetailId = initialParsed['bookingId'];
     } else if (initialParsed['route'] != null) {
       pendingNotificationRoute = initialParsed['route'];
     }
@@ -245,11 +250,7 @@ Map<String, dynamic>? _parseNotificationData(Map<String, dynamic> data) {
     if (type.contains('message') || type.contains('chat')) {
       return {'route': null, 'bookingId': bookingId, 'isChat': true};
     }
-    return {
-      'route': '/bookings/$bookingId',
-      'bookingId': null,
-      'isChat': false
-    };
+    return {'route': null, 'bookingId': bookingId, 'isChat': false};
   }
   return {'route': '/notifications', 'bookingId': null, 'isChat': false};
 }
@@ -604,7 +605,7 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
                   }).catchError((_) {});
                   showBookingChatDialog(navContext, bookingId);
                 } else {
-                  navContext.push('/bookings/$bookingId');
+                  showBookingDetailSlideOut(navContext, bookingId);
                 }
               },
               child: const Text('View'),
@@ -641,6 +642,7 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
     // Handle deep-link from a tapped push notification
     final pendingRoute = pendingNotificationRoute;
     final pendingBookingId = pendingNotificationBookingId;
+    final pendingBookingDetailId = pendingNotificationBookingDetailId;
     if (pendingRoute != null && widget.user != null) {
       pendingNotificationRoute = null;
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -655,6 +657,17 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
           final navContext = rootNavigatorKey.currentContext;
           if (navContext != null) {
             showBookingChatDialog(navContext, pendingBookingId);
+          }
+        } catch (_) {}
+      });
+    } else if (pendingBookingDetailId != null && widget.user != null) {
+      final detailId = pendingNotificationBookingDetailId!;
+      pendingNotificationBookingDetailId = null;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        try {
+          final navContext = rootNavigatorKey.currentContext;
+          if (navContext != null) {
+            showBookingDetailSlideOut(navContext, detailId);
           }
         } catch (_) {}
       });

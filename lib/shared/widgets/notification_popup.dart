@@ -7,6 +7,7 @@ import '../../../../shared/theme/colors.dart';
 import '../../../../shared/providers/notification_provider.dart';
 import '../../../../shared/providers/chat_bubble_provider.dart';
 import 'booking_chat_dialog.dart';
+import 'booking_detail_slide_out.dart';
 
 class NotificationPopup extends ConsumerStatefulWidget {
   final VoidCallback onClose;
@@ -189,7 +190,7 @@ class _NotificationPopupState extends ConsumerState<NotificationPopup> {
                                 if (isChat) {
                                   showBookingChatDialog(context, bookingId);
                                 } else {
-                                  context.push('/bookings/$bookingId');
+                                  showBookingDetailSlideOut(context, bookingId);
                                 }
                               }
                             },

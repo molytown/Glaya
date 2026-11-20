@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:go_router/go_router.dart';
 import '../services/api_service.dart';
 import '../providers/notification_provider.dart';
 import '../theme/colors.dart';
@@ -10,6 +9,7 @@ import '../../features/reels/data/models/reel_model.dart';
 import '../../features/reels/presentation/reel_screen.dart';
 import '../services/config_service.dart';
 import '../providers/chat_bubble_provider.dart';
+import 'booking_detail_slide_out.dart';
 
 /// Desktop notification dropdown widget — appears below the notification icon
 /// with a scrollable list and "Mark all as read" button.
@@ -81,7 +81,8 @@ class _NotificationDropdownState extends ConsumerState<NotificationDropdown> {
 
   IconData _iconForType(String type) {
     if (type.contains('booking')) return Icons.calendar_today;
-    if (type.contains('chat') || type.contains('message')) return Icons.chat_bubble;
+    if (type.contains('chat') || type.contains('message'))
+      return Icons.chat_bubble;
     if (type.contains('reel')) return Icons.play_circle;
     if (type.contains('review')) return Icons.star;
     if (type.contains('offer')) return Icons.local_offer;
@@ -151,36 +152,34 @@ class _NotificationDropdownState extends ConsumerState<NotificationDropdown> {
 
   void _handleNotificationTap(Map<String, dynamic> notification) {
     final type = notification['type'] as String?;
-    final isChat = type?.contains('chat') == true ||
-        type?.contains('message') == true;
+    final isChat =
+        type?.contains('chat') == true || type?.contains('message') == true;
     if (isChat) {
       final notifier = ref.read(chatBubbleProvider.notifier);
       notifier.undismiss();
       ApiService.dio.get('/chats/list').then((resp) {
-        final rooms = (resp.data['data'] as List)
-            .cast<Map<String, dynamic>>();
+        final rooms = (resp.data['data'] as List).cast<Map<String, dynamic>>();
         notifier.updateFromChatList(rooms);
       }).catchError((_) {});
     }
     _markAsRead(notification['id'] as String);
     if (mounted) {
-      final payload =
-          notification['payload'] as Map<String, dynamic>?;
+      final payload = notification['payload'] as Map<String, dynamic>?;
       final reelId = payload?['reelId'] as String?;
       final bookingId = payload?['bookingId'] as String?;
       if (reelId != null) {
         _openReelFromNotification(reelId);
       } else if (bookingId != null) {
-        context.push('/bookings/$bookingId');
+        widget.onClose();
+        showBookingDetailSlideOut(context, bookingId);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final unreadCount = _notifications
-        .where((n) => !(n['read'] as bool? ?? false))
-        .length;
+    final unreadCount =
+        _notifications.where((n) => !(n['read'] as bool? ?? false)).length;
 
     return Container(
       width: 380,
@@ -231,7 +230,8 @@ class _NotificationDropdownState extends ConsumerState<NotificationDropdown> {
                           horizontal: 10, vertical: 4),
                       minimumSize: Size.zero,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      backgroundColor: GlayaColors.berry.withValues(alpha: 0.08),
+                      backgroundColor:
+                          GlayaColors.berry.withValues(alpha: 0.08),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(999),
                       ),
@@ -296,8 +296,8 @@ class _NotificationDropdownState extends ConsumerState<NotificationDropdown> {
                         itemBuilder: (context, index) {
                           final notification = _notifications[index];
                           final read = notification['read'] as bool? ?? false;
-                          final createdAt =
-                              DateTime.parse(notification['createdAt'] as String);
+                          final createdAt = DateTime.parse(
+                              notification['createdAt'] as String);
                           return InkWell(
                             onTap: () => _handleNotificationTap(notification),
                             borderRadius: BorderRadius.circular(8),
@@ -317,7 +317,8 @@ class _NotificationDropdownState extends ConsumerState<NotificationDropdown> {
                                     backgroundColor: GlayaColors.berry,
                                     child: Icon(
                                       _iconForType(
-                                          notification['type'] as String? ?? ''),
+                                          notification['type'] as String? ??
+                                              ''),
                                       color: Colors.white,
                                       size: 18,
                                     ),
