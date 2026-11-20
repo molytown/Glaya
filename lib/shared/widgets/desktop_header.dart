@@ -8,11 +8,12 @@ import '../../../shared/providers/location_provider.dart';
 import '../../../shared/providers/notification_provider.dart';
 import '../../../shared/providers/chat_bubble_provider.dart';
 import '../widgets/location_dialog.dart';
+import '../widgets/auth_slide_out.dart';
 
 /// React `.navbar` replica — 73px white bar with logo, nav links, location,
 /// pill search, currency/language selects, Book Now, messages, notifications
 /// and the user menu / sign-in button.
-class DesktopHeader extends ConsumerWidget {
+class DesktopHeader extends ConsumerStatefulWidget {
   final bool showNotificationDropdown;
   final bool showMessagesDropdown;
   final VoidCallback onNotificationToggle;
@@ -27,12 +28,33 @@ class DesktopHeader extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return _HeaderContent(
-      showNotificationDropdown: showNotificationDropdown,
-      showMessagesDropdown: showMessagesDropdown,
-      onNotificationToggle: onNotificationToggle,
-      onMessagesToggle: onMessagesToggle,
+  ConsumerState<DesktopHeader> createState() => _DesktopHeaderState();
+}
+
+class _DesktopHeaderState extends ConsumerState<DesktopHeader> {
+  bool _showAuthSlideOut = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        _HeaderContent(
+          showNotificationDropdown: widget.showNotificationDropdown,
+          showMessagesDropdown: widget.showMessagesDropdown,
+          onNotificationToggle: widget.onNotificationToggle,
+          onMessagesToggle: widget.onMessagesToggle,
+          onLoginTap: () {
+            setState(() => _showAuthSlideOut = true);
+          },
+        ),
+        if (_showAuthSlideOut)
+          AuthSlideOut(
+            isOpen: _showAuthSlideOut,
+            onClose: () {
+              setState(() => _showAuthSlideOut = false);
+            },
+          ),
+      ],
     );
   }
 }
@@ -42,12 +64,14 @@ class _HeaderContent extends ConsumerStatefulWidget {
   final bool showMessagesDropdown;
   final VoidCallback onNotificationToggle;
   final VoidCallback onMessagesToggle;
+  final VoidCallback onLoginTap;
 
   const _HeaderContent({
     required this.showNotificationDropdown,
     required this.showMessagesDropdown,
     required this.onNotificationToggle,
     required this.onMessagesToggle,
+    required this.onLoginTap,
   });
 
   @override
@@ -233,6 +257,7 @@ class _HeaderContentState extends ConsumerState<_HeaderContent> {
                     await ref.read(authNotifierProvider.notifier).logout();
                     if (mounted) context.go('/');
                   },
+                  onLoginTap: widget.onLoginTap,
                 ),
               ],
             ),
@@ -760,13 +785,18 @@ class _IconDropdown extends StatelessWidget {
 class _UserMenu extends ConsumerWidget {
   final dynamic user;
   final VoidCallback onLogout;
+  final VoidCallback onLoginTap;
 
-  const _UserMenu({required this.user, required this.onLogout});
+  const _UserMenu({
+    required this.user,
+    required this.onLogout,
+    required this.onLoginTap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (user == null) {
-      return _LoginButton();
+      return _LoginButton(onTap: onLoginTap);
     }
     final photoUrl = user.photoUrl as String?;
     return MouseRegion(
@@ -832,12 +862,16 @@ class _UserMenu extends ConsumerWidget {
 }
 
 class _LoginButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _LoginButton({required this.onTap});
+
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: () => context.push('/login'),
+        onTap: onTap,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
