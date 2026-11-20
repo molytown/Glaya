@@ -14,7 +14,6 @@ import '../../../../shared/services/config_service.dart';
 import '../../../../shared/theme/colors.dart';
 import '../../../../shared/utils/haptic_feedback.dart';
 import '../../../../shared/widgets/bottom_nav.dart';
-import '../../chat/presentation/chat_screen.dart';
 import '../../../../shared/widgets/booking_chat_dialog.dart';
 import '../../../../shared/widgets/glaya_gradient_button.dart';
 import '../../auth/presentation/providers/auth_notifier.dart';
@@ -1085,6 +1084,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               const SizedBox(height: 16),
               _buildBeautyJourney(),
               const SizedBox(height: 16),
+              _buildMyServices(),
+              const SizedBox(height: 16),
+              _buildMyPortfolio(),
+              const SizedBox(height: 16),
               _buildQuickActions(),
               const SizedBox(height: 16),
               _buildReelsSection(),
@@ -1879,6 +1882,92 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             'Money Saved',
             '${_getCurrencySymbol()}${moneySaved.toStringAsFixed(0)}',
           ),
+        ],
+      ),
+    );
+  }
+
+  // ── My Services (Professional only) ────────────────────────────────────────────
+  Widget _buildMyServices() {
+    final professionalId = _user?['professionalId'] as String?;
+    if (professionalId == null) return const SizedBox.shrink();
+
+    return _sectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _sectionTitle('My Services', Icons.content_cut),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => context.push('/services'),
+                child: const Row(
+                  children: [
+                    Text(
+                      'Manage Services',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: GlayaColors.berry,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 2),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 16,
+                      color: GlayaColors.berry,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _emptyRow('Manage your services', () => context.push('/services')),
+        ],
+      ),
+    );
+  }
+
+  // ── My Portfolio (Professional only) ──────────────────────────────────────────
+  Widget _buildMyPortfolio() {
+    final professionalId = _user?['professionalId'] as String?;
+    if (professionalId == null) return const SizedBox.shrink();
+
+    return _sectionCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _sectionTitle('My Portfolio', Icons.photo_library_outlined),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => context.push('/portfolio'),
+                child: const Row(
+                  children: [
+                    Text(
+                      'Manage Portfolio',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: GlayaColors.berry,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 2),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 16,
+                      color: GlayaColors.berry,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _emptyRow('Manage your portfolio', () => context.push('/portfolio')),
         ],
       ),
     );
@@ -2898,8 +2987,6 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
 
   void _openEditProfile() {
     print('[DEBUG] _CustomerProfileView: _openEditProfile called');
-    print(
-        '[DEBUG] onEditProfile callback is null: ${widget.onEditProfile == null}');
     // Call the parent's edit profile callback
     widget.onEditProfile();
   }
