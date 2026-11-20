@@ -6,7 +6,7 @@ import '../../../shared/providers/location_provider.dart';
 import '../../../shared/services/config_service.dart';
 import '../../../shared/theme/colors.dart';
 import '../../../shared/utils/responsive_helper.dart';
-import 'flowing_water_background.dart';
+import 'seasonal_auth_background.dart';
 
 class AuthSlideOut extends ConsumerStatefulWidget {
   final bool isOpen;
@@ -170,7 +170,7 @@ class _AuthSlideOutState extends ConsumerState<AuthSlideOut>
                       ),
                     ],
                   ),
-                  child: FlowingWaterBackground(
+                  child: SeasonalAuthBackground(
                     child: SafeArea(
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.all(32),
