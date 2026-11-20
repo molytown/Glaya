@@ -1034,7 +1034,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ? Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 1200),
-                child: body,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: body,
+                ),
               ),
             )
           : body,

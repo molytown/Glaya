@@ -147,43 +147,48 @@ class _ProfessionalProfileScreenState
 
     return Stack(
       children: [
-        CustomScrollView(
-          slivers: [
-            // Header - matches React profile-header
-            SliverToBoxAdapter(
-              child: Container(
-                color: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Row(
-                  children: [
-                    InkWell(
-                      onTap: () => Navigator.of(context).pop(),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.arrow_back, size: 20, color: Color(0xFF1A1A1A)),
-                          SizedBox(width: 8),
-                          Text(
-                            'Back',
-                            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A)),
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1200),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: CustomScrollView(
+              slivers: [
+                // Header - matches React profile-header
+                SliverToBoxAdapter(
+                  child: Container(
+                    color: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.arrow_back, size: 20, color: Color(0xFF1A1A1A)),
+                              SizedBox(width: 8),
+                              Text(
+                                'Back',
+                                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A)),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const Spacer(),
+                        // Header actions
+                        _buildIconButton(
+                          icon: _isFavorited ? Icons.favorite : Icons.favorite_border,
+                          onPressed: () => _toggleFavorite(professional.id),
+                        ),
+                        const SizedBox(width: 8),
+                        _buildIconButton(
+                          icon: Icons.share,
+                          onPressed: () => _shareProfile(professional),
+                        ),
+                      ],
                     ),
-                    const Spacer(),
-                    // Header actions
-                    _buildIconButton(
-                      icon: _isFavorited ? Icons.favorite : Icons.favorite_border,
-                      onPressed: () => _toggleFavorite(professional.id),
-                    ),
-                    const SizedBox(width: 8),
-                    _buildIconButton(
-                      icon: Icons.share,
-                      onPressed: () => _shareProfile(professional),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
             // Hero Section - matches React profile-hero
             SliverToBoxAdapter(
               child: _buildHeroSection(context, professional, isDesktop, isOwnProfile),
@@ -235,8 +240,11 @@ class _ProfessionalProfileScreenState
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 80)),
-          ],
+              ],
+            ),
+          ),
         ),
+          ),
         // Bottom bar
         Positioned(
           bottom: 0,
