@@ -4,6 +4,7 @@ import '../utils/responsive_helper.dart';
 import 'desktop_header.dart';
 import 'notification_dropdown.dart';
 import 'messages_dropdown.dart';
+import 'auth_slide_out.dart';
 
 class DesktopShell extends ConsumerStatefulWidget {
   final Widget child;
@@ -18,6 +19,7 @@ class DesktopShell extends ConsumerStatefulWidget {
 class _DesktopShellState extends ConsumerState<DesktopShell> {
   bool _showNotificationDropdown = false;
   bool _showMessagesDropdown = false;
+  bool _showAuthSlideOut = false;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,9 @@ class _DesktopShellState extends ConsumerState<DesktopShell> {
                     setState(() => _showNotificationDropdown = false);
                   }
                 },
+                onLoginTap: () {
+                  setState(() => _showAuthSlideOut = true);
+                },
               ),
               Expanded(child: widget.child),
             ],
@@ -70,6 +75,14 @@ class _DesktopShellState extends ConsumerState<DesktopShell> {
                   setState(() => _showMessagesDropdown = false);
                 },
               ),
+            ),
+          // Auth slide-out overlay
+          if (_showAuthSlideOut)
+            AuthSlideOut(
+              isOpen: _showAuthSlideOut,
+              onClose: () {
+                setState(() => _showAuthSlideOut = false);
+              },
             ),
         ],
       ),

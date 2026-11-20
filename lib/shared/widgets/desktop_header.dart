@@ -13,11 +13,12 @@ import '../widgets/auth_slide_out.dart';
 /// React `.navbar` replica — 73px white bar with logo, nav links, location,
 /// pill search, currency/language selects, Book Now, messages, notifications
 /// and the user menu / sign-in button.
-class DesktopHeader extends ConsumerStatefulWidget {
+class DesktopHeader extends ConsumerWidget {
   final bool showNotificationDropdown;
   final bool showMessagesDropdown;
   final VoidCallback onNotificationToggle;
   final VoidCallback onMessagesToggle;
+  final VoidCallback onLoginTap;
 
   const DesktopHeader({
     super.key,
@@ -25,36 +26,17 @@ class DesktopHeader extends ConsumerStatefulWidget {
     required this.showMessagesDropdown,
     required this.onNotificationToggle,
     required this.onMessagesToggle,
+    required this.onLoginTap,
   });
 
   @override
-  ConsumerState<DesktopHeader> createState() => _DesktopHeaderState();
-}
-
-class _DesktopHeaderState extends ConsumerState<DesktopHeader> {
-  bool _showAuthSlideOut = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        _HeaderContent(
-          showNotificationDropdown: widget.showNotificationDropdown,
-          showMessagesDropdown: widget.showMessagesDropdown,
-          onNotificationToggle: widget.onNotificationToggle,
-          onMessagesToggle: widget.onMessagesToggle,
-          onLoginTap: () {
-            setState(() => _showAuthSlideOut = true);
-          },
-        ),
-        if (_showAuthSlideOut)
-          AuthSlideOut(
-            isOpen: _showAuthSlideOut,
-            onClose: () {
-              setState(() => _showAuthSlideOut = false);
-            },
-          ),
-      ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _HeaderContent(
+      showNotificationDropdown: showNotificationDropdown,
+      showMessagesDropdown: showMessagesDropdown,
+      onNotificationToggle: onNotificationToggle,
+      onMessagesToggle: onMessagesToggle,
+      onLoginTap: onLoginTap,
     );
   }
 }

@@ -109,11 +109,15 @@ class _AuthSlideOutState extends ConsumerState<AuthSlideOut>
     });
 
     try {
-      // TODO: Implement actual auth logic
-      // For now, just navigate to the login screen
+      // For now, just close the slide-out and let the user navigate to login
+      // In the future, this should handle actual auth logic
       if (mounted) {
-        context.push('/login');
         widget.onClose();
+        // Small delay to let the slide-out close animation finish
+        await Future.delayed(const Duration(milliseconds: 300));
+        if (mounted) {
+          context.push('/login');
+        }
       }
     } catch (e) {
       setState(() {

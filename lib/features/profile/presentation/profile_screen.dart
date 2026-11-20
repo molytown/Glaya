@@ -3020,23 +3020,46 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
+            // Hero section - mirrors React gp-hero
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 36,
-                  backgroundColor: accent,
-                  backgroundImage: widget.photoUrl != null
-                      ? NetworkImage(widget.photoUrl!)
-                      : null,
-                  child: widget.photoUrl == null
-                      ? Text(
-                          widget.initials,
-                          style: const TextStyle(
-                              fontSize: 26, color: Colors.white),
-                        )
-                      : null,
+                // Avatar with verified badge
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 40,
+                      backgroundColor: accent,
+                      backgroundImage: widget.photoUrl != null
+                          ? NetworkImage(widget.photoUrl!)
+                          : null,
+                      child: widget.photoUrl == null
+                          ? Text(
+                              widget.initials,
+                              style: const TextStyle(
+                                  fontSize: 28, color: Colors.white),
+                            )
+                          : null,
+                    ),
+                    // Verified badge
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF10B981),
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: const Icon(Icons.check, size: 14, color: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(width: 16),
+                // User info
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -3047,74 +3070,91 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                             child: Text(
                               widget.displayName,
                               style: const TextStyle(
-                                fontSize: 20,
+                                fontSize: 22,
                                 fontWeight: FontWeight.w700,
                                 color: ink,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          if (widget.glayaScore != null) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFF8E1),
-                                borderRadius: BorderRadius.circular(10),
-                                border:
-                                    Border.all(color: const Color(0xFFFFD54F)),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.star,
-                                      size: 13, color: Color(0xFFF59E0B)),
-                                  const SizedBox(width: 3),
-                                  Text(
-                                    'Glaya ${widget.glayaScore!.toStringAsFixed(1)}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xFFB8860B),
-                                    ),
-                                  ),
-                                ],
+                          const SizedBox(width: 8),
+                          const Icon(Icons.verified, size: 24, color: Color(0xFF10B981)),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      // Member badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFF8E1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: const Color(0xFFFFD54F)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.star, size: 14, color: Color(0xFFF59E0B)),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Member',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: const Color(0xFFB8860B),
                               ),
                             ),
                           ],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      // Subtitle
+                      Row(
+                        children: [
+                          const Icon(Icons.auto_awesome, size: 16, color: accent),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Beauty Enthusiast',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: accent.withValues(alpha: 0.8),
+                            ),
+                          ),
                         ],
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        widget.user?['phone'] as String? ?? '',
-                        style: const TextStyle(fontSize: 14, color: muted),
-                      ),
-                      Text(
-                        'Member since $sinceYear',
-                        style: const TextStyle(fontSize: 13, color: muted),
+                      const SizedBox(height: 4),
+                      // Location
+                      Row(
+                        children: [
+                          const Icon(Icons.location_on, size: 16, color: muted),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              widget.user?['currentLocation'] as String? ?? 'Location not set',
+                              style: const TextStyle(fontSize: 13, color: muted),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
+            // Action buttons - mirrors React gp-hero-actions
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
+                  child: OutlinedButton.icon(
                     onPressed: _openEditProfile,
+                    icon: const Icon(Icons.edit, size: 18),
+                    label: const Text('Edit Profile'),
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(44),
                       foregroundColor: accent,
                       side: const BorderSide(color: accent, width: 1.5),
                       shape: const StadiumBorder(),
-                    ),
-                    child: const Text(
-                      'Edit profile',
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ),
@@ -3128,6 +3168,92 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 10),
+            // Share button
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  // TODO: Implement share functionality
+                },
+                icon: const Icon(Icons.share, size: 18),
+                label: const Text('Share Profile'),
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size.fromHeight(44),
+                  foregroundColor: accent,
+                  side: const BorderSide(color: accent, width: 1.5),
+                  shape: const StadiumBorder(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            // Beauty Level section - mirrors React gp-beauty-level
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF8F9FA),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: line),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Beauty Level',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: muted,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '18',
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: ink,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Progress bar
+                        Container(
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE5E7EB),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                          child: FractionallySizedBox(
+                            alignment: Alignment.centerLeft,
+                            widthFactor: 0.65,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: accent,
+                                borderRadius: BorderRadius.circular(3),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '750 pts to next level',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: muted,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  // Medal emoji
+                  const Text('🏅', style: TextStyle(fontSize: 48)),
+                ],
+              ),
             ),
           ],
         ),
