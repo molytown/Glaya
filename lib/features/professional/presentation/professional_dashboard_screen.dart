@@ -304,9 +304,14 @@ class _ProfessionalDashboardScreenState
     return RefreshIndicator(
       onRefresh: () => ref.refresh(professionalDashboardProvider.future),
       color: _pink,
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        slivers: [
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
           // ── Greeting header ─────────────────────────────────────────────────
           SliverToBoxAdapter(
             child: _buildHeader(greeting, businessName, avgRating, user),
@@ -372,7 +377,10 @@ class _ProfessionalDashboardScreenState
               ]),
             ),
           ),
-        ],
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
