@@ -465,6 +465,14 @@ class _LocationPickerDialogContentState
       if (_mapController != null) {
         _mapController!.animateCamera(CameraUpdate.newLatLngZoom(latLng, 14));
       }
+      // Update location provider and close dialog
+      await ref.read(locationProvider.notifier).setLocation(
+            position.latitude,
+            position.longitude,
+          );
+      if (mounted) {
+        Navigator.pop(context);
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
