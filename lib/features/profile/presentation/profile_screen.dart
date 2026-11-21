@@ -3114,39 +3114,20 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Avatar with verified badge
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundColor: accent,
-                      backgroundImage: widget.photoUrl != null
-                          ? NetworkImage(widget.photoUrl!)
-                          : null,
-                      child: widget.photoUrl == null
-                          ? Text(
-                              widget.initials,
-                              style: const TextStyle(
-                                  fontSize: 28, color: Colors.white),
-                            )
-                          : null,
-                    ),
-                    // Verified badge
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF10B981),
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                        ),
-                        child: const Icon(Icons.check, size: 14, color: Colors.white),
-                      ),
-                    ),
-                  ],
+                // Avatar
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: accent,
+                  backgroundImage: widget.photoUrl != null
+                      ? NetworkImage(widget.photoUrl!)
+                      : null,
+                  child: widget.photoUrl == null
+                      ? Text(
+                          widget.initials,
+                          style: const TextStyle(
+                              fontSize: 28, color: Colors.white),
+                        )
+                      : null,
                 ),
                 const SizedBox(width: 16),
                 // User info
@@ -3167,8 +3148,6 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          const Icon(Icons.verified, size: 24, color: Color(0xFF10B981)),
                         ],
                       ),
                       const SizedBox(height: 4),
