@@ -383,8 +383,7 @@ class _TopRatedProfessionalsCarouselState
           const gap = 12.0;
           final count = widget.visibleCount!;
           final cardWidth = (availableWidth - gap * (count - 1)) / count;
-          final cardHeight =
-              cardWidth / (widget.cardAspectRatio ?? (9 / 16));
+          final cardHeight = cardWidth / (widget.cardAspectRatio ?? (9 / 16));
           return SizedBox(
             height: cardHeight,
             child: ListView.builder(
@@ -663,8 +662,13 @@ class _TopRatedFullImageCard extends StatelessWidget {
 
 class RecommendedProfessionalRow extends StatelessWidget {
   final List<ProfessionalModel> professionals;
+  final EdgeInsetsGeometry? listPadding;
 
-  const RecommendedProfessionalRow({super.key, required this.professionals});
+  const RecommendedProfessionalRow({
+    super.key,
+    required this.professionals,
+    this.listPadding,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -675,7 +679,7 @@ class RecommendedProfessionalRow extends StatelessWidget {
     return SizedBox(
       height: 168,
       child: ListView.builder(
-        padding: const EdgeInsets.only(left: 16),
+        padding: listPadding ?? const EdgeInsets.only(left: 16),
         scrollDirection: Axis.horizontal,
         itemCount: items.length,
         itemBuilder: (_, index) {

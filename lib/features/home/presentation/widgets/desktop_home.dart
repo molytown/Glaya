@@ -340,19 +340,11 @@ class DesktopHomeBody extends ConsumerWidget {
               recommendedAsync.when(
                 data: (pros) => pros.isEmpty
                     ? const SizedBox.shrink()
-                    : Column(
-                        children: [
-                          for (final pro in pros.take(4))
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: _ProListRow(
-                                professional: pro,
-                                bookLabel: 'Book',
-                              ),
-                            ),
-                        ],
+                    : RecommendedProfessionalRow(
+                        professionals: pros,
+                        listPadding: EdgeInsets.zero,
                       ),
-                loading: () => const HomeLoadingPlaceholder(height: 300),
+                loading: () => const HomeLoadingPlaceholder(height: 168),
                 error: (_, __) => const SizedBox.shrink(),
               ),
             ],
