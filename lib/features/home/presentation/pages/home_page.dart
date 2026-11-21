@@ -522,10 +522,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                             child: recommendedAsync.when(
                               data: (pros) => pros.isEmpty
                                   ? const SizedBox.shrink()
-                                  : RecommendedProfessionalRow(
-                                      professionals: pros),
+                                  : RecommendedProListRow(professionals: pros),
                               loading: () =>
-                                  const HomeLoadingPlaceholder(height: 168),
+                                  const HomeLoadingPlaceholder(height: 56),
                               error: (_, __) => const SizedBox.shrink(),
                             ),
                           ),

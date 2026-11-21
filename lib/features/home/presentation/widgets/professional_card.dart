@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/theme/colors.dart';
 import '../../../../shared/utils/haptic_feedback.dart';
-import '../../../../shared/widgets/price_display.dart';
 import '../../../../shared/widgets/verification_badge.dart';
 import '../../../discovery/data/professional_model.dart';
 import 'home_utils.dart';
@@ -40,13 +39,6 @@ class ProfessionalCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Get the minimum price from services if available
-    final minPrice = professional.services?.isNotEmpty == true
-        ? professional.services!
-            .map((s) => (s as dynamic).price as double? ?? 0)
-            .reduce((a, b) => a < b ? a : b)
-        : 25.0; // Default fallback price
-
     return GestureDetector(
       onTap: () {
         HapticFeedback.light();
@@ -786,6 +778,130 @@ class RecommendedProfessionalRow extends StatelessWidget {
           );
         },
       ),
+    );
+  }
+}
+
+/// Compact horizontal list row for tablet "Recommended For You" — exactly 2 visible tiles.
+class RecommendedProListRow extends StatelessWidget {
+  const RecommendedProListRow({
+    super.key,
+    required this.professionals,
+  });
+
+  final List<ProfessionalModel> professionals;
+
+  @override
+  Widget build(BuildContext context) {
+    final pros = professionals.take(6).toList();
+    if (pros.isEmpty) return const SizedBox.shrink();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Two tiles visible in the tablet cell width
+        final tileWidth = (constraints.maxWidth - 12) / 2;
+        return SizedBox(
+          height: 56,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            itemCount: pros.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 6),
+            itemBuilder: (context, index) {
+              final pro = pros[index];
+              return SizedBox(
+                width: tileWidth,
+                child: InkWell(
+                  onTap: () => context.push('/professional/${pro.id}'),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: CachedNetworkImage(
+                          imageUrl: pro.photoUrl ?? '',
+                          width: 44,
+                          height: 44,
+                          fit: BoxFit.cover,
+                          placeholder: (_, __) => Container(
+                            width: 44,
+                            height: 44,
+                            color: GlayaColors.berry.withValues(alpha: 0.15),
+                          ),
+                          errorWidget: (_, __, ___) => Container(
+                            width: 44,
+                            height: 44,
+                            color: GlayaColors.berry.withValues(alpha: 0.15),
+                            child: const Icon(Icons.person,
+                                size: 20, color: GlayaColors.berry),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              pro.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    pro.category ?? 'Stylist',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ),
+                                if (pro.subscriptionType == 'premium' ||
+                                    pro.subscriptionType == 'elite') ...[
+                                  const SizedBox(width: 4),
+                                  const VerificationBadge(
+                                      size: VerificationBadgeSize.small),
+                                ],
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (pro.avgRating != null) ...[
+                        const SizedBox(width: 6),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.star,
+                                size: 10, color: GlayaColors.warning),
+                            const SizedBox(width: 2),
+                            Text(
+                              pro.avgRating!.toStringAsFixed(1),
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
