@@ -140,7 +140,9 @@ class LocationController extends GetxController implements GetxService {
       latitude: myPosition.latitude.toString(),
       longitude: myPosition.longitude.toString(),
       addressType: 'others',
-      zoneId: responseModel.isSuccess ? responseModel.zoneIds[0] : 0,
+      zoneId: responseModel.isSuccess && responseModel.zoneIds.isNotEmpty
+          ? responseModel.zoneIds[0]
+          : 0,
       zoneIds: responseModel.zoneIds,
       address: addressFromGeocode,
       zoneData: responseModel.zoneData,
@@ -443,7 +445,11 @@ class LocationController extends GetxController implements GetxService {
         } else if (body['status'] != 'ZERO_RESULTS') {
           final errorMessage =
               body['error_message']?.toString() ?? 'Failed to get address';
-          Get.snackbar('Error', errorMessage);
+          try {
+            Get.snackbar('Error', errorMessage);
+          } catch (_) {
+            // Snackbar can fail if no overlay context is available
+          }
         }
       } catch (e) {
         // Handle JSON decode error
@@ -470,7 +476,11 @@ class LocationController extends GetxController implements GetxService {
           } else {
             final errorMessage = body['error_message']?.toString() ??
                 'Failed to search location';
-            Get.snackbar('Error', errorMessage);
+            try {
+              Get.snackbar('Error', errorMessage);
+            } catch (_) {
+              // Snackbar can fail if no overlay context is available
+            }
           }
         } catch (e) {
           // Handle JSON decode error
@@ -490,8 +500,12 @@ class LocationController extends GetxController implements GetxService {
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.denied) {
-      Get.snackbar(
-          'Permission Denied', 'You have to allow location permission');
+      try {
+        Get.snackbar(
+            'Permission Denied', 'You have to allow location permission');
+      } catch (_) {
+        // Snackbar can fail if no overlay context is available
+      }
     } else if (permission == LocationPermission.deniedForever) {
       Get.dialog(
         AlertDialog(
