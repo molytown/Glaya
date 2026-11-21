@@ -170,12 +170,12 @@ class _HomePageState extends ConsumerState<HomePage> {
       }
     }
 
-    // Extract neighborhood/street name from full address
+    // Extract neighborhood name from location state
     String locationLabel;
     if (locationState.locationName != null &&
         locationState.locationName!.isNotEmpty) {
       final parts = locationState.locationName!.split(',');
-      // Use first part (street/neighborhood) if available, otherwise full name
+      // Use first part (neighborhood) if available, otherwise full name
       locationLabel =
           parts.length > 1 ? parts[0].trim() : locationState.locationName!;
     } else {

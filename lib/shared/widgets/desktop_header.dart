@@ -114,9 +114,16 @@ class _HeaderContentState extends ConsumerState<_HeaderContent> {
     final locationState = ref.watch(locationProvider);
     final notifCount = ref.watch(notificationCountProvider);
     final msgCount = ref.watch(chatBubbleProvider.select((s) => s.unreadCount));
-    final locationLabel = (locationState.locationName?.isNotEmpty ?? false)
-        ? locationState.locationName!
-        : 'Detecting location…';
+    // Extract neighborhood name from location state
+    String locationLabel;
+    if (locationState.locationName != null &&
+        locationState.locationName!.isNotEmpty) {
+      final parts = locationState.locationName!.split(',');
+      locationLabel =
+          parts.length > 1 ? parts[0].trim() : locationState.locationName!;
+    } else {
+      locationLabel = 'Detecting location…';
+    }
     final path = GoRouterState.of(context).uri.path;
 
     return Container(

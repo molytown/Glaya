@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
@@ -246,24 +245,28 @@ class LocationNotifier extends StateNotifier<LocationState> {
           final place = placemarks.first;
           final parts = <String>[];
 
-          // Add street address if available
-          if (place.street != null && place.street!.isNotEmpty) {
-            parts.add(place.street!);
-          }
-          // Add postal code if available
-          if (place.postalCode != null && place.postalCode!.isNotEmpty) {
-            parts.add(place.postalCode!);
-          }
-          if (place.locality != null && place.locality!.isNotEmpty) {
+          // Prioritize neighborhood/suburb over street address
+          if (place.subLocality != null && place.subLocality!.isNotEmpty) {
+            parts.add(place.subLocality!);
+          } else if (place.locality != null && place.locality!.isNotEmpty) {
             parts.add(place.locality!);
-          }
-          if (place.administrativeArea != null &&
+          } else if (place.administrativeArea != null &&
               place.administrativeArea!.isNotEmpty) {
             parts.add(place.administrativeArea!);
           }
+
+          // Add city if available and different from neighborhood
+          if (place.locality != null &&
+              place.locality!.isNotEmpty &&
+              !parts.contains(place.locality)) {
+            parts.add(place.locality!);
+          }
+
+          // Add country
           if (place.country != null && place.country!.isNotEmpty) {
             parts.add(place.country!);
           }
+
           final locationName = parts.join(', ');
           print('Location name resolved via native geocoding: $locationName');
           return locationName;
@@ -289,31 +292,34 @@ class LocationNotifier extends StateNotifier<LocationState> {
         final address = response.data['address'] as Map<String, dynamic>;
         final parts = <String>[];
 
-        // Add street address if available
-        if (address['road'] != null) {
-          parts.add(address['road']);
+        // Prioritize neighborhood/suburb over street address
+        if (address['suburb'] != null &&
+            address['suburb'].toString().isNotEmpty) {
+          parts.add(address['suburb']);
+        } else if (address['neighbourhood'] != null &&
+            address['neighbourhood'].toString().isNotEmpty) {
+          parts.add(address['neighbourhood']);
+        } else if (address['quarter'] != null &&
+            address['quarter'].toString().isNotEmpty) {
+          parts.add(address['quarter']);
         }
-        // Add house number if available
-        if (address['house_number'] != null) {
-          if (parts.isNotEmpty) {
-            parts[parts.length - 1] =
-                '${address['house_number']} ${parts.last}';
-          } else {
-            parts.add(address['house_number']);
-          }
-        }
-        // Add postal code if available
-        if (address['postcode'] != null) {
-          parts.add(address['postcode']);
-        }
-        // Try to get city/town/locality
-        if (address['city'] != null) {
+
+        // Add city/town/village if available and different from neighborhood
+        if (address['city'] != null &&
+            address['city'].toString().isNotEmpty &&
+            !parts.contains(address['city'])) {
           parts.add(address['city']);
-        } else if (address['town'] != null) {
+        } else if (address['town'] != null &&
+            address['town'].toString().isNotEmpty &&
+            !parts.contains(address['town'])) {
           parts.add(address['town']);
-        } else if (address['village'] != null) {
+        } else if (address['village'] != null &&
+            address['village'].toString().isNotEmpty &&
+            !parts.contains(address['village'])) {
           parts.add(address['village']);
-        } else if (address['locality'] != null) {
+        } else if (address['locality'] != null &&
+            address['locality'].toString().isNotEmpty &&
+            !parts.contains(address['locality'])) {
           parts.add(address['locality']);
         }
 
