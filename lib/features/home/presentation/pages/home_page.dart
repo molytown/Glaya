@@ -513,8 +513,27 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                       ),
                       const SliverToBoxAdapter(child: SizedBox(height: 28)),
-                      // Exclusive Offers (download banner removed)
-                      const SliverToBoxAdapter(child: ExclusiveOffersSection()),
+                      // Recommended For You | Exclusive Offers
+                      SliverToBoxAdapter(
+                        child: SideBySideSection(
+                          left: _boxSection(
+                            title: 'Recommended For You',
+                            onSeeAll: () => context.push('/search'),
+                            child: recommendedAsync.when(
+                              data: (pros) => pros.isEmpty
+                                  ? const SizedBox.shrink()
+                                  : RecommendedProfessionalRow(
+                                      professionals: pros),
+                              loading: () =>
+                                  const HomeLoadingPlaceholder(height: 168),
+                              error: (_, __) => const SizedBox.shrink(),
+                            ),
+                          ),
+                          right: _boxSection(
+                            child: const ExclusiveOffersSection(),
+                          ),
+                        ),
+                      ),
                     ] else ...[
                       // Mobile layout: original vertical stack
                       _section(
