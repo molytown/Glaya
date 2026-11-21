@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../../../shared/services/api_service.dart';
 import '../../../../shared/services/currency_service.dart';
 import '../../../../shared/theme/colors.dart';
 import '../../../../shared/theme/text_styles.dart';
 import '../../../../shared/widgets/bottom_nav.dart';
 import '../../auth/presentation/providers/auth_notifier.dart';
+import 'widgets/top_up_sheet.dart';
 import 'widgets/withdraw_sheet.dart';
 
 class WalletScreen extends ConsumerStatefulWidget {
@@ -21,11 +21,9 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   Map<String, dynamic>? _wallet;
   List<Map<String, dynamic>> _accounts = [];
   List<Map<String, dynamic>> _payouts = [];
-  bool _isLoading = false;
   bool _loadingPayouts = false;
   int _accountIndex = 0;
   final _pageController = PageController();
-  final _amountController = TextEditingController();
 
   String _currencyCode = 'XAF';
 
@@ -52,7 +50,6 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
   @override
   void dispose() {
     _pageController.dispose();
-    _amountController.dispose();
     super.dispose();
   }
 
@@ -215,7 +212,14 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             children: [
               Expanded(
                 child: ElevatedButton(
-                  onPressed: _showTopUpDialog,
+                  onPressed: () => TopUpSheet.show(
+                    context,
+                    currencyCode: _currentCurrency,
+                    onCompleted: () {
+                      _loadWallet();
+                      _loadAccounts();
+                    },
+                  ),
                   child: const Text('Top Up'),
                 ),
               ),
@@ -556,92 +560,6 @@ class _WalletScreenState extends ConsumerState<WalletScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-
-  Future<void> _topUp(double amount) async {
-    setState(() => _isLoading = true);
-    try {
-      final res = await ApiService.dio.post('/payments/wallet/topup', data: {
-        'amount': amount,
-        'method': 'mobile_money',
-        'currency': _currentCurrency,
-      });
-      final data = res.data['data'] as Map<String, dynamic>? ?? {};
-      final authUrl = data['authorizationUrl'] as String?;
-      final reference = data['reference'] as String?;
-
-      if (authUrl != null && authUrl.isNotEmpty) {
-        final uri = Uri.parse(authUrl);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text(
-                'Complete the payment in the browser. Your wallet updates automatically once confirmed.'),
-            duration: Duration(seconds: 6),
-          ));
-        }
-        // Give the webhook/poll a moment, then ask the backend to verify+credit
-        await Future.delayed(const Duration(seconds: 8));
-        if (reference != null) {
-          try {
-            await ApiService.dio.post('/payments/wallet/topup/complete',
-                data: {'reference': reference});
-          } catch (_) {}
-        }
-        await _loadWallet();
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-                content: Text('Could not start top-up. Please try again.')),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Top-up failed: ${e.toString()}')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  void _showTopUpDialog() {
-    final amountController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Top Up Wallet'),
-        content: TextField(
-          controller: amountController,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(
-            labelText: 'Amount ($_currentCurrency)',
-            prefixText:
-                '${CurrencyService.getCurrencySymbol(_currentCurrency)} ',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final amount = double.tryParse(amountController.text) ?? 0;
-              if (amount <= 0) return;
-              Navigator.pop(context);
-              await _topUp(amount);
-            },
-            child: const Text('Top Up'),
-          ),
-        ],
       ),
     );
   }

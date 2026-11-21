@@ -10,6 +10,8 @@ import '../../../../shared/services/config_service.dart';
 import '../../../../shared/widgets/bottom_nav.dart';
 import '../../auth/presentation/providers/auth_notifier.dart';
 import '../../home/presentation/screens/pick_map_screen.dart';
+import '../../payments/presentation/widgets/top_up_sheet.dart';
+import '../../payments/presentation/widgets/withdraw_sheet.dart';
 import '../../shared/presentation/widgets/address_editor.dart';
 
 // ── Currency helper ──────────────────────────────────────────────────────────
@@ -312,71 +314,71 @@ class _ProfessionalDashboardScreenState
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
-          // ── Greeting header ─────────────────────────────────────────────────
-          SliverToBoxAdapter(
-            child: _buildHeader(greeting, businessName, avgRating, user),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                const SizedBox(height: 16),
-                // Today's schedule (Priority 1: Bookings)
-                _buildTodaySchedule(todaySchedule, todayCount),
-                const SizedBox(height: 20),
-                // Pending requests (Priority 1: Bookings)
-                if (pendingCount > 0) ...[
-                  _buildPendingRequests(pendingReqs, pendingCount),
-                  const SizedBox(height: 20),
-                ],
-                // KPI strip (Revenue focus)
-                _buildKpiStrip(todayEarnings, todayCount, pendingCount),
-                const SizedBox(height: 20),
-                // Revenue analytics (Priority 2: Finances)
-                _buildRevenueAnalytics(),
-                const SizedBox(height: 20),
-                // Wallet summary (Priority 2: Finances)
-                _buildWalletSummary(data),
-                const SizedBox(height: 20),
-                // Subscription card
-                _buildSubscriptionCard(currentPlan),
-                const SizedBox(height: 20),
-                // Quick actions
-                _buildQuickActions(context),
-                const SizedBox(height: 20),
-                // Performance metrics
-                _buildPerformance(
-                  totalBookings,
-                  totalReviews,
-                  avgRating,
-                  trustScore,
-                  data['analytics'],
+                // ── Greeting header ─────────────────────────────────────────────────
+                SliverToBoxAdapter(
+                  child: _buildHeader(greeting, businessName, avgRating, user),
                 ),
-                const SizedBox(height: 20),
-                // Business health
-                _buildBusinessHealth(data['analytics']),
-                const SizedBox(height: 20),
-                // Location
-                _buildLocationSection(pro),
-                const SizedBox(height: 20),
-                // About Me / Bio
-                _buildBioSection(pro),
-                const SizedBox(height: 20),
-                // Portfolio
-                _buildPortfolio(portfolioUrls),
-                const SizedBox(height: 20),
-                // Business growth
-                _buildBusinessGrowth(data),
-                const SizedBox(height: 20),
-                // Marketing
-                _buildMarketing(context),
-                const SizedBox(height: 20),
-                // Settings
-                _buildBusinessSettings(context),
-                const SizedBox(height: 8),
-              ]),
-            ),
-          ),
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      const SizedBox(height: 16),
+                      // Today's schedule (Priority 1: Bookings)
+                      _buildTodaySchedule(todaySchedule, todayCount),
+                      const SizedBox(height: 20),
+                      // Pending requests (Priority 1: Bookings)
+                      if (pendingCount > 0) ...[
+                        _buildPendingRequests(pendingReqs, pendingCount),
+                        const SizedBox(height: 20),
+                      ],
+                      // KPI strip (Revenue focus)
+                      _buildKpiStrip(todayEarnings, todayCount, pendingCount),
+                      const SizedBox(height: 20),
+                      // Revenue analytics (Priority 2: Finances)
+                      _buildRevenueAnalytics(),
+                      const SizedBox(height: 20),
+                      // Wallet summary (Priority 2: Finances)
+                      _buildWalletSummary(data),
+                      const SizedBox(height: 20),
+                      // Subscription card
+                      _buildSubscriptionCard(currentPlan),
+                      const SizedBox(height: 20),
+                      // Quick actions
+                      _buildQuickActions(context),
+                      const SizedBox(height: 20),
+                      // Performance metrics
+                      _buildPerformance(
+                        totalBookings,
+                        totalReviews,
+                        avgRating,
+                        trustScore,
+                        data['analytics'],
+                      ),
+                      const SizedBox(height: 20),
+                      // Business health
+                      _buildBusinessHealth(data['analytics']),
+                      const SizedBox(height: 20),
+                      // Location
+                      _buildLocationSection(pro),
+                      const SizedBox(height: 20),
+                      // About Me / Bio
+                      _buildBioSection(pro),
+                      const SizedBox(height: 20),
+                      // Portfolio
+                      _buildPortfolio(portfolioUrls),
+                      const SizedBox(height: 20),
+                      // Business growth
+                      _buildBusinessGrowth(data),
+                      const SizedBox(height: 20),
+                      // Marketing
+                      _buildMarketing(context),
+                      const SizedBox(height: 20),
+                      // Settings
+                      _buildBusinessSettings(context),
+                      const SizedBox(height: 8),
+                    ]),
+                  ),
+                ),
               ],
             ),
           ),
@@ -586,7 +588,8 @@ class _ProfessionalDashboardScreenState
         color: _surface,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
-          BoxShadow(color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 8),
+          BoxShadow(
+              color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 8),
         ],
       ),
       child: Column(
@@ -1827,16 +1830,72 @@ class _ProfessionalDashboardScreenState
             final pending = toNum(wallet['pendingBalance'])?.toDouble() ?? 0;
             String fmt(num v) => '$sym${NumberFormat('#,##0').format(v)}';
 
-            return SizedBox(
-              height: 80,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _walletStat('Balance', fmt(balance), _green),
-                  _walletStat('This Month', fmt(monthEarnings), _blue),
-                  _walletStat('Pending', fmt(pending), _amber),
-                ],
-              ),
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: 72,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _walletStat('Balance', fmt(balance), _green),
+                      _walletStat('This Month', fmt(monthEarnings), _blue),
+                      _walletStat('Pending', fmt(pending), _amber),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () => TopUpSheet.show(
+                          context,
+                          currencyCode: currency,
+                          onCompleted: () => ref.invalidate(proWalletProvider),
+                        ),
+                        icon: const Icon(Icons.add_card_outlined, size: 16),
+                        label: const Text('Top Up',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.w700)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _pink,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: balance > 0
+                            ? () => WithdrawSheet.show(
+                                  context,
+                                  availableBalance: balance.toDouble(),
+                                  currencyCode: currency,
+                                  onSubmitted: () =>
+                                      ref.invalidate(proWalletProvider),
+                                )
+                            : null,
+                        icon: const Icon(Icons.payments_outlined, size: 16),
+                        label: const Text('Withdraw',
+                            style: TextStyle(
+                                fontSize: 12, fontWeight: FontWeight.w700)),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: _pink,
+                          side: const BorderSide(color: _pink),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             );
           },
         ),
