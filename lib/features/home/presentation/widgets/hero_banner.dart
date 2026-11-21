@@ -6,6 +6,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/services/config_service.dart';
+import '../../../../shared/theme/colors.dart';
+import '../../../../shared/utils/responsive_helper.dart';
 
 /// React HeroCarousel replica — src/components/HeroCarousel.jsx + .css
 class HomeHeroBanner extends StatefulWidget {
@@ -99,6 +101,7 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
   @override
   Widget build(BuildContext context) {
     final count = _items.length;
+    final isDesktop = ResponsiveHelper.isDesktop(context);
 
     final pageView = PageView.builder(
       controller: _pageController,
@@ -118,13 +121,13 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
               );
             }
           },
+          isDesktop: isDesktop,
         );
       },
     );
 
     // Desktop: fixed-height full-width banner (React .hero = 424px).
-    // Mobile/tablet: React @media (max-width:768px) uses aspect-ratio 16/9
-    // with 16px side inset.
+    // Mobile/tablet: 16/8 aspect ratio with 16px side inset.
     final content = widget.height != null
         ? SizedBox(
             height: widget.height,
@@ -133,7 +136,7 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
           )
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: AspectRatio(aspectRatio: 16 / 9, child: pageView),
+            child: AspectRatio(aspectRatio: 16 / 8, child: pageView),
           );
 
     return content
@@ -148,12 +151,14 @@ class _HeroSlide extends StatelessWidget {
   final int currentIndex;
   final int totalSlides;
   final Function(int) onPageChanged;
+  final bool isDesktop;
 
   const _HeroSlide({
     required this.slide,
     required this.currentIndex,
     required this.totalSlides,
     required this.onPageChanged,
+    required this.isDesktop,
   });
 
   static const _pink = Color(0xFFE91E8C); // React --pink
@@ -183,6 +188,12 @@ class _HeroSlide extends StatelessWidget {
         const Color(0xFF1A0A2E); // React default hero bg
 
     final isMobile = MediaQuery.of(context).size.width < 768;
+
+    // Desktop: React-style design (12px radius, no shadow, pink #E91E8C)
+    // Mobile/tablet: old design (20px radius + shadow, berry #D6006E)
+    if (!isDesktop) {
+      return _buildMobileSlide(context, imageUrl, bgColor, isMobile);
+    }
 
     return Container(
       // React .hero: border-radius: var(--radius) = 12px, no shadow
@@ -279,6 +290,265 @@ class _HeroSlide extends StatelessWidget {
     );
   }
 
+  // Old mobile/tablet design — restored from commit 6d3b5a1
+  Widget _buildMobileSlide(
+      BuildContext context, String imageUrl, Color bgColor, bool isMobile) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: GlayaColors.berry.withValues(alpha: 0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            // Full background image
+            Positioned.fill(
+              child: imageUrl.isNotEmpty
+                  ? CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      errorWidget: (_, __, ___) =>
+                          Container(color: GlayaColors.berry),
+                    )
+                  : Container(
+                      color: GlayaColors.berry,
+                      child: const Icon(
+                        Icons.face_retouching_natural,
+                        size: 56,
+                        color: Colors.white,
+                      ),
+                    ),
+            ),
+            // Left-side gradient overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      Color(0xFF000000).withValues(alpha: 0.75),
+                      Color(0xFF000000).withValues(alpha: 0.3),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.5, 1.0],
+                  ),
+                ),
+              ),
+            ),
+            // Content overlay
+            Positioned.fill(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  isMobile ? 16 : 32,
+                  isMobile ? 12 : 24,
+                  0,
+                  isMobile ? 12 : 16,
+                ),
+                child: SizedBox(
+                  width: isMobile ? null : 400,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Badge
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isMobile ? 6 : 8,
+                            vertical: isMobile ? 1.5 : 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                const Color(0xFFD6006E).withValues(alpha: 0.25),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: const Color(0xFFD6006E)
+                                  .withValues(alpha: 0.5),
+                            ),
+                          ),
+                          child: Text(
+                            slide['badgeText'] as String? ?? 'Special Offer',
+                            style: TextStyle(
+                              fontSize: isMobile ? 9 : 10,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: isMobile ? 6 : 8),
+                        // Title
+                        Text(
+                          slide['title'] as String? ?? 'Your Beauty,',
+                          style: TextStyle(
+                            fontSize: isMobile ? 18 : 28,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            height: 1.1,
+                          ),
+                        ),
+                        Text(
+                          slide['titlePink'] as String? ?? 'Your Way.',
+                          style: TextStyle(
+                            fontSize: isMobile ? 18 : 28,
+                            fontWeight: FontWeight.w800,
+                            color: const Color(0xFFD6006E),
+                            height: 1.1,
+                          ),
+                        ),
+                        SizedBox(height: isMobile ? 4 : 6),
+                        // Subtitle
+                        Text(
+                          slide['subtitle'] as String? ??
+                              'Book trusted beauty professionals\nnear you in minutes.',
+                          style: TextStyle(
+                            fontSize: isMobile ? 10 : 12,
+                            color: const Color(0xD2FFFFFF),
+                            height: 1.4,
+                          ),
+                        ),
+                        SizedBox(height: isMobile ? 10 : 14),
+                        // CTA Button
+                        GestureDetector(
+                          onTap: () => _handleCtaTap(context),
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isMobile ? 14 : 18,
+                              vertical: isMobile ? 6 : 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFD6006E),
+                              borderRadius: BorderRadius.circular(20),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFD6006E)
+                                      .withValues(alpha: 0.4),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  slide['ctaText'] as String? ?? 'Book Now',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: isMobile ? 11 : 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.arrow_forward,
+                                  size: 14,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Navigation arrows
+            Positioned(
+              left: isMobile ? 12 : 16,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => onPageChanged(
+                    (currentIndex - 1 + totalSlides) % totalSlides,
+                  ),
+                  child: Container(
+                    width: isMobile ? 32 : 36,
+                    height: isMobile ? 32 : 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.chevron_left,
+                      color: Colors.white,
+                      size: isMobile ? 18 : 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              right: isMobile ? 12 : 16,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: GestureDetector(
+                  onTap: () => onPageChanged((currentIndex + 1) % totalSlides),
+                  child: Container(
+                    width: isMobile ? 32 : 36,
+                    height: isMobile ? 32 : 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.chevron_right,
+                      color: Colors.white,
+                      size: isMobile ? 18 : 20,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Dots indicator
+            Positioned(
+              bottom: 18,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  totalSlides,
+                  (index) => AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    margin: const EdgeInsets.symmetric(horizontal: 3),
+                    width: index == currentIndex ? 24 : 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: index == currentIndex
+                          ? const Color(0xFFD6006E)
+                          : Colors.white.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(
+                        index == currentIndex ? 4 : 4,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildContent(BuildContext context, bool isMobile) {
     final badgeText = slide['badgeText'] as String? ?? '';
     final title = slide['title'] as String? ?? '';
@@ -352,11 +622,11 @@ class _HeroSlide extends StatelessWidget {
             decoration: BoxDecoration(
               color: _pink,
               borderRadius: BorderRadius.circular(24),
-              boxShadow: [
+              boxShadow: const [
                 BoxShadow(
-                  color: const Color(0x66E91E8C), // rgba(233,30,140,0.4)
+                  color: Color(0x66E91E8C), // rgba(233,30,140,0.4)
                   blurRadius: 14,
-                  offset: const Offset(0, 4),
+                  offset: Offset(0, 4),
                 ),
               ],
             ),
