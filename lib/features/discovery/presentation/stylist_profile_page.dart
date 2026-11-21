@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../shared/providers/location_provider.dart';
 import '../../../../shared/services/api_service.dart';
 import '../../../../shared/services/config_service.dart';
 import '../../../../shared/widgets/bottom_nav.dart';
@@ -18,6 +19,8 @@ class StylistProfilePage extends ConsumerStatefulWidget {
 class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   int selectedTab = 0;
   Map<String, dynamic>? _professionalData;
+  Map<String, dynamic>? _profile;
+  Map<String, dynamic>? _analytics;
   bool _isLoading = true;
 
   final Color primaryColor = const Color(0xFFD6006E);
@@ -40,17 +43,144 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
     _loadProfessionalData();
   }
 
+  Future<dynamic> _getJson(String path, {Map<String, dynamic>? query}) async {
+    try {
+      final res = await ApiService.dio.get(path, queryParameters: query);
+      return res.data?['data'];
+    } catch (_) {
+      return null;
+    }
+  }
+
   Future<void> _loadProfessionalData() async {
     try {
-      final response = await ApiService.dio.get('/professionals/me/dashboard');
+      final results = await Future.wait([
+        _getJson('/professionals/me'),
+        _getJson('/professionals/me/dashboard'),
+        _getJson('/professionals/me/analytics', query: {'period': 'month'}),
+      ]);
+      if (!mounted) return;
       setState(() {
-        _professionalData = response.data['data'] as Map<String, dynamic>;
+        _profile = results[0] as Map<String, dynamic>?;
+        _professionalData = results[1] as Map<String, dynamic>?;
+        _analytics = results[2] as Map<String, dynamic>?;
         _isLoading = false;
       });
     } catch (e) {
       debugPrint('Error loading professional data: $e');
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  // ── Data helpers ──────────────────────────────────────────────
+
+  Map<String, dynamic> get _pro =>
+      _professionalData?['professional'] as Map<String, dynamic>? ?? {};
+
+  Map<String, dynamic> get _profileUser =>
+      _profile?['user'] as Map<String, dynamic>? ?? {};
+
+  String _resolveMediaUrl(dynamic url) {
+    if (url == null) return '';
+    final str = url.toString();
+    if (str.isEmpty) return '';
+    if (str.startsWith('http')) return ConfigService().replaceLocalhost(str);
+    return '${ConfigService().socketUrl}$str';
+  }
+
+  String _formatPrice(dynamic price) {
+    final currency = ref.read(locationProvider).currency ??
+        _pro['currency']?.toString() ??
+        'XAF';
+    final value = num.tryParse(price?.toString() ?? '') ?? 0;
+    final symbol = switch (currency.toUpperCase()) {
+      'USD' => '\$',
+      'EUR' => '€',
+      'GBP' => '£',
+      'NGN' => '₦',
+      'XAF' => 'FCFA ',
+      'GHS' => 'GH₵ ',
+      'KES' => 'KSh ',
+      'ZAR' => 'R ',
+      'INR' => '₹',
+      'CAD' => 'C\$',
+      'AUD' => 'A\$',
+      'JPY' || 'CNY' => '¥',
+      'BRL' => 'R\$',
+      'MXN' => 'MX\$',
+      _ => '$currency ',
+    };
+    final formatted = value == value.roundToDouble()
+        ? value.toInt().toString()
+        : value.toStringAsFixed(2);
+    return '$symbol$formatted';
+  }
+
+  String _formatDuration(dynamic mins) {
+    final m = (mins is num ? mins : num.tryParse(mins?.toString() ?? '')) ?? 0;
+    final h = m ~/ 60;
+    final rem = m % 60;
+    if (h == 0) return '${rem.toInt()}m';
+    return rem == 0 ? '${h}h' : '${h}h ${rem.toInt()}m';
+  }
+
+  String _formatTime(dynamic time) {
+    final str = time?.toString() ?? '';
+    if (str.contains(':')) {
+      final parts = str.split(':');
+      final hour = int.tryParse(parts[0]) ?? 0;
+      final minute = int.tryParse(parts[1]) ?? 0;
+      final period = hour >= 12 ? 'PM' : 'AM';
+      final hour12 = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+      return '$hour12:${minute.toString().padLeft(2, '0')} $period';
+    }
+    return str;
+  }
+
+  List<Map<String, dynamic>> get _reviews {
+    final raw = (_analytics?['recentReviews'] as List<dynamic>?) ??
+        (_profile?['reviews'] as List<dynamic>?) ??
+        const [];
+    return raw
+        .whereType<Map>()
+        .map((e) => Map<String, dynamic>.from(e))
+        .toList();
+  }
+
+  List<String> get _galleryImageUrls {
+    final urls = <String>[];
+    final galleries = (_profile?['portfolioGalleries'] as List<dynamic>?) ?? [];
+    for (final g in galleries) {
+      if (g is! Map) continue;
+      void addMedia(dynamic media) {
+        if (media is! Map) return;
+        for (final key in ['mediaUrl', 'thumbnailUrl', 'url']) {
+          final u = _resolveMediaUrl(media[key]);
+          if (u.isNotEmpty) {
+            urls.add(u);
+            return;
+          }
+        }
+      }
+
+      addMedia(g['coverMedia']);
+      final media = g['media'] as List<dynamic>?;
+      if (media != null) {
+        for (final m in media) {
+          addMedia(m);
+        }
+      }
+    }
+    if (urls.isEmpty) {
+      final portfolio = (_profile?['portfolioUrls'] as List<dynamic>?) ??
+          (_pro['portfolioUrls'] as List<dynamic>?) ??
+          const [];
+      for (final u in portfolio) {
+        final resolved = _resolveMediaUrl(u);
+        if (resolved.isNotEmpty) urls.add(resolved);
+      }
+    }
+    return urls;
   }
 
   @override
@@ -109,18 +239,13 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildHeroSection() {
-    final pro =
-        _professionalData?['professional'] as Map<String, dynamic>? ?? {};
-    final portfolioUrls = (pro['portfolioUrls'] as List<dynamic>?) ?? [];
-    // Filter out null values from portfolioUrls
-    final validUrls = portfolioUrls.whereType<String>().toList();
-    final coverImage = validUrls.isNotEmpty ? validUrls[0] : null;
-    final configService = ConfigService();
-    final imageUrl = coverImage != null
-        ? (coverImage.startsWith('http')
-            ? configService.replaceLocalhost(coverImage)
-            : '${configService.socketUrl}$coverImage')
-        : 'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=1200&q=85';
+    final galleryUrls = _galleryImageUrls;
+    final userPhoto = _resolveMediaUrl(_profileUser['photoUrl']);
+    final imageUrl = galleryUrls.isNotEmpty
+        ? galleryUrls.first
+        : userPhoto.isNotEmpty
+            ? userPhoto
+            : 'https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?auto=format&fit=crop&w=1200&q=85';
 
     return SizedBox(
       height: 235,
@@ -183,16 +308,44 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildProfileHeader() {
-    final pro =
-        _professionalData?['professional'] as Map<String, dynamic>? ?? {};
-    final businessName = pro['businessName'] as String? ?? 'Professional';
-    final category = pro['category'] as String? ?? 'Professional';
-    final city = pro['city'] as String? ?? 'Unknown';
-    final state = pro['state'] as String? ?? '';
-    final locationText = city.isNotEmpty ? '$city, $state' : 'Location not set';
-    final isVerified = pro['verificationStatus'] == 'approved';
+    final profile = _profile ?? {};
+    final pro = _pro;
+    final category = profile['category'] as Map<String, dynamic>?;
+    final serviceCategories = profile['serviceCategories'];
+    final categoryName =
+        (category?['name'] ?? category?['title'])?.toString() ??
+            (serviceCategories is List && serviceCategories.isNotEmpty
+                ? serviceCategories
+                    .map((c) => c is Map ? (c['name'] ?? c['title']) : c)
+                    .where((c) => c != null)
+                    .join(', ')
+                : null) ??
+            'Professional';
+    final businessName = (profile['businessName'] ??
+            profile['user']?['name'] ??
+            pro['name'] ??
+            'Professional')
+        .toString();
+    final city = profile['city']?.toString() ?? '';
+    final state = profile['state']?.toString() ?? '';
+    final neighborhood = profile['neighborhood']?.toString() ?? '';
+    final address = profile['businessAddress']?.toString() ?? '';
+    final parts = [
+      if (neighborhood.isNotEmpty) neighborhood,
+      if (city.isNotEmpty) city,
+      if (state.isNotEmpty) state,
+    ];
+    final locationText = parts.isNotEmpty
+        ? parts.join(', ')
+        : address.isNotEmpty
+            ? address
+            : 'Location not set';
+    final isVerified =
+        (profile['verificationStatus'] ?? pro['verificationStatus']) ==
+            'approved';
     final user = ref.watch(authNotifierProvider).valueOrNull;
-    final isOwner = user?.id != null && user!.id == pro['userId']?.toString();
+    final proUserId = (profile['userId'] ?? profile['user']?['id'])?.toString();
+    final isOwner = user?.id != null && user!.id == proUserId;
 
     return Transform.translate(
       offset: const Offset(0, -35),
@@ -242,7 +395,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          '$category  •  Professional',
+                          '$categoryName  •  Professional',
                           style: TextStyle(
                             color: secondaryText,
                             fontSize: 13,
@@ -345,11 +498,11 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   }
 
   Widget _buildProfilePhoto() {
-    final user = ref.read(authNotifierProvider).valueOrNull;
-    final photoUrl = user?.photoUrl;
-    final configService = ConfigService();
-    final imageUrl = photoUrl != null
-        ? configService.replaceLocalhost(photoUrl)
+    final photoUrl = _profileUser['photoUrl'] ??
+        _profile?['photoUrl'] ??
+        ref.read(authNotifierProvider).valueOrNull?.photoUrl;
+    final imageUrl = _resolveMediaUrl(photoUrl).isNotEmpty
+        ? _resolveMediaUrl(photoUrl)
         : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=85';
 
     return Container(
@@ -417,14 +570,20 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildStats() {
-    final pro =
-        _professionalData?['professional'] as Map<String, dynamic>? ?? {};
-    final avgRating =
-        num.tryParse(pro['avgRating']?.toString() ?? '')?.toStringAsFixed(1) ??
-            '0.0';
-    final totalReviews = (pro['totalReviews'] as num?)?.toInt() ?? 0;
-    final totalBookings = (pro['totalBookings'] as num?)?.toInt() ?? 0;
-    final trustScore = (pro['trustScore'] as num?)?.toInt() ?? 0;
+    final pro = _pro;
+    final profile = _profile ?? {};
+    final avgRating = num.tryParse(
+                (pro['avgRating'] ?? profile['avgRating'])?.toString() ?? '')
+            ?.toStringAsFixed(1) ??
+        '0.0';
+    final totalReviews =
+        ((pro['totalReviews'] ?? profile['totalReviews']) as num?)?.toInt() ??
+            0;
+    final totalBookings =
+        ((pro['totalBookings'] ?? profile['totalBookings']) as num?)?.toInt() ??
+            0;
+    final trustScore =
+        ((pro['trustScore'] ?? profile['trustScore']) as num?)?.toInt() ?? 0;
 
     return Container(
       color: Colors.white,
@@ -600,9 +759,9 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
 
   Widget _buildOverview() {
     final user = ref.watch(authNotifierProvider).valueOrNull;
-    final pro =
-        _professionalData?['professional'] as Map<String, dynamic>? ?? {};
-    final isOwner = user?.id != null && user!.id == pro['userId']?.toString();
+    final proUserId =
+        (_profile?['userId'] ?? _profile?['user']?['id'])?.toString();
+    final isOwner = user?.id != null && user!.id == proUserId;
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -634,15 +793,12 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildAboutCard() {
-    final pro =
-        _professionalData?['professional'] as Map<String, dynamic>? ?? {};
-    final bio = pro['bio'] as String? ??
-        pro['about'] as String? ??
-        "Hi! I'm a professional passionate about providing excellent service. "
-            "My goal is to give you a personalized experience and results you'll love.";
+    final profile = _profile ?? {};
+    final bio = profile['bio'] as String? ?? profile['about'] as String? ?? '';
 
     final user = ref.watch(authNotifierProvider).valueOrNull;
-    final isOwner = user?.id != null && user!.id == pro['userId']?.toString();
+    final proUserId = (profile['userId'] ?? profile['user']?['id'])?.toString();
+    final isOwner = user?.id != null && user!.id == proUserId;
 
     return _sectionCard(
       child: Column(
@@ -668,8 +824,16 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
           ),
           const SizedBox(height: 12),
           Text(
-            bio,
-            style: TextStyle(color: textColor, fontSize: 14, height: 1.55),
+            bio.isNotEmpty
+                ? bio
+                : (isOwner
+                    ? 'No bio yet — tap Edit to introduce yourself.'
+                    : 'This professional hasn\'t added a bio yet.'),
+            style: TextStyle(
+              color: bio.isEmpty ? secondaryText : textColor,
+              fontSize: 14,
+              height: 1.55,
+            ),
           ),
         ],
       ),
@@ -762,15 +926,37 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildOpeningHours() {
-    final hours = [
-      ['Monday', '9:00 AM – 6:00 PM'],
-      ['Tuesday', '9:00 AM – 6:00 PM'],
-      ['Wednesday', '9:00 AM – 6:00 PM'],
-      ['Thursday', '9:00 AM – 6:00 PM'],
-      ['Friday', '9:00 AM – 7:00 PM'],
-      ['Saturday', '9:00 AM – 5:00 PM'],
-      ['Sunday', 'Closed'],
-    ];
+    // Backend dayOfWeek follows JS getDay(): 0=Sunday ... 6=Saturday.
+    // Display order: Monday..Sunday.
+    const displayOrder = [1, 2, 3, 4, 5, 6, 0];
+    const dayNames = {
+      0: 'Sunday',
+      1: 'Monday',
+      2: 'Tuesday',
+      3: 'Wednesday',
+      4: 'Thursday',
+      5: 'Friday',
+      6: 'Saturday',
+    };
+    final availability =
+        (_profile?['availability'] as List<dynamic>?) ?? const [];
+
+    final hours = displayOrder.map((day) {
+      final slots = availability.where((a) {
+        if (a is! Map) return false;
+        final d = (a['dayOfWeek'] ?? a['day_of_week']) as num?;
+        final blocked = a['isBlocked'] ?? a['is_blocked'];
+        return d?.toInt() == day && blocked != true;
+      }).toList();
+      if (slots.isEmpty) return [dayNames[day]!, 'Closed'];
+      final ranges = slots.map((s) {
+        final s_ = s as Map;
+        final start = _formatTime(s_['startTime'] ?? s_['start_time']);
+        final end = _formatTime(s_['endTime'] ?? s_['end_time']);
+        return start.isEmpty || end.isEmpty ? 'Open' : '$start – $end';
+      }).toList();
+      return [dayNames[day]!, ranges.join(', ')];
+    }).toList();
 
     return _sectionCard(
       child: Column(
@@ -849,6 +1035,24 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildCustomerReviews() {
+    final reviews = _reviews;
+    final pro = _pro;
+    final profile = _profile ?? {};
+    final avgRating = num.tryParse(
+            (pro['avgRating'] ?? profile['avgRating'])?.toString() ?? '') ??
+        0;
+    final totalReviews =
+        ((pro['totalReviews'] ?? profile['totalReviews']) as num?)?.toInt() ??
+            reviews.length;
+    final ratingDisplay = avgRating == avgRating.roundToDouble()
+        ? avgRating.toInt().toString()
+        : avgRating.toStringAsFixed(1);
+    final filledStars = avgRating.round().clamp(0, 5);
+    final fiveStarCount = reviews
+        .where((r) => ((r['rating'] ?? r['stars']) as num? ?? 0) >= 5)
+        .length;
+    final latestReview = reviews.isNotEmpty ? reviews.first : null;
+
     return _sectionCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -867,7 +1071,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                 child: Row(
                   children: [
                     Text(
-                      'See All (124)',
+                      'See All ($totalReviews)',
                       style: TextStyle(
                         color: primaryColor,
                         fontSize: 12,
@@ -890,7 +1094,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                   Row(
                     children: [
                       Text(
-                        '4.8',
+                        ratingDisplay,
                         style: TextStyle(
                           color: textColor,
                           fontSize: 31,
@@ -901,9 +1105,11 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                       Row(
                         children: List.generate(
                           5,
-                          (index) => const Icon(
-                            Icons.star_rounded,
-                            color: Color(0xFFE7A91C),
+                          (index) => Icon(
+                            index < filledStars
+                                ? Icons.star_rounded
+                                : Icons.star_border_rounded,
+                            color: const Color(0xFFE7A91C),
                             size: 17,
                           ),
                         ),
@@ -911,7 +1117,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                     ],
                   ),
                   Text(
-                    'Based on 124 reviews',
+                    'Based on $totalReviews reviews',
                     style: TextStyle(color: secondaryText, fontSize: 10),
                   ),
                 ],
@@ -924,42 +1130,73 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     _reviewMetric(
-                      Icons.sentiment_satisfied_alt_outlined,
-                      'Great service',
-                      '96%',
+                      Icons.reviews_outlined,
+                      'Total Reviews',
+                      '$totalReviews',
                     ),
                     _reviewMetric(
-                      Icons.favorite_border_rounded,
-                      'Professional',
-                      '94%',
+                      Icons.star_rounded,
+                      'Avg Rating',
+                      ratingDisplay,
                     ),
                     _reviewMetric(
                       Icons.thumb_up_alt_outlined,
-                      'Highly recommend',
-                      '92%',
+                      '5-Star Reviews',
+                      '$fiveStarCount',
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 18),
-          const Divider(),
-          const SizedBox(height: 12),
-          _reviewItem(
-            name: 'Jessica M.',
-            date: '2 days ago',
-            text: 'Alicia did an amazing job with my braids! '
-                'She was professional, kind and took her time. '
-                'I\'ll definitely be booking again.',
-            imageUrl:
-                'https://images.unsplash.com/photo-1494790108377-be9c29b29330'
-                '?auto=format&fit=crop&w=200&q=80',
-          ),
+          if (latestReview != null) ...[
+            const SizedBox(height: 18),
+            const Divider(),
+            const SizedBox(height: 12),
+            _reviewItem(
+              name: _reviewerName(latestReview),
+              date: _reviewDate(latestReview),
+              text: _reviewText(latestReview),
+              imageUrl: _reviewImage(latestReview),
+              rating: _reviewRating(latestReview),
+            ),
+          ],
         ],
       ),
     );
   }
+
+  String _reviewerName(Map<String, dynamic> r) {
+    final n = r['reviewer_name'] ??
+        r['reviewerName'] ??
+        r['reviewer']?['name'] ??
+        r['user']?['name'];
+    return n?.toString() ?? 'Customer';
+  }
+
+  String _reviewDate(Map<String, dynamic> r) {
+    final raw = r['created_at'] ?? r['createdAt'];
+    if (raw == null) return '';
+    final dt = DateTime.tryParse(raw.toString());
+    if (dt == null) return '';
+    final diff = DateTime.now().difference(dt);
+    if (diff.inDays == 0) return 'Today';
+    if (diff.inDays == 1) return 'Yesterday';
+    if (diff.inDays < 30) return '${diff.inDays} days ago';
+    if (diff.inDays < 365) return '${(diff.inDays / 30).floor()} months ago';
+    return '${(diff.inDays / 365).floor()} years ago';
+  }
+
+  int _reviewRating(Map<String, dynamic> r) =>
+      ((r['rating'] ?? r['stars']) as num?)?.toInt() ?? 5;
+
+  String _reviewText(Map<String, dynamic> r) =>
+      (r['comment'] ?? r['review'] ?? r['text'] ?? '').toString();
+
+  String _reviewImage(Map<String, dynamic> r) =>
+      _resolveMediaUrl(r['reviewer_photo_url'] ??
+          r['reviewer']?['photoUrl'] ??
+          r['user']?['photoUrl']);
 
   Widget _reviewMetric(IconData icon, String title, String percentage) {
     return Padding(
@@ -992,11 +1229,26 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
     required String date,
     required String text,
     required String imageUrl,
+    int rating = 5,
   }) {
+    final clampedRating = rating.clamp(0, 5);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CircleAvatar(radius: 21, backgroundImage: NetworkImage(imageUrl)),
+        CircleAvatar(
+          radius: 21,
+          backgroundColor: lightPink,
+          backgroundImage: imageUrl.isNotEmpty ? NetworkImage(imageUrl) : null,
+          child: imageUrl.isEmpty
+              ? Text(
+                  name.isNotEmpty ? name[0].toUpperCase() : '?',
+                  style: TextStyle(
+                    color: primaryColor,
+                    fontWeight: FontWeight.w800,
+                  ),
+                )
+              : null,
+        ),
         const SizedBox(width: 11),
         Expanded(
           child: Column(
@@ -1023,9 +1275,11 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
               Row(
                 children: List.generate(
                   5,
-                  (index) => const Icon(
-                    Icons.star_rounded,
-                    color: Color(0xFFE7A91C),
+                  (index) => Icon(
+                    index < clampedRating
+                        ? Icons.star_rounded
+                        : Icons.star_border_rounded,
+                    color: const Color(0xFFE7A91C),
                     size: 13,
                   ),
                 ),
@@ -1047,6 +1301,20 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildReviews() {
+    final reviews = _reviews;
+    final pro = _pro;
+    final profile = _profile ?? {};
+    final avgRating = num.tryParse(
+            (pro['avgRating'] ?? profile['avgRating'])?.toString() ?? '') ??
+        0;
+    final totalReviews =
+        ((pro['totalReviews'] ?? profile['totalReviews']) as num?)?.toInt() ??
+            reviews.length;
+    final ratingDisplay = avgRating == avgRating.roundToDouble()
+        ? avgRating.toInt().toString()
+        : avgRating.toStringAsFixed(1);
+    final filledStars = avgRating.round().clamp(0, 5);
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -1055,7 +1323,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
             child: Column(
               children: [
                 Text(
-                  '4.8',
+                  ratingDisplay,
                   style: TextStyle(
                     color: textColor,
                     fontSize: 45,
@@ -1066,47 +1334,53 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(
                     5,
-                    (_) => const Icon(
-                      Icons.star_rounded,
-                      color: Color(0xFFE7A91C),
+                    (index) => Icon(
+                      index < filledStars
+                          ? Icons.star_rounded
+                          : Icons.star_border_rounded,
+                      color: const Color(0xFFE7A91C),
                       size: 23,
                     ),
                   ),
                 ),
                 const SizedBox(height: 5),
                 Text(
-                  '124 customer reviews',
+                  '$totalReviews customer reviews',
                   style: TextStyle(color: secondaryText, fontSize: 12),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 14),
-          _sectionCard(
-            child: Column(
-              children: [
-                _reviewItem(
-                  name: 'Jessica M.',
-                  date: '2 days ago',
-                  text: 'Alicia did an amazing job with my braids! '
-                      'She was professional and very kind.',
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1494790108377-be9c29b29330'
-                      '?auto=format&fit=crop&w=200&q=80',
+          if (reviews.isEmpty)
+            _sectionCard(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    'No reviews yet',
+                    style: TextStyle(color: secondaryText, fontSize: 13),
+                  ),
                 ),
-                const Divider(height: 30),
-                _reviewItem(
-                  name: 'Maria T.',
-                  date: '1 week ago',
-                  text: 'Beautiful work and very professional. '
-                      'The entire appointment was smooth.',
-                  imageUrl:
-                      'https://images.unsplash.com/photo-1544005313-94ddf0286df2'
-                      '?auto=format&fit=crop&w=200&q=80',
-                ),
-              ],
+              ),
+            )
+          else
+            _sectionCard(
+              child: Column(
+                children: [
+                  for (var i = 0; i < reviews.length; i++) ...[
+                    if (i > 0) const Divider(height: 30),
+                    _reviewItem(
+                      name: _reviewerName(reviews[i]),
+                      date: _reviewDate(reviews[i]),
+                      text: _reviewText(reviews[i]),
+                      imageUrl: _reviewImage(reviews[i]),
+                      rating: _reviewRating(reviews[i]),
+                    ),
+                  ],
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -1117,18 +1391,39 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildServices() {
+    final services = ((_profile?['services'] as List<dynamic>?) ?? const [])
+        .whereType<Map>()
+        .where((s) => s['isActive'] != false)
+        .toList();
+
+    if (services.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: _sectionCard(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: Text(
+                'No services listed yet',
+                style: TextStyle(color: secondaryText, fontSize: 13),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _serviceCard(title: 'Box Braids', duration: '2h 30m', price: '\$120'),
-          _serviceCard(
-            title: 'Natural Hair Styling',
-            duration: '1h 30m',
-            price: '\$85',
-          ),
-          _serviceCard(title: 'Hair Coloring', duration: '2h', price: '\$150'),
-          _serviceCard(title: 'Silk Press', duration: '1h 45m', price: '\$95'),
+          for (final s in services)
+            _serviceCard(
+              title: (s['name'] ?? 'Service').toString(),
+              duration:
+                  _formatDuration(s['durationMins'] ?? s['duration_mins']),
+              price: _formatPrice(s['price']),
+            ),
         ],
       ),
     );
@@ -1193,12 +1488,24 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildGallery() {
-    final images = [
-      'https://images.unsplash.com/photo-1605497788044-5a32c7078486',
-      'https://images.unsplash.com/photo-1562322140-8baeececf3df',
-      'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a',
-      'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e',
-    ];
+    final images = _galleryImageUrls;
+
+    if (images.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: _sectionCard(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: Center(
+              child: Text(
+                'No portfolio photos yet',
+                style: TextStyle(color: secondaryText, fontSize: 13),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -1214,7 +1521,11 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
         itemBuilder: (_, index) {
           return ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.network(images[index], fit: BoxFit.cover),
+            child: Image.network(
+              images[index],
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(color: lightPink),
+            ),
           );
         },
       ),
@@ -1226,6 +1537,28 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   // ------------------------------------------------------------
 
   Widget _buildLocation() {
+    final profile = _profile ?? {};
+    final name = (profile['businessName'] ??
+            profile['user']?['name'] ??
+            _pro['name'] ??
+            'Professional')
+        .toString();
+    final addressParts = [
+      profile['neighborhood'],
+      profile['city'],
+      profile['state'],
+      profile['country'],
+    ].map((e) => e?.toString() ?? '').where((e) => e.isNotEmpty).toList();
+    final businessAddress = profile['businessAddress']?.toString() ?? '';
+    final locationText = addressParts.isNotEmpty
+        ? addressParts.join(', ')
+        : businessAddress.isNotEmpty
+            ? businessAddress
+            : 'Address not set';
+    final location = profile['location'];
+    final hasCoords =
+        location is Map && location['lat'] != null && location['lng'] != null;
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: _sectionCard(
@@ -1241,17 +1574,33 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                 color: const Color(0xFFE4E0DC),
                 borderRadius: BorderRadius.circular(15),
               ),
-              child: const Center(
-                child: Icon(
-                  Icons.location_on,
-                  color: Color(0xFFD6006E),
-                  size: 48,
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.location_on,
+                      color: Color(0xFFD6006E),
+                      size: 48,
+                    ),
+                    if (hasCoords)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Text(
+                          '${location['lat']}, ${location['lng']}',
+                          style: TextStyle(
+                            color: secondaryText,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
             const SizedBox(height: 14),
             Text(
-              'Alicia B. Styles',
+              name,
               style: TextStyle(
                 color: textColor,
                 fontSize: 15,
@@ -1260,7 +1609,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
             ),
             const SizedBox(height: 5),
             Text(
-              'Los Angeles, California',
+              locationText,
               style: TextStyle(color: secondaryText, fontSize: 12),
             ),
           ],
@@ -1553,7 +1902,7 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Book Alicia B. Styles',
+                'Book ${(_profile?['businessName'] ?? _profile?['user']?['name'] ?? _pro['name'] ?? 'Professional')}',
                 style: TextStyle(
                   color: textColor,
                   fontSize: 21,
