@@ -73,7 +73,7 @@ class _PhotoReelsWidgetState extends ConsumerState<PhotoReelsWidget> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const SizedBox(
-        height: 200,
+        height: 240,
         child: Center(child: CircularProgressIndicator()),
       );
     }
@@ -145,7 +145,7 @@ class _HorizontalPhotoCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
+      height: 240,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -173,12 +173,12 @@ class _GridPhotoRow extends StatelessWidget {
         const visibleCount = 5;
         // Each _PhotoCard carries a 12px right margin, so reserve gap space
         // for every visible card (including the trailing one).
-        final cardWidth = ((constraints.maxWidth - 32 - gap * visibleCount) /
-                visibleCount)
-            .clamp(150.0, 240.0);
+        final cardWidth =
+            ((constraints.maxWidth - 32 - gap * visibleCount) / visibleCount)
+                .clamp(150.0, 240.0);
 
         return SizedBox(
-          height: 220,
+          height: 264,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -187,7 +187,7 @@ class _GridPhotoRow extends StatelessWidget {
               return _PhotoCard(
                 reel: reels[index],
                 width: cardWidth,
-                height: 210,
+                height: 252,
               );
             },
           ),
@@ -205,7 +205,7 @@ class _PhotoCard extends StatelessWidget {
   const _PhotoCard({
     required this.reel,
     this.width = 120,
-    this.height = 200,
+    this.height = 240,
   });
 
   @override
@@ -302,7 +302,8 @@ class _PhotoCard extends StatelessWidget {
                           reel.taggedProfessional != null) ...[
                         const SizedBox(width: 6),
                         VerificationBadge(
-                          subscriptionType: reel.taggedProfessional!.subscriptionType,
+                          subscriptionType:
+                              reel.taggedProfessional!.subscriptionType,
                         ),
                       ],
                     ],
