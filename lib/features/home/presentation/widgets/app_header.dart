@@ -595,7 +595,8 @@ class _LocationPickerDialogContentState
                               hintStyle: TextStyle(fontSize: 14),
                               contentPadding: EdgeInsets.zero,
                             ),
-                            style: const TextStyle(fontSize: 14),
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.black),
                             onSubmitted: _searchLocation,
                           ),
                         ),
