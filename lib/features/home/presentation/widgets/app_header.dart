@@ -670,6 +670,7 @@ class _LocationPickerDialogContentState
                               )
                             : const Text(
                                 'Use Current Location',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
