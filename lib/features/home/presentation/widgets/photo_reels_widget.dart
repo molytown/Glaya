@@ -73,7 +73,7 @@ class _PhotoReelsWidgetState extends ConsumerState<PhotoReelsWidget> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const SizedBox(
-        height: 240,
+        height: 200,
         child: Center(child: CircularProgressIndicator()),
       );
     }
@@ -145,7 +145,7 @@ class _HorizontalPhotoCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 240,
+      height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -171,6 +171,10 @@ class _GridPhotoRow extends StatelessWidget {
       builder: (context, constraints) {
         const gap = 12.0;
         const visibleCount = 5;
+        // Desktop-only: cards are 20% taller than tablet.
+        final isDesktop = ResponsiveHelper.isDesktop(context);
+        final rowHeight = isDesktop ? 264.0 : 220.0;
+        final cardHeight = isDesktop ? 252.0 : 210.0;
         // Each _PhotoCard carries a 12px right margin, so reserve gap space
         // for every visible card (including the trailing one).
         final cardWidth =
@@ -178,7 +182,7 @@ class _GridPhotoRow extends StatelessWidget {
                 .clamp(150.0, 240.0);
 
         return SizedBox(
-          height: 264,
+          height: rowHeight,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -187,7 +191,7 @@ class _GridPhotoRow extends StatelessWidget {
               return _PhotoCard(
                 reel: reels[index],
                 width: cardWidth,
-                height: 252,
+                height: cardHeight,
               );
             },
           ),
@@ -205,7 +209,7 @@ class _PhotoCard extends StatelessWidget {
   const _PhotoCard({
     required this.reel,
     this.width = 120,
-    this.height = 240,
+    this.height = 200,
   });
 
   @override
