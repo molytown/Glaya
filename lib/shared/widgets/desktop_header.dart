@@ -884,6 +884,8 @@ class _UserMenu extends ConsumerWidget {
         Offset.zero & overlay.size,
       ),
       items: [
+        if (user.role == 'professional' || user.role == 'both')
+          const PopupMenuItem(value: 'dashboard', child: Text('Dashboard')),
         const PopupMenuItem(value: 'profile', child: Text('Profile')),
         const PopupMenuItem(value: 'bookings', child: Text('Bookings')),
         if (user.role == 'professional' || user.role == 'both')
@@ -910,6 +912,9 @@ class _UserMenu extends ConsumerWidget {
   void _openSlideOut(BuildContext context, String key) {
     final isPro = user.role == 'professional' || user.role == 'both';
     switch (key) {
+      case 'dashboard':
+        showPageSlideOut(context,
+            title: 'Dashboard', child: const ProfessionalDashboardScreen());
       case 'profile':
         showPageSlideOut(
           context,
