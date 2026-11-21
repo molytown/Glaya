@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/auth/presentation/providers/auth_notifier.dart';
 import '../../features/discovery/presentation/discovery_provider.dart';
+import '../../shared/utils/responsive_helper.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -37,7 +38,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   @override
   void initState() {
     super.initState();
-    // Randomly select a splash image
+    // Default: randomly select a splash image for mobile/desktop
     _selectedImage = _splashImages[math.Random().nextInt(_splashImages.length)];
     _zoomController = AnimationController(
       vsync: this,
@@ -115,8 +116,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Use tablet-specific splash image on tablet/iPad
+    final displayImage = ResponsiveHelper.isTablet(context)
+        ? 'assets/splash_tablet.jpg'
+        : _selectedImage;
+
     return Scaffold(
-      backgroundColor: Color(0xFF000000),
+      backgroundColor: const Color(0xFF000000),
       body: GestureDetector(
         onTap: () {
           if (!_navigated) {
@@ -139,104 +145,107 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 );
               },
               child: Image.asset(
-                _selectedImage,
+                displayImage,
                 fit: BoxFit.cover,
               ),
             ),
-            Positioned(
-              top: 16,
-              right: 16,
-              child: Image.asset(
-                'assets/logo.png',
-                width: 80,
-                height: 80,
+            // Only show overlays on mobile/desktop (tablet image has branding built in)
+            if (!ResponsiveHelper.isTablet(context)) ...[
+              Positioned(
+                top: 16,
+                right: 16,
+                child: Image.asset(
+                  'assets/logo.png',
+                  width: 80,
+                  height: 80,
+                ),
               ),
-            ),
-            const Positioned(
-              bottom: 32,
-              left: 16,
-              right: 16,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'FIND',
-                    style: TextStyle(
-                      fontFamily: 'Rained Personal',
-                      color: Colors.white,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                      shadows: [
-                        Shadow(
-                          color: Color(0xFF000000),
-                          offset: Offset(0, 2),
-                          blurRadius: 4,
-                        ),
-                      ],
+              const Positioned(
+                bottom: 32,
+                left: 16,
+                right: 16,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'FIND',
+                      style: TextStyle(
+                        fontFamily: 'Rained Personal',
+                        color: Colors.white,
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                        shadows: [
+                          Shadow(
+                            color: Color(0xFF000000),
+                            offset: Offset(0, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 1),
-                  Text(
-                    'AND BOOK',
-                    style: TextStyle(
-                      fontFamily: 'Rained Personal',
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                      shadows: [
-                        Shadow(
-                          color: Color(0xFF000000),
-                          offset: Offset(0, 2),
-                          blurRadius: 4,
-                        ),
-                      ],
+                    SizedBox(height: 1),
+                    Text(
+                      'AND BOOK',
+                      style: TextStyle(
+                        fontFamily: 'Rained Personal',
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                        shadows: [
+                          Shadow(
+                            color: Color(0xFF000000),
+                            offset: Offset(0, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 1),
-                  Text(
-                    'PROS NEAR YOUR',
-                    style: TextStyle(
-                      fontFamily: 'Rained Personal',
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.0,
-                      shadows: [
-                        Shadow(
-                          color: Color(0xFF000000),
-                          offset: Offset(0, 2),
-                          blurRadius: 4,
-                        ),
-                      ],
+                    SizedBox(height: 1),
+                    Text(
+                      'PROS NEAR YOUR',
+                      style: TextStyle(
+                        fontFamily: 'Rained Personal',
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                        shadows: [
+                          Shadow(
+                            color: Color(0xFF000000),
+                            offset: Offset(0, 2),
+                            blurRadius: 4,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            // Swipe hint indicator
-            Positioned(
-              bottom: 120,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: AnimatedBuilder(
-                  animation: _zoomController,
-                  builder: (context, child) {
-                    return Transform.translate(
-                      offset: Offset(_zoomController.value * 20, 0),
-                      child: child,
-                    );
-                  },
-                  child: Icon(
-                    Icons.swipe_left,
-                    color: Colors.white.withValues(alpha: 0.7),
-                    size: 32,
+              // Swipe hint indicator
+              Positioned(
+                bottom: 120,
+                left: 0,
+                right: 0,
+                child: Center(
+                  child: AnimatedBuilder(
+                    animation: _zoomController,
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(_zoomController.value * 20, 0),
+                        child: child,
+                      );
+                    },
+                    child: Icon(
+                      Icons.swipe_left,
+                      color: Colors.white.withValues(alpha: 0.7),
+                      size: 32,
+                    ),
                   ),
                 ),
               ),
-            ),
+            ],
           ],
         ),
       ),
