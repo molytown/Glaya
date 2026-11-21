@@ -12,6 +12,7 @@ import '../../../discovery/presentation/discovery_provider.dart';
 import '../../../reels/data/models/reel_model.dart';
 import '../../../reels/presentation/widgets/reels_widget.dart';
 import '../../controller/home_controller.dart';
+import '../widgets/billboard.dart';
 import '../widgets/category_professionals_carousel.dart';
 import '../widgets/exclusive_offers.dart';
 import '../widgets/hero_banner.dart';
@@ -39,7 +40,8 @@ BoxDecoration _cardDeco({double radius = _radius}) => BoxDecoration(
       borderRadius: BorderRadius.circular(radius),
       border: Border.all(color: _border),
       boxShadow: const [
-        BoxShadow(color: Color(0x14000000), blurRadius: 3, offset: Offset(0, 1)),
+        BoxShadow(
+            color: Color(0x14000000), blurRadius: 3, offset: Offset(0, 1)),
       ],
     );
 
@@ -116,7 +118,7 @@ class DesktopHomeBody extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(width: sideW, child: const _CategorySidebar()),
+          SizedBox(width: sideW, child: const HomeBillboard()),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
@@ -124,8 +126,7 @@ class DesktopHomeBody extends ConsumerWidget {
                 heroAsync.when(
                   data: (slides) =>
                       HomeHeroBanner(slides: slides, height: heroH),
-                  loading: () =>
-                      const HomeLoadingPlaceholder(height: heroH),
+                  loading: () => const HomeLoadingPlaceholder(height: heroH),
                   error: (_, __) =>
                       const HomeHeroBanner(slides: [], height: heroH),
                 ),
@@ -222,8 +223,7 @@ class DesktopHomeBody extends ConsumerWidget {
   }
 
   // ── SECTION 2B: Just Finished | Popular Services | Home Service Pros ────
-  Widget _buildProsRow(
-      BuildContext context, WidgetRef ref, double cw) {
+  Widget _buildProsRow(BuildContext context, WidgetRef ref, double cw) {
     final popularServicesAsync = ref.watch(popularServicesProvider);
     final lat = ref.watch(locationProvider).hasLocation
         ? ref.watch(locationProvider).lat!
@@ -394,151 +394,6 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-// ── Sidebar — React components/Sidebar.jsx ────────────────────────────────
-class _CategorySidebar extends ConsumerWidget {
-  const _CategorySidebar();
-
-  static const _categories = [
-    ('Hair', Icons.content_cut),
-    ('Nails', Icons.star_outline),
-    ('Skincare', Icons.auto_awesome_outlined),
-    ('Makeup', Icons.emoji_emotions_outlined),
-    ('Spa & Body', Icons.fitness_center_outlined),
-    ('Barbers', Icons.person_outline),
-    ('Brows & Lashes', Icons.visibility_outlined),
-    ('Wellness', Icons.favorite_border),
-    ('Packages', Icons.inventory_2_outlined),
-    ('Gift Cards', Icons.card_giftcard_outlined),
-  ];
-
-  void _select(BuildContext context, WidgetRef ref, String label,
-      String? current) {
-    if (label == 'More') return;
-    final isActive = current == label;
-    ref.read(selectedCategoryProvider.notifier).state =
-        isActive ? null : label;
-    if (!isActive) {
-      context.push('/search?category=${Uri.encodeComponent(label)}');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selected = ref.watch(selectedCategoryProvider);
-
-    return Container(
-      decoration: _cardDeco(),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Container(
-            padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
-            decoration: const BoxDecoration(
-              border: Border(bottom: BorderSide(color: _border)),
-            ),
-            child: const Text(
-              'Browse Categories',
-              style: TextStyle(
-                fontSize: 14.6,
-                fontWeight: FontWeight.w700,
-                color: _textDark,
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              children: [
-                for (final cat in _categories)
-                  _SidebarItem(
-                    label: cat.$1,
-                    icon: cat.$2,
-                    isActive: selected == cat.$1,
-                    onTap: () => _select(context, ref, cat.$1, selected),
-                  ),
-              ],
-            ),
-          ),
-          InkWell(
-            onTap: () => context.push('/search'),
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(14, 8, 14, 10),
-              decoration: const BoxDecoration(
-                border: Border(top: BorderSide(color: _border)),
-              ),
-              child: const Row(
-                children: [
-                  Text(
-                    'View all categories',
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w600,
-                      color: _pink,
-                    ),
-                  ),
-                  Icon(Icons.chevron_right, size: 14, color: _pink),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SidebarItem extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool isActive;
-  final VoidCallback onTap;
-
-  const _SidebarItem({
-    required this.label,
-    required this.icon,
-    required this.isActive,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          color: isActive ? _pinkBg : Colors.transparent,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  Icon(icon, size: 16, color: _pink),
-                  const SizedBox(width: 8),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                      color: isActive ? _pink : _textDark,
-                      height: 1.3,
-                    ),
-                  ),
-                ],
-              ),
-              Icon(Icons.chevron_right,
-                  size: 14, color: isActive ? _pink : _textLight),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ── Category icon bar — React CAT_ICONS + .cat-bar ────────────────────────
 class _CatBar extends ConsumerWidget {
   const _CatBar();
@@ -554,15 +409,14 @@ class _CatBar extends ConsumerWidget {
     ('More', Icons.chevron_right, Color(0xFFF5F5F5)),
   ];
 
-  void _select(BuildContext context, WidgetRef ref, String label,
-      String? current) {
+  void _select(
+      BuildContext context, WidgetRef ref, String label, String? current) {
     if (label == 'More') {
       ref.read(selectedCategoryProvider.notifier).state = null;
       return;
     }
     final isActive = current == label;
-    ref.read(selectedCategoryProvider.notifier).state =
-        isActive ? null : label;
+    ref.read(selectedCategoryProvider.notifier).state = isActive ? null : label;
     if (!isActive) {
       context.push('/search?category=${Uri.encodeComponent(label)}');
     }
@@ -710,8 +564,7 @@ class _RightColumn extends ConsumerWidget {
                                 color: _pink,
                               ),
                             ),
-                            Icon(Icons.chevron_right,
-                                size: 13, color: _pink),
+                            Icon(Icons.chevron_right, size: 13, color: _pink),
                           ],
                         ),
                       ),
@@ -739,10 +592,7 @@ class _RightColumn extends ConsumerWidget {
             ),
           ),
           // Become a Professional / Glaya Premium banner
-          if (!isPro)
-            const _BecomeProBanner()
-          else
-            const _PremiumBanner(),
+          if (!isPro) const _BecomeProBanner() else const _PremiumBanner(),
         ],
       ),
     );
@@ -770,7 +620,9 @@ class _ProListRow extends StatelessWidget {
         ? pro.categories.take(2).join(' • ')
         : pro.category;
     final location = pro.displayArea ??
-        (pro.distance != null ? '${pro.distance!.toStringAsFixed(1)} km away' : null);
+        (pro.distance != null
+            ? '${pro.distance!.toStringAsFixed(1)} km away'
+            : null);
 
     return MouseRegion(
       cursor: SystemMouseCursors.click,
@@ -875,11 +727,10 @@ class _ProListRow extends StatelessWidget {
               MouseRegion(
                 cursor: SystemMouseCursors.click,
                 child: GestureDetector(
-                  onTap: () =>
-                      context.push('/professional/${pro.id}?book=1'),
+                  onTap: () => context.push('/professional/${pro.id}?book=1'),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 7),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
                     decoration: BoxDecoration(
                       color: _pink,
                       borderRadius: BorderRadius.circular(20),
@@ -1107,8 +958,7 @@ class _ServiceRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name =
-        (service['name'] ?? service['title'] ?? 'Service').toString();
+    final name = (service['name'] ?? service['title'] ?? 'Service').toString();
     final priceValue = service['price'] ?? service['priceFrom'];
     final currency = service['currency']?.toString() ?? 'XAF';
     final rating = service['rating'] ?? service['avgRating'];
@@ -1181,14 +1031,12 @@ class _ServiceRow extends StatelessWidget {
                               ? rating.toStringAsFixed(1)
                               : rating.toString())
                           : '4.8',
-                      style: const TextStyle(
-                          fontSize: 12, color: _textDark),
+                      style: const TextStyle(fontSize: 12, color: _textDark),
                     ),
                     if (reviewCount != null)
                       Text(
                         ' ($reviewCount)',
-                        style: const TextStyle(
-                            fontSize: 12, color: _textLight),
+                        style: const TextStyle(fontSize: 12, color: _textLight),
                       ),
                   ],
                 ),
@@ -1201,8 +1049,8 @@ class _ServiceRow extends StatelessWidget {
             child: GestureDetector(
               onTap: open,
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 6),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 decoration: BoxDecoration(
                   color: _pink,
                   borderRadius: BorderRadius.circular(20),
@@ -1308,20 +1156,19 @@ class _ReviewsSectionState extends ConsumerState<_ReviewsSection> {
             : _fallback.cast<Map<String, dynamic>>();
         final idx = _index % list.length;
         final rev = list[idx];
-        final name = (rev['reviewerName'] ?? rev['name'] ?? 'User')
-            .toString();
+        final name = (rev['reviewerName'] ?? rev['name'] ?? 'User').toString();
         final rating = (rev['rating'] is num)
             ? (rev['rating'] as num).toInt()
             : int.tryParse('${rev['rating']}') ?? 5;
-        final comment =
-            (rev['comment'] ?? rev['review'] ?? '').toString();
-        final createdAt = (rev['createdAt'] ?? rev['created_at'] ?? '')
-            .toString();
+        final comment = (rev['comment'] ?? rev['review'] ?? '').toString();
+        final createdAt =
+            (rev['createdAt'] ?? rev['created_at'] ?? '').toString();
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _SectionHeader(title: 'Why Customers Love Glaya', route: '/reviews'),
+            _SectionHeader(
+                title: 'Why Customers Love Glaya', route: '/reviews'),
             Container(
               decoration: _cardDeco(),
               padding: const EdgeInsets.all(16),
@@ -1381,8 +1228,8 @@ class _ReviewsSectionState extends ConsumerState<_ReviewsSection> {
                       if (createdAt.isNotEmpty)
                         Text(
                           createdAt,
-                          style: const TextStyle(
-                              fontSize: 11, color: _textLight),
+                          style:
+                              const TextStyle(fontSize: 11, color: _textLight),
                         ),
                     ],
                   ),
@@ -1419,7 +1266,8 @@ class _ReviewsSectionState extends ConsumerState<_ReviewsSection> {
                         height: 7,
                         decoration: BoxDecoration(
                           color: i == idx ? _pink : _border,
-                          borderRadius: BorderRadius.circular(i == idx ? 4 : 3.5),
+                          borderRadius:
+                              BorderRadius.circular(i == idx ? 4 : 3.5),
                         ),
                       ),
                     ),
@@ -1533,17 +1381,16 @@ class _AppDownloadBannerState extends State<_AppDownloadBanner> {
       final url = href?.isNotEmpty == true ? href : null;
       final badge = badgeUrl?.isNotEmpty == true ? media(badgeUrl!) : null;
       return MouseRegion(
-        cursor: url != null
-            ? SystemMouseCursors.click
-            : SystemMouseCursors.basic,
+        cursor:
+            url != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
         child: GestureDetector(
           onTap: url != null
               ? () {/* external store link — open via url_launcher if added */}
               : null,
           child: badge != null
               ? Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 6, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
@@ -1556,8 +1403,8 @@ class _AppDownloadBannerState extends State<_AppDownloadBanner> {
                   ),
                 )
               : Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
                     color: const Color(0xFF1D1D1D),
                     borderRadius: BorderRadius.circular(8),
@@ -1623,130 +1470,126 @@ class _AppDownloadBannerState extends State<_AppDownloadBanner> {
               ),
             ),
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
             child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if ((b['badgeText']?.toString().isNotEmpty ?? false))
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
-                    margin: const EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      b['badgeText'].toString(),
-                      style: const TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if ((b['badgeText']?.toString().isNotEmpty ?? false))
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 3),
+                          margin: const EdgeInsets.only(bottom: 8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            b['badgeText'].toString(),
+                            style: const TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      Text(
+                        (b['title']?.toString().isNotEmpty ?? false)
+                            ? b['title'].toString()
+                            : 'Download Glaya',
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                          height: 1.15,
+                        ),
                       ),
-                    ),
-                  ),
-                Text(
-                  (b['title']?.toString().isNotEmpty ?? false)
-                      ? b['title'].toString()
-                      : 'Download Glaya',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w800,
-                    color: Colors.white,
-                    height: 1.15,
+                      if ((b['description']?.toString().isNotEmpty ??
+                          false)) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          b['description'].toString(),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.white.withValues(alpha: 0.85),
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 14),
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 8,
+                        children: [
+                          if ((b['appStoreUrl']?.toString().isNotEmpty ??
+                                  false) ||
+                              (b['appStoreBadgeUrl']?.toString().isNotEmpty ??
+                                  false))
+                            storeBtn(
+                              label: 'Download on the',
+                              store: 'App Store',
+                              href: b['appStoreUrl']?.toString(),
+                              badgeUrl: b['appStoreBadgeUrl']?.toString(),
+                              icon: Icons.phone_iphone,
+                            ),
+                          if ((b['playStoreUrl']?.toString().isNotEmpty ??
+                                  false) ||
+                              (b['playStoreBadgeUrl']?.toString().isNotEmpty ??
+                                  false))
+                            storeBtn(
+                              label: 'Get it on',
+                              store: 'Google Play',
+                              href: b['playStoreUrl']?.toString(),
+                              badgeUrl: b['playStoreBadgeUrl']?.toString(),
+                              icon: Icons.play_arrow,
+                            ),
+                          if (!((b['appStoreUrl']?.toString().isNotEmpty ??
+                                  false) ||
+                              (b['playStoreBadgeUrl']?.toString().isNotEmpty ??
+                                  false) ||
+                              (b['playStoreUrl']?.toString().isNotEmpty ??
+                                  false) ||
+                              (b['playStoreBadgeUrl']?.toString().isNotEmpty ??
+                                  false)))
+                            const Text(
+                              'Coming soon to app stores',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.white70,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                if ((b['description']?.toString().isNotEmpty ?? false)) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    b['description'].toString(),
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.white.withValues(alpha: 0.85),
-                      height: 1.4,
+                if ((b['imageUrl']?.toString().isNotEmpty ?? false)) ...[
+                  const SizedBox(width: 20),
+                  // React .adb-image — app mockup, contain-fit, max 180x160, shadow
+                  ConstrainedBox(
+                    constraints:
+                        const BoxConstraints(maxWidth: 180, maxHeight: 160),
+                    child: DecoratedBox(
+                      decoration: const BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0x59000000),
+                            blurRadius: 16,
+                            offset: Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: CachedNetworkImage(
+                        imageUrl: media(b['imageUrl'].toString()),
+                        fit: BoxFit.contain,
+                        errorWidget: (_, __, ___) => const SizedBox.shrink(),
+                      ),
                     ),
                   ),
                 ],
-                const SizedBox(height: 14),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 8,
-                  children: [
-                    if ((b['appStoreUrl']?.toString().isNotEmpty ?? false) ||
-                        (b['appStoreBadgeUrl']
-                                ?.toString()
-                                .isNotEmpty ??
-                            false))
-                      storeBtn(
-                        label: 'Download on the',
-                        store: 'App Store',
-                        href: b['appStoreUrl']?.toString(),
-                        badgeUrl: b['appStoreBadgeUrl']?.toString(),
-                        icon: Icons.phone_iphone,
-                      ),
-                    if ((b['playStoreUrl']?.toString().isNotEmpty ?? false) ||
-                        (b['playStoreBadgeUrl']
-                                ?.toString()
-                                .isNotEmpty ??
-                            false))
-                      storeBtn(
-                        label: 'Get it on',
-                        store: 'Google Play',
-                        href: b['playStoreUrl']?.toString(),
-                        badgeUrl: b['playStoreBadgeUrl']?.toString(),
-                        icon: Icons.play_arrow,
-                      ),
-                    if (!((b['appStoreUrl']?.toString().isNotEmpty ?? false) ||
-                        (b['playStoreBadgeUrl']
-                                ?.toString()
-                                .isNotEmpty ??
-                            false) ||
-                        (b['playStoreUrl']?.toString().isNotEmpty ?? false) ||
-                        (b['playStoreBadgeUrl']
-                                ?.toString()
-                                .isNotEmpty ??
-                            false)))
-                      const Text(
-                        'Coming soon to app stores',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.white70,
-                        ),
-                      ),
-                  ],
-                ),
               ],
-            ),
-          ),
-          if ((b['imageUrl']?.toString().isNotEmpty ?? false)) ...[
-            const SizedBox(width: 20),
-            // React .adb-image — app mockup, contain-fit, max 180x160, shadow
-            ConstrainedBox(
-              constraints:
-                  const BoxConstraints(maxWidth: 180, maxHeight: 160),
-              child: DecoratedBox(
-                decoration: const BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x59000000),
-                      blurRadius: 16,
-                      offset: Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: CachedNetworkImage(
-                  imageUrl: media(b['imageUrl'].toString()),
-                  fit: BoxFit.contain,
-                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
-                ),
-              ),
-            ),
-          ],
-        ],
             ),
           ),
         ],
@@ -1760,13 +1603,18 @@ class _TrustBar extends StatelessWidget {
   const _TrustBar();
 
   static const _items = [
-    (Icons.verified_user_outlined, 'Verified Professionals',
-        'All pros are verified\n& reviewed'),
+    (
+      Icons.verified_user_outlined,
+      'Verified Professionals',
+      'All pros are verified\n& reviewed'
+    ),
     (Icons.credit_card, 'Secure Payments', 'Your payments are\n100% secure'),
-    (Icons.access_time, 'On-time Guarantee',
-        'Punctuality\nis our priority'),
-    (Icons.headset_mic_outlined, '24/7 Support',
-        "We're here to help\nyou anytime"),
+    (Icons.access_time, 'On-time Guarantee', 'Punctuality\nis our priority'),
+    (
+      Icons.headset_mic_outlined,
+      '24/7 Support',
+      "We're here to help\nyou anytime"
+    ),
     (Icons.lock_outline, 'Privacy First', 'Your data is safe\nwith us'),
   ];
 
