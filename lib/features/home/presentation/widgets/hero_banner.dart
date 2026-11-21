@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../shared/theme/colors.dart';
 import '../../../../shared/services/config_service.dart';
 
+/// React HeroCarousel replica — src/components/HeroCarousel.jsx + .css
 class HomeHeroBanner extends StatefulWidget {
   final List<Map<String, dynamic>> slides;
 
   /// Fixed height override — React desktop .hero is a fixed 424px tall,
-  /// full-width banner. When null the banner keeps its 16/8 aspect ratio.
+  /// full-width banner. When null the banner keeps React's 16/9 ratio.
   final double? height;
 
   const HomeHeroBanner({super.key, required this.slides, this.height});
@@ -26,21 +26,56 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
   int _currentPage = 0;
   Timer? _timer;
 
-  static const _fallback = {
-    'title': 'Glow More,\nPay Less!',
-    'subtitle': 'Get 20% OFF on your\nfirst booking',
-    'badgeText': 'Special Offer',
-    'ctaText': 'Book Now',
-    'discountLabel': '20%\nOFF',
-    'bgColor': '#FCE4EC',
-    'imageUrl':
-        'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800&h=400&fit=crop',
-  };
+  // Mirrors React FALLBACK_SLIDES. ctaLink values are mapped to routes
+  // that exist in the Flutter router ('/professionals' and '/offers'
+  // have no Flutter equivalent → '/search').
+  static const _fallbackSlides = [
+    {
+      'id': '1',
+      'badgeText': 'Glow Up ✨',
+      'title': 'Your Beauty,',
+      'titlePink': 'Your Way.',
+      'subtitle': 'Book trusted beauty professionals\nnear you in minutes.',
+      'ctaText': 'Book Now',
+      'ctaLink': '/search',
+      'bgColor': '#1A0A2E',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200&h=600&fit=crop',
+    },
+    {
+      'id': '2',
+      'badgeText': 'New ✨',
+      'title': 'Top Rated',
+      'titlePink': 'Professionals.',
+      'subtitle': 'Verified experts ready to serve\nyou at home or in salon.',
+      'ctaText': 'Find a Pro',
+      'ctaLink': '/search',
+      'bgColor': '#0D1B2A',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1200&h=600&fit=crop',
+    },
+    {
+      'id': '3',
+      'badgeText': 'Limited 🎁',
+      'title': 'Exclusive',
+      'titlePink': 'Offers Inside.',
+      'subtitle': 'Get up to 20% off your first\nbooking this week.',
+      'ctaText': 'View Offers',
+      'ctaLink': '/search',
+      'bgColor': '#1C0A1A',
+      'imageUrl':
+          'https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?w=1200&h=600&fit=crop',
+    },
+  ];
+
+  List<Map<String, dynamic>> get _items =>
+      widget.slides.isEmpty ? _fallbackSlides : widget.slides;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 4), (_) => _nextSlide());
+    // React: setInterval(next, 5000)
+    _timer = Timer.periodic(const Duration(seconds: 5), (_) => _nextSlide());
   }
 
   @override
@@ -52,7 +87,7 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
 
   void _nextSlide() {
     if (!mounted || !_pageController.hasClients) return;
-    final count = widget.slides.isEmpty ? 1 : widget.slides.length;
+    final count = _items.length;
     final next = (_currentPage + 1) % count;
     _pageController.animateToPage(
       next,
@@ -63,22 +98,21 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
 
   @override
   Widget build(BuildContext context) {
-    final count = widget.slides.isEmpty ? 1 : widget.slides.length;
+    final count = _items.length;
 
     final pageView = PageView.builder(
       controller: _pageController,
       itemCount: count,
       onPageChanged: (index) => setState(() => _currentPage = index),
       itemBuilder: (_, index) {
-        final slide = widget.slides.isEmpty ? _fallback : widget.slides[index];
         return _HeroSlide(
-          slide: slide,
+          slide: _items[index],
           currentIndex: _currentPage,
           totalSlides: count,
-          onPageChanged: (index) {
+          onPageChanged: (i) {
             if (_pageController.hasClients) {
               _pageController.animateToPage(
-                index,
+                i,
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.easeInOut,
               );
@@ -89,20 +123,20 @@ class _HomeHeroBannerState extends State<HomeHeroBanner> {
     );
 
     // Desktop: fixed-height full-width banner (React .hero = 424px).
-    // Mobile/tablet: 16/8 aspect ratio with 16px side inset.
-    final banner = widget.height != null
+    // Mobile/tablet: React @media (max-width:768px) uses aspect-ratio 16/9
+    // with 16px side inset.
+    final content = widget.height != null
         ? SizedBox(
             height: widget.height,
             width: double.infinity,
             child: pageView,
           )
         : Padding(
-            // 16px side inset matches the rest of the home content on all devices.
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: AspectRatio(aspectRatio: 16 / 8, child: pageView),
+            child: AspectRatio(aspectRatio: 16 / 9, child: pageView),
           );
 
-    return banner
+    return content
         .animate()
         .fadeIn(duration: 400.ms)
         .slideY(begin: 0.05, end: 0);
@@ -122,279 +156,100 @@ class _HeroSlide extends StatelessWidget {
     required this.onPageChanged,
   });
 
+  static const _pink = Color(0xFFE91E8C); // React --pink
+
+  Color? _parseHexColor(String? hex) {
+    if (hex == null || hex.isEmpty) return null;
+    var h = hex.replaceAll('#', '');
+    if (h.length == 6) h = 'FF$h';
+    if (h.length != 8) return null;
+    return Color(int.tryParse(h, radix: 16) ?? 0xFF1A0A2E);
+  }
+
   @override
   Widget build(BuildContext context) {
     final configService = ConfigService();
-    final imageUrl = slide['imageUrl'] as String?;
+    final rawImageUrl = slide['imageUrl'] as String?;
 
-    // Normalize image URL
-    String normalizedImageUrl = imageUrl ?? '';
-    if (normalizedImageUrl.isNotEmpty) {
-      if (!normalizedImageUrl.startsWith('http')) {
-        normalizedImageUrl = '${configService.socketUrl}$normalizedImageUrl';
-      }
+    // Normalize image URL (API may return relative /uploads paths)
+    String imageUrl = '';
+    if (rawImageUrl != null && rawImageUrl.isNotEmpty) {
+      imageUrl = rawImageUrl.startsWith('http')
+          ? configService.replaceLocalhost(rawImageUrl)
+          : '${configService.socketUrl}$rawImageUrl';
     }
+
+    final bgColor = _parseHexColor(slide['bgColor'] as String?) ??
+        const Color(0xFF1A0A2E); // React default hero bg
 
     final isMobile = MediaQuery.of(context).size.width < 768;
 
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: GlayaColors.berry.withValues(alpha: 0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      // React .hero: border-radius: var(--radius) = 12px, no shadow
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(12),
         child: Stack(
           children: [
-            // Full background image
+            // Background: image cover, or bgColor when no image
+            // (React: style={{ background: slide.bgColor }} + <img> overlay)
             Positioned.fill(
-              child: normalizedImageUrl.isNotEmpty
+              child: imageUrl.isNotEmpty
                   ? CachedNetworkImage(
-                      imageUrl: normalizedImageUrl,
+                      imageUrl: imageUrl,
                       fit: BoxFit.cover,
-                      errorWidget: (_, __, ___) =>
-                          Container(color: GlayaColors.berry),
+                      errorWidget: (_, __, ___) => Container(color: bgColor),
                     )
-                  : Container(
-                      color: GlayaColors.berry,
-                      child: const Icon(
-                        Icons.face_retouching_natural,
-                        size: 56,
-                        color: Colors.white,
-                      ),
-                    ),
+                  : Container(color: bgColor),
             ),
-            // Left-side gradient overlay (matching React design)
+            // Gradient overlay — React .hero-overlay
             Positioned.fill(
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                     colors: [
-                      Color(0xFF000000).withValues(alpha: 0.75),
-                      Color(0xFF000000).withValues(alpha: 0.3),
+                      Color(0xBF000000), // rgba(0,0,0,0.75)
+                      Color(0x4D000000), // rgba(0,0,0,0.30)
                       Colors.transparent,
                     ],
-                    stops: const [0.0, 0.5, 1.0],
+                    stops: [0.0, 0.5, 1.0],
                   ),
                 ),
               ),
             ),
-            // Content overlay
-            Positioned.fill(
+            // Content — React .hero is flex with align-items:center,
+            // .hero-content max-width 460px padding 32px 40px
+            Align(
+              alignment: Alignment.centerLeft,
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
+                  isMobile ? 20 : 40,
                   isMobile ? 16 : 32,
-                  isMobile ? 12 : 24,
-                  0,
-                  isMobile ? 12 : 16,
+                  isMobile ? 20 : 40,
+                  isMobile ? 16 : 32,
                 ),
                 child: SizedBox(
-                  width: isMobile ? null : 400,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Badge
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isMobile ? 6 : 8,
-                            vertical: isMobile ? 1.5 : 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                const Color(0xFFD6006E).withValues(alpha: 0.25),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: const Color(0xFFD6006E)
-                                  .withValues(alpha: 0.5),
-                            ),
-                          ),
-                          child: Text(
-                            slide['badgeText'] as String? ?? 'Special Offer',
-                            style: TextStyle(
-                              fontSize: isMobile ? 9 : 10,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: isMobile ? 6 : 8),
-                        // Title
-                        Text(
-                          slide['title'] as String? ?? 'Your Beauty,',
-                          style: TextStyle(
-                            fontSize: isMobile ? 18 : 28,
-                            fontWeight: FontWeight.w800,
-                            color: Colors.white,
-                            height: 1.1,
-                          ),
-                        ),
-                        Text(
-                          slide['titlePink'] as String? ?? 'Your Way.',
-                          style: TextStyle(
-                            fontSize: isMobile ? 18 : 28,
-                            fontWeight: FontWeight.w800,
-                            color: const Color(0xFFD6006E),
-                            height: 1.1,
-                          ),
-                        ),
-                        SizedBox(height: isMobile ? 4 : 6),
-                        // Subtitle
-                        Text(
-                          slide['subtitle'] as String? ??
-                              'Book trusted beauty professionals\nnear you in minutes.',
-                          style: TextStyle(
-                            fontSize: isMobile ? 10 : 12,
-                            color: const Color(0xD2FFFFFF),
-                            height: 1.4,
-                          ),
-                        ),
-                        SizedBox(height: isMobile ? 10 : 14),
-                        // CTA Button
-                        GestureDetector(
-                          onTap: () {
-                            final serviceId = slide['serviceId'] as String?;
-                            final professionalId =
-                                slide['professionalId'] as String?;
-                            final ctaLink = slide['ctaLink'] as String?;
-
-                            print('[HERO] Button tapped');
-                            print('[HERO] serviceId: $serviceId');
-                            print('[HERO] professionalId: $professionalId');
-                            print('[HERO] ctaLink: $ctaLink');
-
-                            // If service is selected, navigate to booking with service pre-selected
-                            if (serviceId != null && professionalId != null) {
-                              print(
-                                  '[HERO] Navigating to booking with service');
-                              context.push('/book/$professionalId',
-                                  extra: serviceId);
-                            }
-                            // If only professional is selected, navigate to professional profile
-                            else if (professionalId != null) {
-                              print(
-                                  '[HERO] Navigating to professional profile');
-                              context.push('/professional/$professionalId');
-                            }
-                            // Otherwise, use CTA Link as fallback if it's a valid path, otherwise go to search
-                            else {
-                              final fallbackPath =
-                                  (ctaLink != null && ctaLink.startsWith('/'))
-                                      ? ctaLink
-                                      : '/search';
-                              print('[HERO] Using CTA fallback: $fallbackPath');
-                              context.push(fallbackPath);
-                            }
-                          },
-                          child: Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: isMobile ? 14 : 18,
-                              vertical: isMobile ? 6 : 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFD6006E),
-                              borderRadius: BorderRadius.circular(20),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFFD6006E)
-                                      .withValues(alpha: 0.4),
-                                  blurRadius: 10,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  slide['ctaText'] as String? ?? 'Book Now',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: isMobile ? 11 : 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                const Icon(
-                                  Icons.arrow_forward,
-                                  size: 14,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  width: isMobile ? 220 : 460,
+                  child: _buildContent(context, isMobile),
                 ),
               ),
             ),
-            // Navigation arrows
-            Positioned(
-              left: isMobile ? 12 : 16,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: GestureDetector(
-                  onTap: () => onPageChanged(
-                    (currentIndex - 1 + totalSlides) % totalSlides,
-                  ),
-                  child: Container(
-                    width: isMobile ? 32 : 36,
-                    height: isMobile ? 32 : 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.chevron_left,
-                      color: Colors.white,
-                      size: isMobile ? 18 : 20,
-                    ),
-                  ),
-                ),
+            // Prev/Next nav — React .hero-nav
+            _buildNavButton(
+              isMobile: isMobile,
+              isPrev: true,
+              onTap: () => onPageChanged(
+                (currentIndex - 1 + totalSlides) % totalSlides,
               ),
             ),
-            Positioned(
-              right: isMobile ? 12 : 16,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: GestureDetector(
-                  onTap: () => onPageChanged((currentIndex + 1) % totalSlides),
-                  child: Container(
-                    width: isMobile ? 32 : 36,
-                    height: isMobile ? 32 : 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.15),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.25),
-                      ),
-                    ),
-                    child: Icon(
-                      Icons.chevron_right,
-                      color: Colors.white,
-                      size: isMobile ? 18 : 20,
-                    ),
-                  ),
-                ),
-              ),
+            _buildNavButton(
+              isMobile: isMobile,
+              isPrev: false,
+              onTap: () => onPageChanged((currentIndex + 1) % totalSlides),
             ),
-            // Dots indicator
+            // Dots — React .hero-dots / .hero-dot
             Positioned(
               bottom: 18,
               left: 0,
@@ -410,11 +265,9 @@ class _HeroSlide extends StatelessWidget {
                     height: 8,
                     decoration: BoxDecoration(
                       color: index == currentIndex
-                          ? const Color(0xFFD6006E)
+                          ? _pink
                           : Colors.white.withValues(alpha: 0.4),
-                      borderRadius: BorderRadius.circular(
-                        index == currentIndex ? 4 : 4,
-                      ),
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ),
@@ -424,5 +277,166 @@ class _HeroSlide extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildContent(BuildContext context, bool isMobile) {
+    final badgeText = slide['badgeText'] as String? ?? '';
+    final title = slide['title'] as String? ?? '';
+    final titlePink = slide['titlePink'] as String? ?? '';
+    final subtitle = slide['subtitle'] as String? ?? '';
+    final ctaText = slide['ctaText'] as String? ?? 'Book Now';
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // .hero-badge — pill with pink tint border, backdrop blur in React
+        Container(
+          padding: EdgeInsets.symmetric(
+            horizontal: isMobile ? 8 : 10,
+            vertical: isMobile ? 2 : 3,
+          ),
+          decoration: BoxDecoration(
+            color: _pink.withValues(alpha: 0.25),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: _pink.withValues(alpha: 0.5)),
+          ),
+          child: Text(
+            badgeText,
+            style: TextStyle(
+              fontSize: isMobile ? 10 : 11,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        SizedBox(height: isMobile ? 8 : 12),
+        // .hero-title — 36px desktop / 20px mobile, pink second line
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: isMobile ? 20 : 36,
+            fontWeight: FontWeight.w800,
+            color: Colors.white,
+            height: isMobile ? 1.2 : 1.15,
+          ),
+        ),
+        Text(
+          titlePink,
+          style: TextStyle(
+            fontSize: isMobile ? 20 : 36,
+            fontWeight: FontWeight.w800,
+            color: _pink,
+            height: isMobile ? 1.2 : 1.15,
+          ),
+        ),
+        SizedBox(height: isMobile ? 6 : 10),
+        // .hero-subtitle — white-space: pre-line (\n renders as break)
+        Text(
+          subtitle,
+          style: TextStyle(
+            fontSize: isMobile ? 11 : 13.5,
+            color: Colors.white.withValues(alpha: 0.82),
+            height: isMobile ? 1.4 : 1.6,
+          ),
+        ),
+        SizedBox(height: isMobile ? 14 : 22),
+        // .btn-pink.hero-cta — radius 24, pink shadow
+        GestureDetector(
+          onTap: () => _handleCtaTap(context),
+          child: Container(
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 0 : 22,
+              vertical: isMobile ? 6 : 10,
+            ),
+            decoration: BoxDecoration(
+              color: _pink,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0x66E91E8C), // rgba(233,30,140,0.4)
+                  blurRadius: 14,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Text(
+                    ctaText,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: isMobile ? 10 : 13.5,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Icon(
+                  Icons.arrow_forward,
+                  size: isMobile ? 12 : 16,
+                  color: Colors.white,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNavButton({
+    required bool isMobile,
+    required bool isPrev,
+    required VoidCallback onTap,
+  }) {
+    final size = isMobile ? 32.0 : 36.0;
+    return Positioned(
+      left: isPrev ? (isMobile ? 12 : 16) : null,
+      right: isPrev ? null : (isMobile ? 12 : 16),
+      top: 0,
+      bottom: 0,
+      child: Center(
+        child: GestureDetector(
+          onTap: onTap,
+          child: Container(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.25),
+              ),
+            ),
+            child: Icon(
+              isPrev ? Icons.chevron_left : Icons.chevron_right,
+              color: Colors.white,
+              size: isMobile ? 18 : 20,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _handleCtaTap(BuildContext context) {
+    final serviceId = slide['serviceId'] as String?;
+    final professionalId = slide['professionalId'] as String?;
+    final ctaLink = slide['ctaLink'] as String?;
+
+    if (serviceId != null && professionalId != null) {
+      context.push('/book/$professionalId', extra: serviceId);
+    } else if (professionalId != null) {
+      context.push('/professional/$professionalId');
+    } else {
+      final fallbackPath =
+          (ctaLink != null && ctaLink.startsWith('/')) ? ctaLink : '/search';
+      context.push(fallbackPath);
+    }
   }
 }
