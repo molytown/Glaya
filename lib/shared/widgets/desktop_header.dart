@@ -4,11 +4,20 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../features/auth/presentation/providers/auth_notifier.dart';
+import '../../../features/booking/presentation/bookings_list_screen.dart';
+import '../../../features/discovery/presentation/stylist_profile_page.dart';
+import '../../../features/loyalty/presentation/loyalty_screen.dart';
+import '../../../features/payments/presentation/wallet_screen.dart';
+import '../../../features/profile/presentation/profile_screen.dart';
+import '../../../features/professional/presentation/portfolio_screen.dart';
+import '../../../features/professional/presentation/professional_dashboard_screen.dart';
+import '../../../features/professional/presentation/service_management_screen.dart';
+import '../../../features/settings/presentation/settings_screen.dart';
 import '../../../shared/providers/location_provider.dart';
 import '../../../shared/providers/notification_provider.dart';
 import '../../../shared/providers/chat_bubble_provider.dart';
 import '../widgets/location_dialog.dart';
-import '../widgets/auth_slide_out.dart';
+import 'page_slide_out.dart';
 
 /// React `.navbar` replica — 73px white bar with logo, nav links, location,
 /// pill search, currency/language selects, Book Now, messages, notifications
@@ -168,8 +177,8 @@ class _HeaderContentState extends ConsumerState<_HeaderContent> {
                 const SizedBox(width: 8),
                 // Search
                 ConstrainedBox(
-                  constraints: const BoxConstraints(
-                      minWidth: 150, maxWidth: 280),
+                  constraints:
+                      const BoxConstraints(minWidth: 150, maxWidth: 280),
                   child: _NavbarSearch(
                     controller: _searchController,
                     focusNode: _searchFocus,
@@ -261,38 +270,86 @@ class _HeaderContentState extends ConsumerState<_HeaderContent> {
 
   // Mirrors React LOCAL_CURRENCIES
   static const _currencies = [
-    ('NGN', 'Nigerian Naira'), ('USD', 'US Dollar'), ('EUR', 'Euro'),
-    ('GBP', 'British Pound'), ('ZAR', 'South African Rand'),
-    ('GHS', 'Ghanaian Cedi'), ('KES', 'Kenyan Shilling'),
-    ('CAD', 'Canadian Dollar'), ('AUD', 'Australian Dollar'),
-    ('JPY', 'Japanese Yen'), ('CNY', 'Chinese Yuan'), ('INR', 'Indian Rupee'),
-    ('BRL', 'Brazilian Real'), ('MXN', 'Mexican Peso'), ('SAR', 'Saudi Riyal'),
-    ('AED', 'UAE Dirham'), ('EGP', 'Egyptian Pound'), ('MAD', 'Moroccan Dirham'),
-    ('TZS', 'Tanzanian Shilling'), ('UGX', 'Ugandan Shilling'),
-    ('ETB', 'Ethiopian Birr'), ('XOF', 'West African CFA Franc'),
-    ('XAF', 'Central African CFA Franc'), ('CDF', 'Congolese Franc'),
-    ('RWF', 'Rwandan Franc'), ('CHF', 'Swiss Franc'), ('SEK', 'Swedish Krona'),
-    ('NOK', 'Norwegian Krone'), ('DKK', 'Danish Krone'), ('PLN', 'Polish Zloty'),
-    ('TRY', 'Turkish Lira'), ('RUB', 'Russian Ruble'), ('KRW', 'South Korean Won'),
-    ('SGD', 'Singapore Dollar'), ('HKD', 'Hong Kong Dollar'), ('THB', 'Thai Baht'),
-    ('IDR', 'Indonesian Rupiah'), ('MYR', 'Malaysian Ringgit'),
-    ('PHP', 'Philippine Peso'), ('VND', 'Vietnamese Dong'),
-    ('PKR', 'Pakistani Rupee'), ('BDT', 'Bangladeshi Taka'),
-    ('LKR', 'Sri Lankan Rupee'), ('NPR', 'Nepalese Rupee'),
+    ('NGN', 'Nigerian Naira'),
+    ('USD', 'US Dollar'),
+    ('EUR', 'Euro'),
+    ('GBP', 'British Pound'),
+    ('ZAR', 'South African Rand'),
+    ('GHS', 'Ghanaian Cedi'),
+    ('KES', 'Kenyan Shilling'),
+    ('CAD', 'Canadian Dollar'),
+    ('AUD', 'Australian Dollar'),
+    ('JPY', 'Japanese Yen'),
+    ('CNY', 'Chinese Yuan'),
+    ('INR', 'Indian Rupee'),
+    ('BRL', 'Brazilian Real'),
+    ('MXN', 'Mexican Peso'),
+    ('SAR', 'Saudi Riyal'),
+    ('AED', 'UAE Dirham'),
+    ('EGP', 'Egyptian Pound'),
+    ('MAD', 'Moroccan Dirham'),
+    ('TZS', 'Tanzanian Shilling'),
+    ('UGX', 'Ugandan Shilling'),
+    ('ETB', 'Ethiopian Birr'),
+    ('XOF', 'West African CFA Franc'),
+    ('XAF', 'Central African CFA Franc'),
+    ('CDF', 'Congolese Franc'),
+    ('RWF', 'Rwandan Franc'),
+    ('CHF', 'Swiss Franc'),
+    ('SEK', 'Swedish Krona'),
+    ('NOK', 'Norwegian Krone'),
+    ('DKK', 'Danish Krone'),
+    ('PLN', 'Polish Zloty'),
+    ('TRY', 'Turkish Lira'),
+    ('RUB', 'Russian Ruble'),
+    ('KRW', 'South Korean Won'),
+    ('SGD', 'Singapore Dollar'),
+    ('HKD', 'Hong Kong Dollar'),
+    ('THB', 'Thai Baht'),
+    ('IDR', 'Indonesian Rupiah'),
+    ('MYR', 'Malaysian Ringgit'),
+    ('PHP', 'Philippine Peso'),
+    ('VND', 'Vietnamese Dong'),
+    ('PKR', 'Pakistani Rupee'),
+    ('BDT', 'Bangladeshi Taka'),
+    ('LKR', 'Sri Lankan Rupee'),
+    ('NPR', 'Nepalese Rupee'),
   ];
 
   // Mirrors React LOCAL_LANGUAGES
   static const _languages = [
-    ('en', 'English'), ('fr', 'Français'), ('es', 'Español'),
-    ('pt', 'Português'), ('de', 'Deutsch'), ('it', 'Italiano'),
-    ('ar', 'العربية'), ('zh', '中文'), ('ja', '日本語'), ('ko', '한국어'),
-    ('ru', 'Русский'), ('hi', 'हिन्दी'), ('bn', 'বাংলা'), ('ur', 'اردو'),
-    ('tr', 'Türkçe'), ('nl', 'Nederlands'), ('pl', 'Polski'),
-    ('sv', 'Svenska'), ('da', 'Dansk'), ('no', 'Norsk'), ('fi', 'Suomi'),
-    ('el', 'Ελληνικά'), ('he', 'עברית'), ('th', 'ไทย'),
-    ('id', 'Bahasa Indonesia'), ('ms', 'Bahasa Melayu'),
-    ('vi', 'Tiếng Việt'), ('sw', 'Kiswahili'), ('am', 'አማርኛ'),
-    ('ha', 'Hausa'), ('yo', 'Yorùbá'), ('ig', 'Igbo'),
+    ('en', 'English'),
+    ('fr', 'Français'),
+    ('es', 'Español'),
+    ('pt', 'Português'),
+    ('de', 'Deutsch'),
+    ('it', 'Italiano'),
+    ('ar', 'العربية'),
+    ('zh', '中文'),
+    ('ja', '日本語'),
+    ('ko', '한국어'),
+    ('ru', 'Русский'),
+    ('hi', 'हिन्दी'),
+    ('bn', 'বাংলা'),
+    ('ur', 'اردو'),
+    ('tr', 'Türkçe'),
+    ('nl', 'Nederlands'),
+    ('pl', 'Polski'),
+    ('sv', 'Svenska'),
+    ('da', 'Dansk'),
+    ('no', 'Norsk'),
+    ('fi', 'Suomi'),
+    ('el', 'Ελληνικά'),
+    ('he', 'עברית'),
+    ('th', 'ไทย'),
+    ('id', 'Bahasa Indonesia'),
+    ('ms', 'Bahasa Melayu'),
+    ('vi', 'Tiếng Việt'),
+    ('sw', 'Kiswahili'),
+    ('am', 'አማርኛ'),
+    ('ha', 'Hausa'),
+    ('yo', 'Yorùbá'),
+    ('ig', 'Igbo'),
   ];
 }
 
@@ -330,7 +387,9 @@ class _NavLink extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13.5,
                   fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-                  color: isActive ? const Color(0xFFE91E8C) : const Color(0xFF9CA3AF),
+                  color: isActive
+                      ? const Color(0xFFE91E8C)
+                      : const Color(0xFF9CA3AF),
                 ),
               ),
               if (hasDropdown)
@@ -351,11 +410,13 @@ class _NavLink extends StatelessWidget {
     showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
-        Rect.fromLTWH(global.dx, global.dy + box.size.height, box.size.width, 0),
+        Rect.fromLTWH(
+            global.dx, global.dy + box.size.height, box.size.width, 0),
         Offset.zero & overlay.size,
       ),
       items: const [
-        PopupMenuItem(value: '/services/popular', child: Text('Popular Services')),
+        PopupMenuItem(
+            value: '/services/popular', child: Text('Popular Services')),
         PopupMenuItem(value: '/services', child: Text('All Services')),
         PopupMenuItem(value: '/home-service', child: Text('Home Service')),
         PopupMenuItem(value: '/search', child: Text('Find Professionals')),
@@ -378,8 +439,7 @@ class _LocationButton extends ConsumerWidget {
         onTap: () => _showLocationDialog(context, ref),
         child: Row(
           children: [
-            const Icon(Icons.location_on,
-                size: 14, color: Color(0xFFE91E8C)),
+            const Icon(Icons.location_on, size: 14, color: Color(0xFFE91E8C)),
             const SizedBox(width: 4),
             ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 140),
@@ -404,9 +464,10 @@ class _LocationButton extends ConsumerWidget {
 
   void _showLocationDialog(BuildContext context, WidgetRef ref) {
     final locationState = ref.read(locationProvider);
-    final initialLocation = locationState.lat != null && locationState.lng != null
-        ? LatLng(locationState.lat!, locationState.lng!)
-        : null;
+    final initialLocation =
+        locationState.lat != null && locationState.lng != null
+            ? LatLng(locationState.lat!, locationState.lng!)
+            : null;
     showDialog(
       context: context,
       builder: (dialogContext) => LocationDialog(
@@ -414,9 +475,9 @@ class _LocationButton extends ConsumerWidget {
         initialAddress: locationState.locationName,
         onConfirm: (latLng, address) {
           ref.read(locationProvider.notifier).setLocation(
-            latLng.latitude,
-            latLng.longitude,
-          );
+                latLng.latitude,
+                latLng.longitude,
+              );
         },
       ),
     );
@@ -734,7 +795,8 @@ class _IconDropdown extends StatelessWidget {
                 color: Color(0xFF1A1A2E),
               ),
             ),
-            const Icon(Icons.keyboard_arrow_down, size: 14, color: Color(0xFF9CA3AF)),
+            const Icon(Icons.keyboard_arrow_down,
+                size: 14, color: Color(0xFF9CA3AF)),
           ],
         ),
       ),
@@ -749,7 +811,8 @@ class _IconDropdown extends StatelessWidget {
     showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
-        Rect.fromLTWH(global.dx, global.dy + box.size.height, box.size.width, 0),
+        Rect.fromLTWH(
+            global.dx, global.dy + box.size.height, box.size.width, 0),
         Offset.zero & overlay.size,
       ),
       items: items
@@ -798,7 +861,8 @@ class _UserMenu extends ConsumerWidget {
                   child: Image.network(
                     photoUrl,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const Icon(Icons.person, size: 18),
+                    errorBuilder: (_, __, ___) =>
+                        const Icon(Icons.person, size: 18),
                   ),
                 )
               : const Icon(Icons.person, size: 18, color: Color(0xFF6B7280)),
@@ -815,21 +879,22 @@ class _UserMenu extends ConsumerWidget {
     showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
-        Rect.fromLTWH(global.dx, global.dy + box.size.height, box.size.width, 0),
+        Rect.fromLTWH(
+            global.dx, global.dy + box.size.height, box.size.width, 0),
         Offset.zero & overlay.size,
       ),
       items: [
-        const PopupMenuItem(value: '/profile', child: Text('Profile')),
-        const PopupMenuItem(value: '/bookings', child: Text('Bookings')),
+        const PopupMenuItem(value: 'profile', child: Text('Profile')),
+        const PopupMenuItem(value: 'bookings', child: Text('Bookings')),
         if (user.role == 'professional' || user.role == 'both')
-          const PopupMenuItem(value: '/services/manage', child: Text('Services')),
+          const PopupMenuItem(value: 'services', child: Text('Services')),
         if (user.role == 'professional' || user.role == 'both')
-          const PopupMenuItem(value: '/portfolio', child: Text('Portfolio')),
+          const PopupMenuItem(value: 'portfolio', child: Text('Portfolio')),
         if (user.role == 'professional' || user.role == 'both')
-          const PopupMenuItem(value: '/professional/analytics', child: Text('Analytics')),
-        const PopupMenuItem(value: '/wallet', child: Text('Wallet')),
-        const PopupMenuItem(value: '/loyalty', child: Text('Rewards')),
-        const PopupMenuItem(value: '/settings', child: Text('Settings')),
+          const PopupMenuItem(value: 'analytics', child: Text('Analytics')),
+        const PopupMenuItem(value: 'wallet', child: Text('Wallet')),
+        const PopupMenuItem(value: 'rewards', child: Text('Rewards')),
+        const PopupMenuItem(value: 'settings', child: Text('Settings')),
         const PopupMenuItem(value: 'logout', child: Text('Sign Out')),
       ],
     ).then((value) {
@@ -837,9 +902,41 @@ class _UserMenu extends ConsumerWidget {
       if (value == 'logout') {
         onLogout();
       } else if (context.mounted) {
-        context.go(value);
+        _openSlideOut(context, value);
       }
     });
+  }
+
+  void _openSlideOut(BuildContext context, String key) {
+    final isPro = user.role == 'professional' || user.role == 'both';
+    switch (key) {
+      case 'profile':
+        showPageSlideOut(
+          context,
+          title: 'Profile',
+          child: isPro ? const StylistProfilePage() : const ProfileScreen(),
+        );
+      case 'bookings':
+        showPageSlideOut(context,
+            title: 'Bookings', child: const BookingsListScreen());
+      case 'services':
+        showPageSlideOut(context,
+            title: 'Services', child: const ServiceManagementScreen());
+      case 'portfolio':
+        showPageSlideOut(context,
+            title: 'Portfolio', child: const PortfolioScreen());
+      case 'analytics':
+        showPageSlideOut(context,
+            title: 'Analytics', child: const ProfessionalDashboardScreen());
+      case 'wallet':
+        showPageSlideOut(context, title: 'Wallet', child: const WalletScreen());
+      case 'rewards':
+        showPageSlideOut(context,
+            title: 'Rewards', child: const LoyaltyScreen());
+      case 'settings':
+        showPageSlideOut(context,
+            title: 'Settings', child: const SettingsScreen());
+    }
   }
 }
 

@@ -56,31 +56,50 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(authNotifierProvider).valueOrNull;
+    final isDesktop = MediaQuery.of(context).size.width >= 1024;
+    final content = _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : _buildScrollView();
     return Scaffold(
       backgroundColor: backgroundColor,
       body: SafeArea(
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(child: _buildHeroSection()),
-
-                  SliverToBoxAdapter(child: _buildProfileHeader()),
-
-                  SliverToBoxAdapter(child: _buildStats()),
-
-                  SliverToBoxAdapter(child: _buildTabs()),
-
-                  SliverToBoxAdapter(child: _buildTabContent()),
-
-                  // Space for bottom action bar
-                  const SliverToBoxAdapter(child: SizedBox(height: 110)),
-                ],
-              ),
+        child: isDesktop
+            ? Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1100),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: content,
+                  ),
+                ),
+              )
+            : content,
       ),
       bottomNavigationBar: GlayaBottomNav(
         currentIndex: 4,
         userRole: user?.role,
+      ),
+    );
+  }
+
+  Widget _buildScrollView() {
+    return RefreshIndicator(
+      onRefresh: _loadProfessionalData,
+      child: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: _buildHeroSection()),
+
+          SliverToBoxAdapter(child: _buildProfileHeader()),
+
+          SliverToBoxAdapter(child: _buildStats()),
+
+          SliverToBoxAdapter(child: _buildTabs()),
+
+          SliverToBoxAdapter(child: _buildTabContent()),
+
+          // Space for bottom action bar
+          const SliverToBoxAdapter(child: SizedBox(height: 110)),
+        ],
       ),
     );
   }
@@ -267,7 +286,8 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                       onPressed: () => context.push('/settings'),
                       icon: const Icon(Icons.edit_outlined, size: 16),
                       label: const Text('Edit Profile',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w700)),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: primaryColor,
                         side: BorderSide(color: primaryColor),
@@ -281,9 +301,11 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => WalletDialog.show(context),
-                      icon: const Icon(Icons.account_balance_wallet_outlined, size: 16),
+                      icon: const Icon(Icons.account_balance_wallet_outlined,
+                          size: 16),
                       label: const Text('Wallet',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
+                          style: TextStyle(
+                              fontSize: 12, fontWeight: FontWeight.w700)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: primaryColor,
                         foregroundColor: Colors.white,
@@ -342,7 +364,8 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
           fit: BoxFit.cover,
         ),
         boxShadow: [
-          BoxShadow(color: Color(0xFF000000).withValues(alpha: .15), blurRadius: 10),
+          BoxShadow(
+              color: Color(0xFF000000).withValues(alpha: .15), blurRadius: 10),
         ],
       ),
       child: Align(
@@ -490,56 +513,62 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
     return Container(
       height: 72,
       color: Colors.white,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: tabs.length,
-        itemBuilder: (context, index) {
-          final selected = selectedTab == index;
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final tabWidth = constraints.maxWidth / tabs.length;
+          return ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: tabs.length,
+            itemBuilder: (context, index) {
+              final selected = selectedTab == index;
 
-          final icons = [
-            Icons.person_outline_rounded,
-            Icons.content_cut_rounded,
-            Icons.photo_library_outlined,
-            Icons.star_border_rounded,
-            Icons.location_on_outlined,
-          ];
+              final icons = [
+                Icons.person_outline_rounded,
+                Icons.content_cut_rounded,
+                Icons.photo_library_outlined,
+                Icons.star_border_rounded,
+                Icons.location_on_outlined,
+              ];
 
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedTab = index;
-              });
-            },
-            child: Container(
-              width: MediaQuery.of(context).size.width / 5,
-              padding: const EdgeInsets.only(top: 12),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: selected ? primaryColor : Colors.transparent,
-                    width: 3,
-                  ),
-                ),
-              ),
-              child: Column(
-                children: [
-                  Icon(
-                    icons[index],
-                    size: 21,
-                    color: selected ? primaryColor : secondaryText,
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    tabs[index],
-                    style: TextStyle(
-                      color: selected ? primaryColor : textColor,
-                      fontSize: 11,
-                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedTab = index;
+                  });
+                },
+                child: Container(
+                  width: tabWidth,
+                  padding: const EdgeInsets.only(top: 12),
+                  decoration: BoxDecoration(
+                    border: Border(
+                      bottom: BorderSide(
+                        color: selected ? primaryColor : Colors.transparent,
+                        width: 3,
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ),
+                  child: Column(
+                    children: [
+                      Icon(
+                        icons[index],
+                        size: 21,
+                        color: selected ? primaryColor : secondaryText,
+                      ),
+                      const SizedBox(height: 5),
+                      Text(
+                        tabs[index],
+                        style: TextStyle(
+                          color: selected ? primaryColor : textColor,
+                          fontSize: 11,
+                          fontWeight:
+                              selected ? FontWeight.w700 : FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
           );
         },
       ),
@@ -1348,7 +1377,12 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
       (Icons.lock_outline, 'Two-Factor Authentication', '/settings', null),
       (Icons.devices_outlined, 'Devices', '/settings', null),
       (Icons.language_outlined, 'Language', '/settings', null),
-      (Icons.privacy_tip_outlined, 'Privacy Settings', '/cms/privacy-policy', null),
+      (
+        Icons.privacy_tip_outlined,
+        'Privacy Settings',
+        '/cms/privacy-policy',
+        null
+      ),
     ];
     return _sectionCard(
       child: Column(
