@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -158,12 +160,59 @@ class _HorizontalPhotoCarousel extends StatelessWidget {
   }
 }
 
-/// Horizontally-scrollable grid row for tablet: ~5 photo cards visible at
-/// a time, sized to fill the row width, more revealed on scroll.
-class _GridPhotoRow extends StatelessWidget {
+/// Horizontally-scrollable grid row for tablet/desktop: ~5 photo cards
+/// visible at a time, sized to fill the row width, more revealed on scroll.
+/// On tablet/desktop the row auto-slides every 3s and wraps back to the start.
+class _GridPhotoRow extends StatefulWidget {
   final List<Reel> reels;
 
   const _GridPhotoRow({required this.reels});
+
+  @override
+  State<_GridPhotoRow> createState() => _GridPhotoRowState();
+}
+
+class _GridPhotoRowState extends State<_GridPhotoRow> {
+  final _controller = ScrollController();
+  Timer? _timer;
+  Timer? _idleTimer;
+  double _step = 162;
+  bool _paused = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 3), (_) => _autoScroll());
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _idleTimer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _autoScroll() {
+    if (_paused || !_controller.hasClients) return;
+    final pos = _controller.position;
+    if (pos.maxScrollExtent <= 0) return;
+    var target = pos.pixels + _step;
+    if (target >= pos.maxScrollExtent - 1) target = 0;
+    _controller.animateTo(
+      target,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _onUserScroll() {
+    _paused = true;
+    _idleTimer?.cancel();
+    _idleTimer = Timer(const Duration(seconds: 4), () {
+      if (mounted) setState(() => _paused = false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -180,20 +229,30 @@ class _GridPhotoRow extends StatelessWidget {
         final cardWidth =
             ((constraints.maxWidth - 32 - gap * visibleCount) / visibleCount)
                 .clamp(150.0, 240.0);
+        _step = cardWidth + 12;
 
         return SizedBox(
           height: rowHeight,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: reels.length,
-            itemBuilder: (context, index) {
-              return _PhotoCard(
-                reel: reels[index],
-                width: cardWidth,
-                height: cardHeight,
-              );
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (n) {
+              if (n is ScrollStartNotification && n.dragDetails != null) {
+                _onUserScroll();
+              }
+              return false;
             },
+            child: ListView.builder(
+              controller: _controller,
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: widget.reels.length,
+              itemBuilder: (context, index) {
+                return _PhotoCard(
+                  reel: widget.reels[index],
+                  width: cardWidth,
+                  height: cardHeight,
+                );
+              },
+            ),
           ),
         );
       },
