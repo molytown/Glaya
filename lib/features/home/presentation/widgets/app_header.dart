@@ -9,10 +9,7 @@ import '../../../../shared/services/config_service.dart';
 import '../../../../shared/widgets/notification_popup.dart';
 import '../../../../shared/providers/notification_provider.dart';
 import '../../../../shared/providers/location_provider.dart';
-import '../../controller/location_controller.dart';
-import '../screens/pick_map_screen.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
-import '../../../location/presentation/guest_location_picker_screen.dart';
 
 class HomeAppHeader extends ConsumerWidget {
   final String? photoUrl;
@@ -224,92 +221,277 @@ class LocationPickerDialogContent extends ConsumerStatefulWidget {
 
 class _LocationPickerDialogContentState
     extends ConsumerState<LocationPickerDialogContent> {
-  bool _isLoading = false;
-  String? _error;
+  GoogleMapController? _mapController;
+  LatLng? _selectedLocation;
+  String? _selectedAddress;
+  bool _isLoading = true;
+  bool _isLocating = false;
+  final TextEditingController _searchController = TextEditingController();
+  Set<Marker> _markers = {};
 
-  Future<void> _useCurrentLocation() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation();
+  }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _getCurrentLocation() async {
+    setState(() => _isLocating = true);
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
+      final locationState = ref.read(locationProvider);
+      if (locationState.hasLocation) {
+        final latLng = LatLng(locationState.lat!, locationState.lng!);
         setState(() {
-          _error =
-              'Location services are disabled. Please enable them in settings.';
+          _selectedLocation = latLng;
+          _markers = {
+            Marker(
+              markerId: const MarkerId('selected'),
+              position: latLng,
+              draggable: true,
+              onDragEnd: (position) {
+                _onMarkerDragged(position);
+              },
+            ),
+          };
           _isLoading = false;
         });
-        return;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          setState(() {
-            _error =
-                'Location permission denied. Please enable it in settings.';
-            _isLoading = false;
-          });
-          return;
+        _reverseGeocode(latLng);
+        if (_mapController != null) {
+          _mapController!.animateCamera(CameraUpdate.newLatLngZoom(latLng, 14));
         }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
+      } else {
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high,
+        );
+        final latLng = LatLng(position.latitude, position.longitude);
         setState(() {
-          _error =
-              'Location permission permanently denied. Please enable it in settings.';
+          _selectedLocation = latLng;
+          _markers = {
+            Marker(
+              markerId: const MarkerId('selected'),
+              position: latLng,
+              draggable: true,
+              onDragEnd: (position) {
+                _onMarkerDragged(position);
+              },
+            ),
+          };
           _isLoading = false;
         });
-        return;
-      }
-
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.medium,
-        timeLimit: const Duration(seconds: 10),
-      );
-
-      // Update location provider
-      await ref.read(locationProvider.notifier).setLocation(
-            position.latitude,
-            position.longitude,
-          );
-
-      if (mounted) {
-        Navigator.pop(context);
+        _reverseGeocode(latLng);
+        if (_mapController != null) {
+          _mapController!.animateCamera(CameraUpdate.newLatLngZoom(latLng, 14));
+        }
       }
     } catch (e) {
       setState(() {
-        _error = 'Failed to get location: ${e.toString()}';
+        _selectedLocation = const LatLng(3.848, 11.502);
+        _markers = {
+          Marker(
+            markerId: const MarkerId('selected'),
+            position: const LatLng(3.848, 11.502),
+            draggable: true,
+            onDragEnd: (position) {
+              _onMarkerDragged(position);
+            },
+          ),
+        };
         _isLoading = false;
       });
+      _reverseGeocode(const LatLng(3.848, 11.502));
+    } finally {
+      setState(() => _isLocating = false);
     }
   }
 
-  void _openMapPicker() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MapPickerDialogContent(),
-      ),
-    );
+  Future<void> _reverseGeocode(LatLng latLng) async {
+    try {
+      final dio = Dio();
+      final response = await dio.get(
+        'https://nominatim.openstreetmap.org/reverse',
+        queryParameters: {
+          'lat': latLng.latitude,
+          'lon': latLng.longitude,
+          'format': 'json',
+        },
+        options: Options(
+          headers: {
+            'User-Agent': 'Glaya/1.0',
+          },
+        ),
+      );
+
+      if (response.data != null && response.data['address'] != null) {
+        final address = response.data['address'] as Map<String, dynamic>;
+        final parts = <String>[];
+
+        if (address['road'] != null) parts.add(address['road']);
+        if (address['suburb'] != null) parts.add(address['suburb']);
+        if (address['neighbourhood'] != null)
+          parts.add(address['neighbourhood']);
+        if (address['city'] != null ||
+            address['town'] != null ||
+            address['village'] != null) {
+          parts.add(address['city'] ?? address['town'] ?? address['village']);
+        }
+
+        if (mounted) {
+          setState(() {
+            _selectedAddress =
+                parts.isNotEmpty ? parts.join(', ') : 'Unknown location';
+          });
+        }
+      }
+    } catch (e) {
+      // Silently fail
+    }
   }
 
-  void _skipLocation() {
-    // Set default location (Douala, Cameroon)
-    ref.read(locationProvider.notifier).setLocation(3.848, 11.502);
-    if (mounted) {
-      Navigator.pop(context);
+  Future<void> _searchLocation(String query) async {
+    if (query.isEmpty) return;
+
+    try {
+      final dio = Dio();
+      final response = await dio.get(
+        'https://nominatim.openstreetmap.org/search',
+        queryParameters: {
+          'q': query,
+          'format': 'json',
+          'limit': 1,
+        },
+        options: Options(
+          headers: {
+            'User-Agent': 'Glaya/1.0',
+          },
+        ),
+      );
+
+      if (response.data != null &&
+          response.data is List &&
+          response.data.isNotEmpty) {
+        final result = response.data[0] as Map<String, dynamic>;
+        final lat = double.tryParse(result['lat'] as String? ?? '');
+        final lon = double.tryParse(result['lon'] as String? ?? '');
+
+        if (lat != null && lon != null && _mapController != null) {
+          final newLocation = LatLng(lat, lon);
+          setState(() {
+            _selectedLocation = newLocation;
+            _selectedAddress = result['display_name'] as String?;
+            _markers = {
+              Marker(
+                markerId: const MarkerId('selected'),
+                position: newLocation,
+                draggable: true,
+                onDragEnd: (position) {
+                  _onMarkerDragged(position);
+                },
+              ),
+            };
+          });
+          await _mapController!.animateCamera(
+            CameraUpdate.newCameraPosition(
+              CameraPosition(target: newLocation, zoom: 16),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Silently fail
+    }
+  }
+
+  void _onMarkerDragged(LatLng position) {
+    setState(() {
+      _selectedLocation = position;
+      _markers = {
+        Marker(
+          markerId: const MarkerId('selected'),
+          position: position,
+          draggable: true,
+          onDragEnd: (pos) {
+            _onMarkerDragged(pos);
+          },
+        ),
+      };
+    });
+    _reverseGeocode(position);
+  }
+
+  void _onMapTap(LatLng position) {
+    setState(() {
+      _selectedLocation = position;
+      _markers = {
+        Marker(
+          markerId: const MarkerId('selected'),
+          position: position,
+          draggable: true,
+          onDragEnd: (pos) {
+            _onMarkerDragged(pos);
+          },
+        ),
+      };
+    });
+    _reverseGeocode(position);
+  }
+
+  Future<void> _onUseCurrentLocation() async {
+    setState(() => _isLocating = true);
+    try {
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      final latLng = LatLng(position.latitude, position.longitude);
+      setState(() {
+        _selectedLocation = latLng;
+        _markers = {
+          Marker(
+            markerId: const MarkerId('selected'),
+            position: latLng,
+            draggable: true,
+            onDragEnd: (position) {
+              _onMarkerDragged(position);
+            },
+          ),
+        };
+      });
+      _reverseGeocode(latLng);
+      if (_mapController != null) {
+        _mapController!.animateCamera(CameraUpdate.newLatLngZoom(latLng, 14));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to get location: ${e.toString()}')),
+        );
+      }
+    } finally {
+      setState(() => _isLocating = false);
+    }
+  }
+
+  Future<void> _onConfirm() async {
+    if (_selectedLocation != null) {
+      await ref.read(locationProvider.notifier).setLocation(
+            _selectedLocation!.latitude,
+            _selectedLocation!.longitude,
+          );
+      if (mounted) {
+        Navigator.pop(context);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final locationState = ref.watch(locationProvider);
-
     return Container(
+      constraints: const BoxConstraints(maxHeight: 600, maxWidth: 400),
       decoration: BoxDecoration(
         color: GlayaColors.background,
         borderRadius: BorderRadius.circular(20),
@@ -319,7 +501,7 @@ class _LocationPickerDialogContentState
         children: [
           // Header
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: const BorderRadius.only(
@@ -339,269 +521,187 @@ class _LocationPickerDialogContentState
                   onPressed: () => Navigator.pop(context),
                   icon: const Icon(Icons.close, color: GlayaColors.textPrimary),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 8),
                 const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Set Your Location',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w800,
-                          color: GlayaColors.textPrimary,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'Find beauty professionals near you',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF000000),
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    'Set Your Location',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: GlayaColors.textPrimary,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
 
-          // Content
-          Flexible(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  // Current location button
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
+          // Map with search bar
+          SizedBox(
+            height: 350,
+            child: Stack(
+              children: [
+                if (_isLoading)
+                  const Center(child: CircularProgressIndicator())
+                else
+                  GoogleMap(
+                    initialCameraPosition: CameraPosition(
+                      target: _selectedLocation ?? const LatLng(3.848, 11.502),
+                      zoom: 14,
+                    ),
+                    markers: _markers,
+                    onMapCreated: (controller) {
+                      _mapController = controller;
+                      if (_selectedLocation != null) {
+                        controller.animateCamera(
+                          CameraUpdate.newLatLngZoom(_selectedLocation!, 14),
+                        );
+                      }
+                    },
+                    onTap: _onMapTap,
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: false,
+                    zoomControlsEnabled: true,
+                  ),
+                // Search bar at top
+                Positioned(
+                  top: 12,
+                  right: 12,
+                  left: 12,
+                  child: Container(
+                    height: 48,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
                         BoxShadow(
-                          color: GlayaColors.softShadow,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
+                          color: const Color(0xFF000000).withValues(alpha: 0.2),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
                         ),
                       ],
                     ),
-                    child: Column(
+                    child: Row(
                       children: [
-                        const Icon(
-                          Icons.my_location,
-                          size: 48,
-                          color: GlayaColors.berry,
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Use Current Location',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: GlayaColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'We\'ll use your GPS to find nearby services',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF000000),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: _isLoading ? null : _useCurrentLocation,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: GlayaColors.berry,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                        const Icon(Icons.search, color: Colors.grey, size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: const InputDecoration(
+                              hintText: 'Search location...',
+                              border: InputBorder.none,
+                              hintStyle: TextStyle(fontSize: 14),
+                              contentPadding: EdgeInsets.zero,
                             ),
-                            child: _isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white),
-                                    ),
-                                  )
-                                : const Text(
-                                    'Use Current Location',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                            style: const TextStyle(fontSize: 14),
+                            onSubmitted: _searchLocation,
                           ),
                         ),
                       ],
                     ),
                   ),
+                ),
+              ],
+            ),
+          ),
 
-                  if (_error != null) ...[
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red.shade200),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.error_outline,
-                              color: Colors.red.shade700, size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _error!,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.red.shade700,
-                              ),
-                            ),
+          // Footer with selected address and buttons
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(color: const Color(0xFFE5E7EB)),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Selected address
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF9FAFB),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.location_on,
+                          size: 16, color: GlayaColors.berry),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _selectedAddress ?? 'Detecting area…',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF1A1A1A),
                           ),
-                        ],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _isLocating ? null : _onUseCurrentLocation,
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: BorderSide(color: GlayaColors.berry),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: _isLocating
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Text(
+                                'Use Current Location',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: GlayaColors.berry,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed:
+                            _selectedLocation != null ? _onConfirm : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: GlayaColors.berry,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Confirm Location',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ),
                   ],
-
-                  const SizedBox(height: 20),
-
-                  // Map picker button
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: GlayaColors.softShadow,
-                          blurRadius: 10,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        const Icon(
-                          Icons.map_outlined,
-                          size: 48,
-                          color: GlayaColors.berry,
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Pick on Map',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            color: GlayaColors.textPrimary,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Select your location manually on the map',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Color(0xFF000000),
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          width: double.infinity,
-                          child: OutlinedButton(
-                            onPressed: _openMapPicker,
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: GlayaColors.berry,
-                              side: const BorderSide(color: GlayaColors.berry),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: const Text(
-                              'Pick on Map',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Skip button
-                  Center(
-                    child: TextButton(
-                      onPressed: _skipLocation,
-                      child: const Text(
-                        'Skip for now',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Color(0xFF000000),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ),
-
-                  // Current location display
-                  if (locationState.hasLocation)
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: GlayaColors.berry.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.check_circle,
-                              color: GlayaColors.berry, size: 20),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Location Set',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: GlayaColors.berry,
-                                  ),
-                                ),
-                                Text(
-                                  '${locationState.lat!.toStringAsFixed(4)}, ${locationState.lng!.toStringAsFixed(4)}',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFF000000),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
