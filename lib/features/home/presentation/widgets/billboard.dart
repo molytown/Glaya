@@ -18,7 +18,7 @@ class HomeBillboard extends ConsumerStatefulWidget {
 }
 
 class _HomeBillboardState extends ConsumerState<HomeBillboard> {
-  static const _autoplay = Duration(seconds: 5);
+  static const _autoplay = Duration(seconds: 15);
 
   final _controller = PageController();
   Timer? _timer;
@@ -93,6 +93,7 @@ class _HomeBillboardState extends ConsumerState<HomeBillboard> {
               children: [
                 PageView.builder(
                   controller: _controller,
+                  scrollDirection: Axis.vertical,
                   itemCount: slides.length,
                   onPageChanged: _onPageChanged,
                   itemBuilder: (context, i) =>
@@ -100,13 +101,15 @@ class _HomeBillboardState extends ConsumerState<HomeBillboard> {
                 ),
                 if (slides.length > 1) ...[
                   _navButton(
-                    icon: Icons.chevron_left,
-                    alignment: Alignment.centerLeft,
+                    icon: Icons.keyboard_arrow_up,
+                    alignment: Alignment.topCenter,
+                    padding: const EdgeInsets.only(top: 8),
                     onTap: () => _go(-1, slides.length),
                   ),
                   _navButton(
-                    icon: Icons.chevron_right,
-                    alignment: Alignment.centerRight,
+                    icon: Icons.keyboard_arrow_down,
+                    alignment: Alignment.bottomCenter,
+                    padding: const EdgeInsets.only(bottom: 34),
                     onTap: () => _go(1, slides.length),
                   ),
                   Positioned(
@@ -163,15 +166,13 @@ class _HomeBillboardState extends ConsumerState<HomeBillboard> {
   Widget _navButton({
     required IconData icon,
     required Alignment alignment,
+    required EdgeInsets padding,
     required VoidCallback onTap,
   }) {
     return Align(
       alignment: alignment,
       child: Padding(
-        padding: EdgeInsets.only(
-          left: alignment == Alignment.centerLeft ? 8 : 0,
-          right: alignment == Alignment.centerRight ? 8 : 0,
-        ),
+        padding: padding,
         child: Material(
           color: Colors.black.withValues(alpha: 0.45),
           shape: const CircleBorder(),
