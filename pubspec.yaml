@@ -85,6 +85,7 @@ flutter:
     - assets/splash_9.jpg
     - assets/splash_10.jpg
     - assets/splash_tablet.jpg
+    - assets/splash_desktop.jpg
     - assets/Splash_video.mp4
     - assets/notification.mp3
     - assets/pink_gradient_background.jpg

@@ -116,10 +116,12 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Use tablet-specific splash image on tablet/iPad
-    final displayImage = ResponsiveHelper.isTablet(context)
-        ? 'assets/splash_tablet.jpg'
-        : _selectedImage;
+    // Platform-specific splash images
+    final displayImage = ResponsiveHelper.isDesktop(context)
+        ? 'assets/splash_desktop.jpg'
+        : ResponsiveHelper.isTablet(context)
+            ? 'assets/splash_tablet.jpg'
+            : _selectedImage;
 
     return Scaffold(
       backgroundColor: const Color(0xFF000000),
@@ -149,8 +151,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 fit: BoxFit.cover,
               ),
             ),
-            // Only show overlays on mobile/desktop (tablet image has branding built in)
-            if (!ResponsiveHelper.isTablet(context)) ...[
+            // Only show overlays on mobile (tablet/desktop images have branding built in)
+            if (ResponsiveHelper.isMobile(context)) ...[
               Positioned(
                 top: 16,
                 right: 16,
