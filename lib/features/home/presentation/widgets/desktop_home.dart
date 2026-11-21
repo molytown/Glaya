@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../shared/providers/location_provider.dart';
-import '../../../../shared/services/api_service.dart';
 import '../../../../shared/services/config_service.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../../../discovery/data/professional_model.dart';
@@ -209,15 +208,7 @@ class DesktopHomeBody extends ConsumerWidget {
       children: [
         const Expanded(flex: 2, child: PhotoReelsWidget()),
         const SizedBox(width: 20),
-        Expanded(
-          flex: 1,
-          // Aligns the banner's top edge with the photo cards in the
-          // Glam Photos column (header ~40px + 12px gap ≈ 52px).
-          child: Padding(
-            padding: const EdgeInsets.only(top: 52),
-            child: const _AppDownloadBanner(),
-          ),
-        ),
+        const Expanded(flex: 1, child: ExclusiveOffersSection()),
       ],
     );
   }
@@ -322,12 +313,13 @@ class DesktopHomeBody extends ConsumerWidget {
     );
   }
 
-  // ── SECTION 3: How It Works | Reviews | Exclusive Offers ─────────────────
+  // ── SECTION 3: How It Works | Reviews | Recommended For You ──────────────
   Widget _buildBottomRow(
       BuildContext context, WidgetRef ref, double w, double cw) {
     // React .home-bottom-row: 1fr 450px 462px (≤1200: 1fr 280px 240px)
     final col2W = w > 1350 ? 450.0 : 280.0;
     final col3W = w > 1350 ? 462.0 : 240.0;
+    final recommendedAsync = ref.watch(recommendedProfessionalsProvider);
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,7 +328,36 @@ class DesktopHomeBody extends ConsumerWidget {
         const SizedBox(width: 20),
         SizedBox(width: col2W, child: const _ReviewsSection()),
         const SizedBox(width: 20),
-        SizedBox(width: col3W, child: const ExclusiveOffersSection()),
+        SizedBox(
+          width: col3W,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const _SectionHeader(
+                title: 'Recommended For You',
+                route: '/search',
+              ),
+              recommendedAsync.when(
+                data: (pros) => pros.isEmpty
+                    ? const SizedBox.shrink()
+                    : Column(
+                        children: [
+                          for (final pro in pros.take(4))
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 10),
+                              child: _ProListRow(
+                                professional: pro,
+                                bookLabel: 'Book',
+                              ),
+                            ),
+                        ],
+                      ),
+                loading: () => const HomeLoadingPlaceholder(height: 300),
+                error: (_, __) => const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -1323,276 +1344,6 @@ class _ReviewNavButton extends StatelessWidget {
           ),
           child: Icon(icon, size: 14, color: _textGray),
         ),
-      ),
-    );
-  }
-}
-
-// ── App Download banner — React AppDownloadBanner (GET /download-banner) ───
-class _AppDownloadBanner extends StatefulWidget {
-  const _AppDownloadBanner();
-
-  @override
-  State<_AppDownloadBanner> createState() => _AppDownloadBannerState();
-}
-
-class _AppDownloadBannerState extends State<_AppDownloadBanner> {
-  Map<String, dynamic>? _banner;
-  bool _loaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    try {
-      final res = await ApiService.dio.get('/download-banner');
-      final data = res.data is Map && res.data['data'] is Map
-          ? res.data['data'] as Map<String, dynamic>
-          : (res.data is Map ? res.data as Map<String, dynamic> : null);
-      if (mounted) {
-        setState(() {
-          if (data != null && data['isActive'] != false) _banner = data;
-          _loaded = true;
-        });
-      }
-    } catch (_) {
-      if (mounted) setState(() => _loaded = true);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (!_loaded || _banner == null) {
-      return const SizedBox.shrink();
-    }
-    final b = _banner!;
-    final media = ConfigService().replaceLocalhost;
-
-    Widget storeBtn({
-      required String label,
-      required String store,
-      required String? href,
-      String? badgeUrl,
-      required IconData icon,
-    }) {
-      final url = href?.isNotEmpty == true ? href : null;
-      final badge = badgeUrl?.isNotEmpty == true ? media(badgeUrl!) : null;
-      return MouseRegion(
-        cursor:
-            url != null ? SystemMouseCursors.click : SystemMouseCursors.basic,
-        child: GestureDetector(
-          onTap: url != null
-              ? () {/* external store link — open via url_launcher if added */}
-              : null,
-          child: badge != null
-              ? Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: CachedNetworkImage(
-                    imageUrl: badge,
-                    height: 40,
-                    fit: BoxFit.contain,
-                    errorWidget: (_, __, ___) => const SizedBox(height: 40),
-                  ),
-                )
-              : Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1D1D1D),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.white24),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(icon, size: 18, color: Colors.white),
-                      const SizedBox(width: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            label,
-                            style: const TextStyle(
-                              fontSize: 9,
-                              color: Colors.white70,
-                              letterSpacing: 0.4,
-                            ),
-                          ),
-                          Text(
-                            store,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.white,
-                              height: 1.15,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-        ),
-      );
-    }
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF2D1B4E), Color(0xFF6A1B6E), Color(0xFFE91E8C)],
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
-        children: [
-          // React .adb-bg-art — banner art as a faint full-bleed overlay
-          if ((b['imageUrl']?.toString().isNotEmpty ?? false))
-            Positioned.fill(
-              child: Opacity(
-                opacity: 0.16,
-                child: CachedNetworkImage(
-                  imageUrl: media(b['imageUrl'].toString()),
-                  fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => const SizedBox.shrink(),
-                ),
-              ),
-            ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 26),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if ((b['badgeText']?.toString().isNotEmpty ?? false))
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          margin: const EdgeInsets.only(bottom: 8),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            b['badgeText'].toString(),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      Text(
-                        (b['title']?.toString().isNotEmpty ?? false)
-                            ? b['title'].toString()
-                            : 'Download Glaya',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.white,
-                          height: 1.15,
-                        ),
-                      ),
-                      if ((b['description']?.toString().isNotEmpty ??
-                          false)) ...[
-                        const SizedBox(height: 6),
-                        Text(
-                          b['description'].toString(),
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.white.withValues(alpha: 0.85),
-                            height: 1.4,
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 14),
-                      Wrap(
-                        spacing: 10,
-                        runSpacing: 8,
-                        children: [
-                          if ((b['appStoreUrl']?.toString().isNotEmpty ??
-                                  false) ||
-                              (b['appStoreBadgeUrl']?.toString().isNotEmpty ??
-                                  false))
-                            storeBtn(
-                              label: 'Download on the',
-                              store: 'App Store',
-                              href: b['appStoreUrl']?.toString(),
-                              badgeUrl: b['appStoreBadgeUrl']?.toString(),
-                              icon: Icons.phone_iphone,
-                            ),
-                          if ((b['playStoreUrl']?.toString().isNotEmpty ??
-                                  false) ||
-                              (b['playStoreBadgeUrl']?.toString().isNotEmpty ??
-                                  false))
-                            storeBtn(
-                              label: 'Get it on',
-                              store: 'Google Play',
-                              href: b['playStoreUrl']?.toString(),
-                              badgeUrl: b['playStoreBadgeUrl']?.toString(),
-                              icon: Icons.play_arrow,
-                            ),
-                          if (!((b['appStoreUrl']?.toString().isNotEmpty ??
-                                  false) ||
-                              (b['playStoreBadgeUrl']?.toString().isNotEmpty ??
-                                  false) ||
-                              (b['playStoreUrl']?.toString().isNotEmpty ??
-                                  false) ||
-                              (b['playStoreBadgeUrl']?.toString().isNotEmpty ??
-                                  false)))
-                            const Text(
-                              'Coming soon to app stores',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.white70,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                if ((b['imageUrl']?.toString().isNotEmpty ?? false)) ...[
-                  const SizedBox(width: 20),
-                  // React .adb-image — app mockup, contain-fit, max 180x160, shadow
-                  ConstrainedBox(
-                    constraints:
-                        const BoxConstraints(maxWidth: 180, maxHeight: 160),
-                    child: DecoratedBox(
-                      decoration: const BoxDecoration(
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0x59000000),
-                            blurRadius: 16,
-                            offset: Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: CachedNetworkImage(
-                        imageUrl: media(b['imageUrl'].toString()),
-                        fit: BoxFit.contain,
-                        errorWidget: (_, __, ___) => const SizedBox.shrink(),
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

@@ -31,7 +31,6 @@ import '../../../../shared/services/api_service.dart';
 import '../../../../shared/utils/responsive_helper.dart';
 import '../widgets/photo_reels_widget.dart';
 import '../widgets/side_by_side_section.dart';
-import '../widgets/download_banner.dart';
 import '../widgets/how_it_works_section.dart';
 
 class HomePage extends ConsumerStatefulWidget {
@@ -339,8 +338,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ),
                             onSeeAll: () => context.push('/search'),
                             child: topRatedAsync.when(
-                              data: (pros) =>
-                                  TopRatedProfessionalsCarousel(professionals: pros),
+                              data: (pros) => TopRatedProfessionalsCarousel(
+                                  professionals: pros),
                               loading: () =>
                                   const HomeLoadingPlaceholder(height: 280),
                               error: (_, __) => const SizedBox.shrink(),
@@ -476,35 +475,35 @@ class _HomePageState extends ConsumerState<HomePage> {
                       const SliverToBoxAdapter(child: SizedBox(height: 28)),
                       // Top Manicure & Pedicure Artists - vertical on tablet
                       _section(
-                          titleWidget: const Text.rich(
-                            TextSpan(
-                              children: [
-                                TextSpan(
-                                  text: 'Nails ',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: GlayaColors.textPrimary,
-                                  ),
+                        titleWidget: const Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: 'Nails ',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.textPrimary,
                                 ),
-                                TextSpan(
-                                  text: 'Artists',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    fontWeight: FontWeight.bold,
-                                    color: GlayaColors.accentPurple,
-                                  ),
+                              ),
+                              TextSpan(
+                                text: 'Artists',
+                                style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.bold,
+                                  color: GlayaColors.accentPurple,
                                 ),
-                              ],
-                            ),
-                          ),
-                          onSeeAll: () =>
-                              context.push('/service-portfolio/nails'),
-                          child: const CategoryProfessionalsCarousel(
-                            categoryName: 'Nails',
-                            serviceId: 'nails',
+                              ),
+                            ],
                           ),
                         ),
+                        onSeeAll: () =>
+                            context.push('/service-portfolio/nails'),
+                        child: const CategoryProfessionalsCarousel(
+                          categoryName: 'Nails',
+                          serviceId: 'nails',
+                        ),
+                      ),
                       const SliverToBoxAdapter(child: SizedBox(height: 28)),
                       // How Glaya Works | Why Customers Love Glaya
                       SliverToBoxAdapter(
@@ -514,13 +513,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                       ),
                       const SliverToBoxAdapter(child: SizedBox(height: 28)),
-                      // Download Banner | Exclusive Offers
-                      SliverToBoxAdapter(
-                        child: SideBySideSection(
-                          left: const DownloadBanner(),
-                          right: const ExclusiveOffersSection(),
-                        ),
-                      ),
+                      // Exclusive Offers (download banner removed)
+                      const SliverToBoxAdapter(child: ExclusiveOffersSection()),
                     ] else ...[
                       // Mobile layout: original vertical stack
                       _section(
@@ -548,8 +542,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                         ),
                         onSeeAll: () => context.push('/search'),
                         child: topRatedAsync.when(
-                          data: (pros) =>
-                              TopRatedProfessionalsCarousel(professionals: pros),
+                          data: (pros) => TopRatedProfessionalsCarousel(
+                              professionals: pros),
                           loading: () =>
                               const HomeLoadingPlaceholder(height: 280),
                           error: (_, __) => const SizedBox.shrink(),
@@ -630,7 +624,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ],
                           ),
                         ),
-                        onSeeAll: () => context.push('/service-portfolio/makeup'),
+                        onSeeAll: () =>
+                            context.push('/service-portfolio/makeup'),
                         child: const CategoryProfessionalsCarousel(
                           categoryName: 'Makeup',
                           serviceId: 'makeup',
@@ -688,13 +683,15 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ],
                           ),
                         ),
-                        onSeeAll: () => context.push('/service-portfolio/nails'),
+                        onSeeAll: () =>
+                            context.push('/service-portfolio/nails'),
                         child: const CategoryProfessionalsCarousel(
                           categoryName: 'Nails',
                           serviceId: 'nails',
                         ),
                       ),
-                      const SliverToBoxAdapter(child: BecomeProfessionalBanner()),
+                      const SliverToBoxAdapter(
+                          child: BecomeProfessionalBanner()),
                       const SliverToBoxAdapter(child: ReferLoyaltyRow()),
                       _section(
                         title: 'Recommended For You',
@@ -709,7 +706,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                       ),
                       _section(
                         title: 'Nearby Professionals',
-                        onSeeAll: () => context.push('/nearby-professionals-map'),
+                        onSeeAll: () =>
+                            context.push('/nearby-professionals-map'),
                         child: nearbyAsync.when(
                           data: (pros) => pros.isEmpty
                               ? const SizedBox.shrink()
