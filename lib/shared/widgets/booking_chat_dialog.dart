@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../features/chat/presentation/chat_screen.dart';
 import '../utils/responsive_helper.dart';
+import 'floating_chat_overlay.dart';
 
-/// Opens the booking chat as a popup dialog instead of a full screen.
-/// On desktop, positions in bottom-right corner. On mobile/tablet, centered.
+/// Opens the booking chat. On tablet/desktop it floats above the page as a
+/// non-modal panel (page stays interactive); on phones it's a modal dialog.
 Future<void> showBookingChatDialog(BuildContext context, String bookingId) {
+  final width = MediaQuery.of(context).size.width;
+  if (width >= 600) {
+    FloatingChatOverlay.show(bookingId);
+    return Future.value();
+  }
   return showGeneralDialog(
     context: context,
     barrierDismissible: true,

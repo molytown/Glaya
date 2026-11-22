@@ -7,6 +7,8 @@ import '../../../../shared/theme/colors.dart';
 import '../../../../shared/providers/location_provider.dart';
 import '../../auth/presentation/providers/auth_notifier.dart';
 import '../../../../shared/widgets/booking_chat_dialog.dart';
+import '../../../../shared/router/app_router.dart';
+import '../../../../shared/utils/responsive_helper.dart';
 import '../../payments/presentation/widgets/payment_deposit_dialog.dart';
 import '../../payments/presentation/widgets/cod_payment_dialog.dart';
 
@@ -39,6 +41,21 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   void initState() {
     super.initState();
     _loadBooking();
+  }
+
+  /// Opens booking chat. When embedded in the desktop/tablet slide-out,
+  /// closes the slide-out first so the floating chat panel is unobstructed.
+  void _openChat() {
+    final wide = ResponsiveHelper.isTablet(context);
+    if (widget.embedded && wide) {
+      Navigator.of(context).pop();
+      final navContext = rootNavigatorKey.currentContext;
+      if (navContext != null) {
+        showBookingChatDialog(navContext, widget.bookingId);
+      }
+      return;
+    }
+    showBookingChatDialog(context, widget.bookingId);
   }
 
   Future<void> _loadBooking() async {
@@ -224,7 +241,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       });
       if (mounted) {
         _snack('Reschedule request sent to professional');
-        showBookingChatDialog(context, widget.bookingId);
+        _openChat();
       }
     } catch (e) {
       if (mounted) _snack('Failed to send reschedule request: $e', error: true);
@@ -656,25 +673,24 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         if (isPro) {
           // Professional coordinates time + price in chat, then confirms terms
           return _actionBtn('Chat', Icons.chat_bubble_outline,
-              onTap: () => showBookingChatDialog(context, widget.bookingId));
+              onTap: () => _openChat());
         }
         // Customer: show Chat button
         return _actionBtn('Chat', Icons.chat_bubble_outline,
-            onTap: () => showBookingChatDialog(context, widget.bookingId));
+            onTap: () => _openChat());
       case 'accepted':
       case 'deposit_required':
         if (isPro) {
           return _actionBtn(
               'Confirm & Request Deposit', Icons.request_quote_outlined,
-              onTap: () => showBookingChatDialog(context, widget.bookingId));
+              onTap: () => _openChat());
         }
         return Column(children: [
           _actionBtn('Pay Now', Icons.payment_outlined,
               onTap: () => context.push('/payment/${widget.bookingId}')),
           const SizedBox(height: 8),
           _actionBtn('Chat', Icons.chat_bubble_outline,
-              outlined: true,
-              onTap: () => showBookingChatDialog(context, widget.bookingId)),
+              outlined: true, onTap: () => _openChat()),
         ]);
       case 'confirmed':
         if (isPro) {
@@ -683,8 +699,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 onTap: () => _performAction('checkin')),
             const SizedBox(height: 8),
             _actionBtn('Chat', Icons.chat_bubble_outline,
-                outlined: true,
-                onTap: () => showBookingChatDialog(context, widget.bookingId)),
+                outlined: true, onTap: () => _openChat()),
           ]);
         }
         final customerCheckedIn = _booking?['customerCheckedInAt'] != null ||
@@ -700,9 +715,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           Row(children: [
             Expanded(
                 child: _actionBtn('Message', Icons.chat_bubble_outline,
-                    outlined: true,
-                    onTap: () =>
-                        showBookingChatDialog(context, widget.bookingId))),
+                    outlined: true, onTap: () => _openChat())),
             const SizedBox(width: 8),
             Expanded(
                 child: _actionBtn('Call', Icons.call_outlined,
@@ -720,8 +733,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 outlined: true, onTap: _showCodCode),
             const SizedBox(height: 8),
             _actionBtn('Chat', Icons.chat_bubble_outline,
-                outlined: true,
-                onTap: () => showBookingChatDialog(context, widget.bookingId)),
+                outlined: true, onTap: () => _openChat()),
           ]);
         }
         return Column(children: [
@@ -736,8 +748,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             const SizedBox(height: 8),
           ],
           _actionBtn('Chat', Icons.chat_bubble_outline,
-              outlined: true,
-              onTap: () => showBookingChatDialog(context, widget.bookingId)),
+              outlined: true, onTap: () => _openChat()),
         ]);
       case 'completed':
         if (isPro) {
@@ -748,8 +759,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
                 onTap: _showGlayaScore),
             const SizedBox(height: 8),
             _actionBtn('Chat', Icons.chat_bubble_outline,
-                outlined: true,
-                onTap: () => showBookingChatDialog(context, widget.bookingId)),
+                outlined: true, onTap: () => _openChat()),
           ]);
         }
         return _actionBtn('Leave a Review', Icons.star_outline,
