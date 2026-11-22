@@ -334,7 +334,7 @@ class _AmbassadorScreenState extends State<AmbassadorScreen>
                         ],
                       ],
                     ),
-                    Text('Ambassador · Earn ${rate ?? 0}% on every booking',
+                    Text('Ambassador · Earn ${rate ?? 0}% of Glaya\'s earnings',
                         style: TextStyle(
                             color: Colors.white.withOpacity(0.85), fontSize: 12)),
                     const SizedBox(height: 4),
