@@ -497,11 +497,9 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                     Expanded(
                       child: Text(
                         _selectedAddress ?? 'Pick location on map',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
-                          color: _selectedLocation != null
-                              ? GlayaColors.berry
-                              : Color(0xFF000000),
+                          color: Color(0xFF1A1A1A),
                         ),
                       ),
                     ),
@@ -577,6 +575,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
         TextField(
           controller: ctrl,
           keyboardType: type,
+          style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: GlayaColors.berry, size: 18),
             contentPadding: const EdgeInsets.symmetric(
@@ -593,6 +592,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
             ),
             filled: true,
             fillColor: const Color(0xFFFAFAFA),
+            hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF1A1A1A)),
           ),
         ),
       ],
@@ -615,6 +615,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
         TextField(
           controller: _passwordCtrl,
           obscureText: !_showPassword,
+          style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
           decoration: InputDecoration(
             prefixIcon: const Icon(
               Icons.lock_outline,
@@ -646,7 +647,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
             filled: true,
             fillColor: const Color(0xFFFAFAFA),
             hintText: 'Leave blank to keep current password',
-            hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+            hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF1A1A1A)),
           ),
         ),
       ],
@@ -670,6 +671,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
           controller: _bioCtrl,
           maxLines: 4,
           keyboardType: TextInputType.multiline,
+          style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
           decoration: InputDecoration(
             prefixIcon: const Icon(
               Icons.edit_note,
@@ -691,7 +693,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
             filled: true,
             fillColor: const Color(0xFFFAFAFA),
             hintText: 'Tell us about yourself...',
-            hintStyle: const TextStyle(fontSize: 13, color: Colors.grey),
+            hintStyle: const TextStyle(fontSize: 13, color: Color(0xFF1A1A1A)),
           ),
         ),
       ],
@@ -1020,6 +1022,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   }
 
   String get _role => (_user?['role'] as String?) ?? 'customer';
+  // Dynamic account-type label (Ambassador > Professional > User)
+  String get _accountTypeLabel {
+    if (_ambassador != null) return 'Ambassador';
+    return _role == 'customer' ? 'User' : 'Professional';
+  }
+
   String get _initials => _displayName.trim().isNotEmpty
       ? _displayName
           .trim()
@@ -1144,16 +1152,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       return DateTime.now().year.toString();
     }();
 
+    final isAmbassador = _ambassador != null;
     return SliverAppBar(
       expandedHeight: 280,
       pinned: true,
-      backgroundColor: GlayaColors.berry,
+      backgroundColor:
+          isAmbassador ? const Color(0xFFB8860B) : GlayaColors.berry,
       elevation: 0,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFD6006E), Color(0xFF880E4F)],
+              colors: isAmbassador
+                  ? const [Color(0xFFD4AF37), Color(0xFF8B6508)]
+                  : const [Color(0xFFD6006E), Color(0xFF880E4F)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -1205,17 +1217,30 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ),
                     const SizedBox(height: 12),
                     const SizedBox(height: 8),
-                    Text(
-                      _displayName,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            _displayName,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (isAmbassador) ...[
+                          const SizedBox(width: 6),
+                          const Icon(Icons.verified,
+                              size: 22, color: Color(0xFFFFF3D6)),
+                        ],
+                      ],
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Beauty Enthusiast • Since $sinceYear',
+                      '$_accountTypeLabel • Since $sinceYear',
                       style:
                           const TextStyle(fontSize: 13, color: Colors.white70),
                     ),
@@ -3024,16 +3049,31 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
   bool _homeService = true;
   bool _reminders = true;
 
-  // Glaya color scheme — mirrors the React app palette
-  static const ground = GlayaColors.pinkBg; // #FFF0F5
+  // Glaya color scheme — mirrors the React app palette.
+  // Ambassadors get the gold theme (matches ambassador_screen.dart / React).
   static const ink = GlayaColors.textPrimary; // #1A1A2E
   static const muted = Color(0xFF000000); // #6B7280
-  static const accent = GlayaColors.berry; // #E91E8C
-  static const accentDark = GlayaColors.pinkDark; // #C2185B
-  static const accentSoft = GlayaColors.pinkLight; // #FCE4EC
   static const line = GlayaColors.divider; // #E5E7EB
-  static const segment = GlayaColors.pinkBg;
   static const switchOff = Color(0xFF000000); // #9CA3AF
+
+  bool get _isAmbassador => widget.ambassador != null;
+
+  Color get ground =>
+      _isAmbassador ? const Color(0xFFFBF6EA) : GlayaColors.pinkBg;
+  Color get accent =>
+      _isAmbassador ? const Color(0xFFB8860B) : GlayaColors.berry;
+  Color get accentDark =>
+      _isAmbassador ? const Color(0xFF8B6508) : GlayaColors.pinkDark;
+  Color get accentSoft =>
+      _isAmbassador ? const Color(0xFFFFF3D6) : GlayaColors.pinkLight;
+  Color get segment =>
+      _isAmbassador ? const Color(0xFFF5EEDC) : GlayaColors.pinkBg;
+
+  // Dynamic account-type label shown under the user's name
+  String get _accountTypeLabel {
+    if (_isAmbassador) return 'Ambassador';
+    return widget.role == 'customer' ? 'User' : 'Professional';
+  }
 
   Map<String, dynamic>? get _loyalty => widget.loyalty;
   int get _loyaltyPoints => (_loyalty?['points'] as num?)?.toInt() ?? 0;
@@ -3272,6 +3312,11 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          if (_isAmbassador) ...[
+                            const SizedBox(width: 6),
+                            const Icon(Icons.verified,
+                                size: 22, color: Color(0xFFD4AF37)),
+                          ],
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -3280,36 +3325,48 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFF8E1),
+                          color: _isAmbassador
+                              ? const Color(0xFFFFF8E1)
+                              : const Color(0xFFFFF8E1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: const Color(0xFFFFD54F)),
+                          border: Border.all(
+                              color: _isAmbassador
+                                  ? const Color(0xFFD4AF37)
+                                  : const Color(0xFFFFD54F)),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.star,
-                                size: 14, color: Color(0xFFF59E0B)),
+                            Icon(
+                                _isAmbassador
+                                    ? Icons.workspace_premium
+                                    : Icons.star,
+                                size: 14,
+                                color: _isAmbassador
+                                    ? const Color(0xFFB8860B)
+                                    : const Color(0xFFF59E0B)),
                             const SizedBox(width: 4),
                             Text(
-                              'Member',
+                              _isAmbassador ? 'Ambassador' : 'Member',
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFFB8860B),
+                                color: _isAmbassador
+                                    ? const Color(0xFF8B6508)
+                                    : const Color(0xFFB8860B),
                               ),
                             ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 4),
-                      // Subtitle
+                      // Subtitle — dynamic account type
                       Row(
                         children: [
-                          const Icon(Icons.auto_awesome,
-                              size: 16, color: accent),
+                          Icon(Icons.auto_awesome, size: 16, color: accent),
                           const SizedBox(width: 4),
                           Text(
-                            'Beauty Enthusiast',
+                            _accountTypeLabel,
                             style: TextStyle(
                               fontSize: 13,
                               color: accent.withValues(alpha: 0.8),
@@ -3351,7 +3408,7 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                     style: OutlinedButton.styleFrom(
                       minimumSize: const Size.fromHeight(44),
                       foregroundColor: accent,
-                      side: const BorderSide(color: accent, width: 1.5),
+                      side: BorderSide(color: accent, width: 1.5),
                       shape: const StadiumBorder(),
                     ),
                   ),
@@ -3380,7 +3437,7 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(44),
                   foregroundColor: accent,
-                  side: const BorderSide(color: accent, width: 1.5),
+                  side: BorderSide(color: accent, width: 1.5),
                   shape: const StadiumBorder(),
                 ),
               ),
@@ -3835,7 +3892,7 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                   ),
                   child: Text(
                     item.tag,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                       color: accentDark,

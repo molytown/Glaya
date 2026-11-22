@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../shared/services/api_service.dart';
 import '../../../../shared/services/config_service.dart';
 import '../../../../shared/theme/colors.dart';
+import '../../../../shared/widgets/content_actions.dart';
 import '../../reels/data/models/reel_model.dart';
 import '../../reels/data/repositories/reel_repository.dart';
 import '../../reels/presentation/reel_screen.dart';
@@ -69,6 +70,19 @@ class _UserPublicProfileScreenState extends State<UserPublicProfileScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         foregroundColor: GlayaColors.textPrimary,
+        actions: [
+          if (!_isLoading && _user != null)
+            IconButton(
+              icon: const Icon(Icons.more_vert),
+              onPressed: () => ContentActions.show(
+                context,
+                targetType: 'profile',
+                targetId: widget.userId,
+                reportedUserId: widget.userId,
+                displayName: _displayName,
+              ),
+            ),
+        ],
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -128,8 +142,7 @@ class _UserPublicProfileScreenState extends State<UserPublicProfileScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       const Icon(Icons.star,
-                                          size: 13,
-                                          color: Color(0xFFF59E0B)),
+                                          size: 13, color: Color(0xFFF59E0B)),
                                       const SizedBox(width: 3),
                                       Text(
                                         'Glaya ${_glayaScore!.toStringAsFixed(1)}',

@@ -9,6 +9,7 @@ import '../../../shared/services/config_service.dart';
 import '../../../shared/theme/colors.dart';
 import '../../../shared/utils/num_utils.dart';
 import '../../../shared/widgets/verification_badge.dart';
+import '../../../shared/widgets/content_actions.dart';
 import '../../auth/data/models/user_model.dart';
 import '../../auth/presentation/providers/auth_notifier.dart';
 import '../../discovery/data/professional_model.dart';
@@ -486,6 +487,18 @@ class _ReelScreenState extends ConsumerState<ReelScreen> {
                     icon: _isMuted ? Icons.volume_off : Icons.volume_up,
                     onTap: _toggleMute,
                   ),
+                const SizedBox(height: 20),
+                // More options — report / block
+                _buildActionButton(
+                  icon: Icons.more_vert,
+                  onTap: () => ContentActions.show(
+                    context,
+                    targetType: 'reel',
+                    targetId: reel.id,
+                    reportedUserId: reel.user?.id,
+                    displayName: displayName,
+                  ),
+                ),
               ],
             ),
           ),

@@ -36,32 +36,33 @@ class ProfessionalModel extends Professional {
 
   factory ProfessionalModel.fromJson(Map<String, dynamic> json) {
     final configService = ConfigService();
-    
+
     // Handle category - can be String, Map, or null
     String categoryValue = '';
     final category = json['category'];
     if (category is String) {
       categoryValue = category;
     } else if (category is Map) {
-      categoryValue = category['name']?.toString() ?? category['id']?.toString() ?? '';
+      categoryValue =
+          category['name']?.toString() ?? category['id']?.toString() ?? '';
     } else {
-      categoryValue = (json['categoryId'] ?? json['category_id'] ?? '').toString();
+      categoryValue =
+          (json['categoryId'] ?? json['category_id'] ?? '').toString();
     }
 
     final categoriesValue = _parseCategories(json['categories']);
-    
+
     return ProfessionalModel(
       id: json['id']?.toString() ?? '',
-      userId:
-          (json['user']?['id'] ?? json['userId'] ?? json['user_id'] ?? '')
-              .toString(),
+      userId: (json['user']?['id'] ?? json['userId'] ?? json['user_id'] ?? '')
+          .toString(),
       name: (json['user']?['name'] ?? 'Unknown').toString(),
       category: categoryValue,
       categories: categoriesValue.isNotEmpty
           ? categoriesValue
           : (categoryValue.isNotEmpty ? [categoryValue] : const <String>[]),
-      trustScore: _parseNum(json['trustScore'] ?? json['trust_score'] ?? 0)
-          .toInt(),
+      trustScore:
+          _parseNum(json['trustScore'] ?? json['trust_score'] ?? 0).toInt(),
       photoUrl: configService.replaceLocalhost(
         (json['user']?['photoUrl'] as String?) ??
             (json['user']?['photo_url'] as String?) ??
@@ -77,23 +78,19 @@ class ProfessionalModel extends Professional {
           ?.map((r) => ReviewItem.fromJson(r as Map<String, dynamic>))
           .toList(),
       businessName:
-          json['businessName']?.toString() ??
-          json['business_name']?.toString(),
-      businessAddress:
-          json['businessAddress']?.toString() ??
+          json['businessName']?.toString() ?? json['business_name']?.toString(),
+      businessAddress: json['businessAddress']?.toString() ??
           json['business_address']?.toString(),
-      neighborhood:
-          json['neighborhood']?.toString() ??
+      neighborhood: json['neighborhood']?.toString() ??
           json['area']?.toString() ??
           json['neighbourhood']?.toString(),
       city: json['city']?.toString(),
       state: json['state']?.toString(),
-      onlineStatus:
-          (json['dynamicOnlineStatus'] ??
-                  json['dynamic_online_status'] ??
-                  json['onlineStatus'] ??
-                  json['online_status'])
-              ?.toString(),
+      onlineStatus: (json['dynamicOnlineStatus'] ??
+              json['dynamic_online_status'] ??
+              json['onlineStatus'] ??
+              json['online_status'])
+          ?.toString(),
       avgRating: _parseNum(json['avgRating'] ?? json['avg_rating']).toDouble(),
       totalReviews: _parseNum(
         json['totalReviews'] ?? json['total_reviews'] ?? 0,
@@ -103,10 +100,9 @@ class ProfessionalModel extends Professional {
       ).toInt(),
       verificationStatus:
           (json['verificationStatus'] ?? json['verification_status'])
-              ?.toString() ??
-          'pending',
-      homeService:
-          (json['homeService'] as bool?) ??
+                  ?.toString() ??
+              'pending',
+      homeService: (json['homeService'] as bool?) ??
           (json['home_service'] as bool?) ??
           false,
       portfolioUrls: json['portfolioGalleries'] as List<dynamic>? ?? [],
@@ -119,9 +115,8 @@ class ProfessionalModel extends Professional {
       distance: _parseNum(json['distance']).toDouble(),
       currency: json['currency']?.toString(),
       subscriptionType:
-          (json['subscriptionType'] ?? json['subscription_type'])
-              ?.toString() ??
-          'flex',
+          (json['subscriptionType'] ?? json['subscription_type'])?.toString() ??
+              'flex',
     );
   }
 
@@ -173,22 +168,26 @@ class ServiceItem {
       ).toInt(),
       depositAmount:
           json['depositAmount'] != null || json['deposit_amount'] != null
-          ? ProfessionalModel._parseNum(
-              json['depositAmount'] ?? json['deposit_amount'],
-            ).toDouble()
-          : null,
+              ? ProfessionalModel._parseNum(
+                  json['depositAmount'] ?? json['deposit_amount'],
+                ).toDouble()
+              : null,
       imageUrl: (json['imageUrl'] ?? json['image_url'])?.toString(),
     );
   }
 }
 
 class ReviewItem {
+  final String? id;
+  final String? reviewerId;
   final String reviewerName;
   final int rating;
   final String? comment;
   final String? createdAt;
 
   const ReviewItem({
+    this.id,
+    this.reviewerId,
     required this.reviewerName,
     required this.rating,
     this.comment,
@@ -197,11 +196,14 @@ class ReviewItem {
 
   factory ReviewItem.fromJson(Map<String, dynamic> json) {
     return ReviewItem(
+      id: json['id']?.toString(),
+      reviewerId:
+          (json['reviewerId'] ?? json['reviewer_id'] ?? json['reviewer']?['id'])
+              ?.toString(),
       reviewerName: (json['reviewer']?['name'] ?? 'Anonymous').toString(),
       rating: ProfessionalModel._parseNum(json['rating']).toInt(),
       comment: json['comment']?.toString(),
-      createdAt:
-          (json['createdAt'] ?? json['created_at'])?.toString(),
+      createdAt: (json['createdAt'] ?? json['created_at'])?.toString(),
     );
   }
 }
@@ -215,8 +217,7 @@ class AvailabilitySlot {
   factory AvailabilitySlot.fromJson(Map<String, dynamic> json) {
     return AvailabilitySlot(
       time: (json['time'] ?? '').toString(),
-      isBooked:
-          json['isBooked'] == true || json['is_booked'] == true,
+      isBooked: json['isBooked'] == true || json['is_booked'] == true,
     );
   }
 }

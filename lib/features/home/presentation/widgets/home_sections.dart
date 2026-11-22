@@ -9,6 +9,7 @@ import '../../../../shared/services/api_service.dart';
 import '../../../../shared/services/config_service.dart';
 import '../../../../shared/services/currency_service.dart';
 import '../../../../shared/theme/colors.dart';
+import '../../../../shared/widgets/content_actions.dart';
 import '../../../auth/presentation/providers/auth_notifier.dart';
 import '../../../discovery/data/professional_model.dart';
 import '../../../discovery/data/trending_service_model.dart';
@@ -519,7 +520,8 @@ class _MiniPromoCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: GlayaColors.vibrantPink),
         boxShadow: [
-          BoxShadow(color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 6)
+          BoxShadow(
+              color: Color(0xFF000000).withValues(alpha: 0.04), blurRadius: 6)
         ],
       ),
       child: Column(
@@ -747,7 +749,8 @@ class CustomerReviewsRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(14),
               boxShadow: [
                 BoxShadow(
-                    color: Color(0xFF000000).withValues(alpha: 0.05), blurRadius: 6)
+                    color: Color(0xFF000000).withValues(alpha: 0.05),
+                    blurRadius: 6)
               ],
             ),
             child: Column(
@@ -778,6 +781,25 @@ class CustomerReviewsRow extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    if (review['id'] != null &&
+                        (review['reviewerId'] ??
+                                review['reviewer_id'] ??
+                                review['reviewer']?['id']) !=
+                            null)
+                      GestureDetector(
+                        onTap: () => ContentActions.show(
+                          context,
+                          targetType: 'review',
+                          targetId: review['id'].toString(),
+                          reportedUserId: (review['reviewerId'] ??
+                                  review['reviewer_id'] ??
+                                  review['reviewer']?['id'])
+                              ?.toString(),
+                          displayName: name,
+                        ),
+                        child: const Icon(Icons.more_vert,
+                            size: 14, color: GlayaColors.textGray),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 6),

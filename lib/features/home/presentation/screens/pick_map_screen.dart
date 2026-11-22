@@ -456,7 +456,18 @@ class _PickMapScreenState extends State<PickMapScreen> {
       await locationController.saveUserAddress(address);
 
       if (mounted) {
-        Navigator.pop(context);
+        // Return the picked position + address so callers (edit profile,
+        // signup) can display/save it. Existing callers that ignore the
+        // result are unaffected.
+        Navigator.pop(context, {
+          'position': LatLng(
+            double.tryParse(address.latitude ?? '') ??
+                locationController.pickPosition.latitude,
+            double.tryParse(address.longitude ?? '') ??
+                locationController.pickPosition.longitude,
+          ),
+          'address': address.address ?? locationController.pickAddress ?? '',
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Location saved successfully'),

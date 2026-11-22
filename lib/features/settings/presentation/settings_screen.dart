@@ -195,55 +195,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             const SizedBox(height: 28),
 
-            // Name
-            const Text('Display Name',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: Color(0xFF000000))),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _nameController,
-              textCapitalization: TextCapitalization.words,
-              decoration: InputDecoration(
-                hintText: 'Enter your name',
-                hintStyle: const TextStyle(color: Color(0xFF000000)),
-                border:
-                    OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                prefixIcon: const Icon(Icons.person_outline),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            // Phone (read-only)
-            const Text('Phone Number',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                    color: Color(0xFF000000))),
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.shade300),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.phone_outlined, color: Color(0xFF000000)),
-                  const SizedBox(width: 12),
-                  Text(
-                    _user?['phone'] as String? ?? '',
-                    style: const TextStyle(fontSize: 16, color: Color(0xFF000000)),
-                  ),
-                  const Spacer(),
-                  const Text('Cannot change',
-                      style: TextStyle(fontSize: 12, color: Color(0xFF000000))),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
+            // Name & phone are edited on the Edit Profile screen —
+            // intentionally not duplicated here.
+            const SizedBox(height: 4),
 
             const Divider(),
             const SizedBox(height: 8),
@@ -275,6 +229,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 () => context.push('/cms/privacy-policy')),
             _buildTile(Icons.info_outline, 'About Glaya',
                 () => context.push('/cms/about-us')),
+            const SizedBox(height: 8),
+            // Delete Account — required for App Store compliance
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              leading:
+                  const Icon(Icons.delete_forever_outlined, color: Colors.red),
+              title: const Text('Delete Account',
+                  style: TextStyle(
+                      color: Colors.red, fontWeight: FontWeight.w600)),
+              subtitle: const Text(
+                'Permanently delete your account and data',
+                style: TextStyle(fontSize: 12, color: Color(0xFF000000)),
+              ),
+              onTap: _deleteAccount,
+            ),
             const SizedBox(height: 8),
             const Divider(),
             const SizedBox(height: 8),
@@ -318,6 +287,59 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _deleteAccount() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Delete Account?'),
+        content: const Text(
+          'This will permanently delete your Glaya account and personal data. '
+          'This action cannot be undone.\n\n'
+          'Note: Booking, payment and review records are retained in anonymized '
+          'form for legal and financial purposes.',
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            child: const Text('Delete My Account',
+                style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true || !mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    try {
+      await ApiService.dio.delete('/users/me');
+      if (!mounted) return;
+      Navigator.of(context).pop(); // dismiss spinner
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Your account has been deleted')),
+      );
+      // Clear local session and return to login
+      try {
+        await ApiService.dio.post('/auth/logout');
+      } catch (_) {}
+      ref.read(authNotifierProvider.notifier).logout();
+      if (mounted) context.go('/login');
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context).pop(); // dismiss spinner
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Could not delete account: $e')),
+      );
+    }
   }
 
   Widget _buildTile(IconData icon, String label, VoidCallback onTap) {

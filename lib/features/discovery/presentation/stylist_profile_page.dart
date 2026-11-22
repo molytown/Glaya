@@ -6,6 +6,7 @@ import '../../../../shared/providers/location_provider.dart';
 import '../../../../shared/services/api_service.dart';
 import '../../../../shared/services/config_service.dart';
 import '../../../../shared/widgets/bottom_nav.dart';
+import '../../../../shared/widgets/content_actions.dart';
 import '../../auth/presentation/providers/auth_notifier.dart';
 import '../../profile/presentation/wallet_dialog.dart';
 
@@ -1159,6 +1160,8 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
               text: _reviewText(latestReview),
               imageUrl: _reviewImage(latestReview),
               rating: _reviewRating(latestReview),
+              reviewId: latestReview['id']?.toString(),
+              reviewerId: _reviewerId(latestReview),
             ),
           ],
         ],
@@ -1189,6 +1192,12 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
 
   int _reviewRating(Map<String, dynamic> r) =>
       ((r['rating'] ?? r['stars']) as num?)?.toInt() ?? 5;
+
+  String? _reviewerId(Map<String, dynamic> r) => (r['reviewer_id'] ??
+          r['reviewerId'] ??
+          r['reviewer']?['id'] ??
+          r['user']?['id'])
+      ?.toString();
 
   String _reviewText(Map<String, dynamic> r) =>
       (r['comment'] ?? r['review'] ?? r['text'] ?? '').toString();
@@ -1230,6 +1239,8 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
     required String text,
     required String imageUrl,
     int rating = 5,
+    String? reviewId,
+    String? reviewerId,
   }) {
     final clampedRating = rating.clamp(0, 5);
     return Row(
@@ -1265,6 +1276,21 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                     ),
                   ),
                   const Spacer(),
+                  if (reviewId != null && reviewerId != null)
+                    GestureDetector(
+                      onTap: () => ContentActions.show(
+                        context,
+                        targetType: 'review',
+                        targetId: reviewId,
+                        reportedUserId: reviewerId,
+                        displayName: name,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 6),
+                        child: Icon(Icons.more_vert,
+                            size: 18, color: secondaryText),
+                      ),
+                    ),
                   Text(
                     date,
                     style: TextStyle(color: secondaryText, fontSize: 9),
@@ -1376,6 +1402,8 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
                       text: _reviewText(reviews[i]),
                       imageUrl: _reviewImage(reviews[i]),
                       rating: _reviewRating(reviews[i]),
+                      reviewId: reviews[i]['id']?.toString(),
+                      reviewerId: _reviewerId(reviews[i]),
                     ),
                   ],
                 ],

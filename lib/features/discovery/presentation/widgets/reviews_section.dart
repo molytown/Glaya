@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../shared/theme/colors.dart';
+import '../../../../shared/widgets/content_actions.dart';
 import '../../data/professional_model.dart';
 
 class ReviewsSection extends StatelessWidget {
@@ -22,7 +23,11 @@ class ReviewsSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('Reviews', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A))),
+              const Text('Reviews',
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1A1A1A))),
               const Spacer(),
               Row(
                 children: [
@@ -30,12 +35,16 @@ class ReviewsSection extends StatelessWidget {
                   const SizedBox(width: 4),
                   Text(
                     avgRating.toStringAsFixed(1),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A)),
+                    style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF1A1A1A)),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '($totalReviews)',
-                    style: const TextStyle(fontSize: 14, color: Color(0xFF000000)),
+                    style:
+                        const TextStyle(fontSize: 14, color: Color(0xFF000000)),
                   ),
                 ],
               ),
@@ -43,7 +52,8 @@ class ReviewsSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           if (reviews.isEmpty)
-            const Text('No reviews yet', style: TextStyle(fontSize: 14, color: Color(0xFF000000)))
+            const Text('No reviews yet',
+                style: TextStyle(fontSize: 14, color: Color(0xFF000000)))
           else
             ListView.separated(
               shrinkWrap: true,
@@ -53,6 +63,11 @@ class ReviewsSection extends StatelessWidget {
               itemBuilder: (_, i) {
                 final review = reviews[i] as dynamic;
                 return _ReviewCard(
+                  reviewId: review.id?.toString(),
+                  reviewerId: (review.reviewerId ??
+                          review.reviewer_id ??
+                          review.reviewer?.id)
+                      ?.toString(),
                   reviewerName: review.reviewerName ?? 'Anonymous',
                   rating: review.rating ?? 0,
                   comment: review.comment ?? '',
@@ -62,7 +77,9 @@ class ReviewsSection extends StatelessWidget {
             ),
           TextButton(
             onPressed: () => context.push('/reviews', extra: professional.id),
-            child: const Text('See All Reviews →', style: TextStyle(color: GlayaColors.berry, fontWeight: FontWeight.w700)),
+            child: const Text('See All Reviews →',
+                style: TextStyle(
+                    color: GlayaColors.berry, fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -71,12 +88,20 @@ class ReviewsSection extends StatelessWidget {
 }
 
 class _ReviewCard extends StatelessWidget {
+  final String? reviewId;
+  final String? reviewerId;
   final String reviewerName;
   final int rating;
   final String comment;
   final String? createdAt;
 
-  const _ReviewCard({required this.reviewerName, required this.rating, required this.comment, this.createdAt});
+  const _ReviewCard(
+      {this.reviewId,
+      this.reviewerId,
+      required this.reviewerName,
+      required this.rating,
+      required this.comment,
+      this.createdAt});
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +133,11 @@ class _ReviewCard extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Center(
-                  child: Text(reviewerName[0].toUpperCase(), style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white)),
+                  child: Text(reviewerName[0].toUpperCase(),
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white)),
                 ),
               ),
               const SizedBox(width: 10),
@@ -116,11 +145,33 @@ class _ReviewCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(reviewerName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A))),
-                    if (dateStr.isNotEmpty) Text(dateStr, style: const TextStyle(fontSize: 11, color: Color(0xFF000000))),
+                    Text(reviewerName,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF1A1A1A))),
+                    if (dateStr.isNotEmpty)
+                      Text(dateStr,
+                          style: const TextStyle(
+                              fontSize: 11, color: Color(0xFF000000))),
                   ],
                 ),
               ),
+              if (reviewId != null && reviewerId != null)
+                GestureDetector(
+                  onTap: () => ContentActions.show(
+                    context,
+                    targetType: 'review',
+                    targetId: reviewId!,
+                    reportedUserId: reviewerId,
+                    displayName: reviewerName,
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 6),
+                    child: Icon(Icons.more_vert,
+                        color: Color(0xFF000000), size: 18),
+                  ),
+                ),
               Row(
                 children: List.generate(5, (index) {
                   return Icon(
@@ -134,7 +185,8 @@ class _ReviewCard extends StatelessWidget {
           ),
           if (comment.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text(comment, style: const TextStyle(fontSize: 13, color: Color(0xFF555555))),
+            Text(comment,
+                style: const TextStyle(fontSize: 13, color: Color(0xFF555555))),
           ],
         ],
       ),

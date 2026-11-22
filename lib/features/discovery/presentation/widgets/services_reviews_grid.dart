@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../shared/services/config_service.dart';
 import '../../../../shared/theme/colors.dart';
+import '../../../../shared/widgets/content_actions.dart';
 import '../../data/professional_model.dart';
 import 'booking_modal.dart';
 
@@ -14,7 +15,8 @@ class ServicesReviewsGrid extends ConsumerStatefulWidget {
   const ServicesReviewsGrid({super.key, required this.professional});
 
   @override
-  ConsumerState<ServicesReviewsGrid> createState() => _ServicesReviewsGridState();
+  ConsumerState<ServicesReviewsGrid> createState() =>
+      _ServicesReviewsGridState();
 }
 
 class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
@@ -71,7 +73,10 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
         children: [
           const Text(
             'Services',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A)),
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A)),
           ),
           const SizedBox(height: 16),
           if (services.isEmpty)
@@ -87,7 +92,8 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                 childAspectRatio: 1.0,
               ),
               itemCount: services.length,
-              itemBuilder: (context, index) => _buildServiceCard(services[index]),
+              itemBuilder: (context, index) =>
+                  _buildServiceCard(services[index]),
             ),
         ],
       ),
@@ -96,7 +102,9 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
 
   Widget _buildServiceCard(ServiceItem service) {
     final configService = ConfigService();
-    final imageUrl = service.imageUrl != null ? configService.replaceLocalhost(service.imageUrl!) : null;
+    final imageUrl = service.imageUrl != null
+        ? configService.replaceLocalhost(service.imageUrl!)
+        : null;
     final rating = widget.professional.avgRating ?? 0.0;
     final currency = widget.professional.currency ?? 'XAF';
 
@@ -127,7 +135,8 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                 top: 8,
                 left: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: Color(0xFF000000).withValues(alpha: 0.55),
                     borderRadius: BorderRadius.circular(999),
@@ -135,11 +144,15 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(Icons.star, size: 11, color: Color(0xFFFBBF24)),
+                      const Icon(Icons.star,
+                          size: 11, color: Color(0xFFFBBF24)),
                       const SizedBox(width: 3),
                       Text(
                         rating > 0 ? rating.toStringAsFixed(1) : 'New',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Colors.white),
+                        style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white),
                       ),
                     ],
                   ),
@@ -150,14 +163,18 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                 top: 8,
                 right: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: Color(0xFF000000).withValues(alpha: 0.55),
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: Text(
                     '${NumberFormat('#,##0').format(service.price)} $currency',
-                    style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
+                    style: const TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white),
                   ),
                 ),
               ),
@@ -200,14 +217,18 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                       GestureDetector(
                         onTap: () => _showBookingModal(service),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 6),
                           decoration: BoxDecoration(
                             color: GlayaColors.berry,
                             borderRadius: BorderRadius.circular(999),
                           ),
                           child: const Text(
                             'Book',
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: Colors.white),
+                            style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                                color: Colors.white),
                           ),
                         ),
                       ),
@@ -250,7 +271,10 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
         children: [
           const Text(
             'Reviews',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, color: Color(0xFF1A1A1A)),
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A)),
           ),
           const SizedBox(height: 16),
           if (reviews.isEmpty)
@@ -284,8 +308,13 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                 ),
                 child: Center(
                   child: Text(
-                    review.reviewerName.isNotEmpty ? review.reviewerName[0].toUpperCase() : 'U',
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white),
+                    review.reviewerName.isNotEmpty
+                        ? review.reviewerName[0].toUpperCase()
+                        : 'U',
+                    style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white),
                   ),
                 ),
               ),
@@ -294,21 +323,47 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(review.reviewerName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xFF1A1A1A))),
+                    Text(review.reviewerName,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1A1A1A))),
                     Row(
-                      children: List.generate(5, (i) => Icon(
-                        i < review.rating ? Icons.star : Icons.star_border,
-                        size: 12,
-                        color: i < review.rating ? const Color(0xFFF59E0B) : const Color(0xFFE5E7EB),
-                      )),
+                      children: List.generate(
+                          5,
+                          (i) => Icon(
+                                i < review.rating
+                                    ? Icons.star
+                                    : Icons.star_border,
+                                size: 12,
+                                color: i < review.rating
+                                    ? const Color(0xFFF59E0B)
+                                    : const Color(0xFFE5E7EB),
+                              )),
                     ),
                   ],
                 ),
               ),
+              if (review.id != null && review.reviewerId != null)
+                GestureDetector(
+                  onTap: () => ContentActions.show(
+                    context,
+                    targetType: 'review',
+                    targetId: review.id!,
+                    reportedUserId: review.reviewerId,
+                    displayName: review.reviewerName,
+                  ),
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(Icons.more_vert,
+                        color: Color(0xFF000000), size: 18),
+                  ),
+                ),
               if (review.createdAt != null)
                 Text(
                   _formatDate(review.createdAt!),
-                  style: const TextStyle(fontSize: 11, color: Color(0xFF000000)),
+                  style:
+                      const TextStyle(fontSize: 11, color: Color(0xFF000000)),
                 ),
             ],
           ),
@@ -316,7 +371,8 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
             const SizedBox(height: 8),
             Text(
               '"${review.comment}"',
-              style: const TextStyle(fontSize: 13, color: Color(0xFF555555), height: 1.5),
+              style: const TextStyle(
+                  fontSize: 13, color: Color(0xFF555555), height: 1.5),
             ),
           ],
         ],
@@ -340,7 +396,8 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
         children: [
           Icon(icon, size: 32, color: const Color(0xFFCCCCCC)),
           const SizedBox(height: 12),
-          Text(message, style: const TextStyle(fontSize: 14, color: Color(0xFF000000))),
+          Text(message,
+              style: const TextStyle(fontSize: 14, color: Color(0xFF000000))),
         ],
       ),
     );
