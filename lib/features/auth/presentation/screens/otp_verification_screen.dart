@@ -13,7 +13,8 @@ class OtpVerificationScreen extends ConsumerStatefulWidget {
   const OtpVerificationScreen({super.key, required this.phone});
 
   @override
-  ConsumerState<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
+  ConsumerState<OtpVerificationScreen> createState() =>
+      _OtpVerificationScreenState();
 }
 
 class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
@@ -59,7 +60,10 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       final prefs = await SharedPreferences.getInstance();
       // Checkbox is hidden in OTP mode — keep persistent session (null = default)
       final rememberMe = prefs.getBool('stay_signed_in');
-      await ref.read(authNotifierProvider.notifier).verifyOtp(widget.phone, otp, rememberMe: rememberMe);
+      final ambassadorCode =
+          GoRouterState.of(context).uri.queryParameters['ambassador'];
+      await ref.read(authNotifierProvider.notifier).verifyOtp(widget.phone, otp,
+          rememberMe: rememberMe, ambassadorCode: ambassadorCode);
       if (mounted) {
         context.go('/');
       }
@@ -134,14 +138,17 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                     ? const SizedBox(
                         height: 20,
                         width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
                       )
                     : const Text('Verify'),
               ),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: _secondsRemaining > 0 ? null : _resendOtp,
-                child: Text(_secondsRemaining > 0 ? 'Resend OTP in ${_formatTime(_secondsRemaining)}' : 'Resend OTP'),
+                child: Text(_secondsRemaining > 0
+                    ? 'Resend OTP in ${_formatTime(_secondsRemaining)}'
+                    : 'Resend OTP'),
               ),
             ],
           ),

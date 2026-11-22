@@ -3,7 +3,8 @@ import 'dart:io';
 
 abstract class AuthRepository {
   Future<void> requestOtp(String phone);
-  Future<User> verifyOtp(String phone, String otp, {bool? rememberMe});
+  Future<User> verifyOtp(String phone, String otp,
+      {bool? rememberMe, String? ambassadorCode});
   Future<void> logout();
   Future<User?> getCurrentUser();
   Future<bool> get isAuthenticated;
@@ -14,6 +15,7 @@ abstract class AuthRepository {
     required String password,
     required String role,
     String? referralCode,
+    String? ambassadorCode,
     double? latitude,
     double? longitude,
     String? fullAddress,
@@ -34,6 +36,7 @@ abstract class AuthRepository {
       password: password,
       role: role,
       referralCode: referralCode,
+      ambassadorCode: ambassadorCode,
       latitude: latitude,
       longitude: longitude,
       fullAddress: fullAddress,
@@ -55,6 +58,7 @@ abstract class AuthRepository {
     required String password,
     required String role,
     String? referralCode,
+    String? ambassadorCode,
     double? latitude,
     double? longitude,
     String? fullAddress,

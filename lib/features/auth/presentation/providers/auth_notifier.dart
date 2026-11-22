@@ -3,9 +3,11 @@ import 'dart:io';
 import '../../domain/entities/user.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 
-final authRepositoryProvider = Provider<AuthRepositoryImpl>((ref) => AuthRepositoryImpl());
+final authRepositoryProvider =
+    Provider<AuthRepositoryImpl>((ref) => AuthRepositoryImpl());
 
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((ref) {
+final authNotifierProvider =
+    StateNotifierProvider<AuthNotifier, AsyncValue<User?>>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return AuthNotifier(repository);
 });
@@ -35,10 +37,12 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     await _repository.requestOtp(phone);
   }
 
-  Future<void> verifyOtp(String phone, String otp, {bool? rememberMe}) async {
+  Future<void> verifyOtp(String phone, String otp,
+      {bool? rememberMe, String? ambassadorCode}) async {
     state = const AsyncValue.loading();
     try {
-      final user = await _repository.verifyOtp(phone, otp, rememberMe: rememberMe);
+      final user = await _repository.verifyOtp(phone, otp,
+          rememberMe: rememberMe, ambassadorCode: ambassadorCode);
       state = AsyncValue.data(user);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -51,6 +55,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
     required String password,
     required String role,
     String? referralCode,
+    String? ambassadorCode,
     double? latitude,
     double? longitude,
     String? fullAddress,
@@ -73,6 +78,7 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
         password: password,
         role: role,
         referralCode: referralCode,
+        ambassadorCode: ambassadorCode,
         latitude: latitude,
         longitude: longitude,
         fullAddress: fullAddress,

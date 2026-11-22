@@ -34,11 +34,13 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<User> verifyOtp(String phone, String otp, {bool? rememberMe}) async {
+  Future<User> verifyOtp(String phone, String otp,
+      {bool? rememberMe, String? ambassadorCode}) async {
     final fcmToken = await _getFcmToken();
     final response = await _dio.post('/auth/verify-otp', data: {
       'phone': phone,
       'otp': otp,
+      if (ambassadorCode != null) 'ambassadorCode': ambassadorCode,
       if (fcmToken != null) 'fcmToken': fcmToken,
       if (fcmToken != null) 'deviceType': _deviceType(),
       if (rememberMe != null) 'rememberMe': rememberMe,
@@ -61,6 +63,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String role,
     String? referralCode,
+    String? ambassadorCode,
     double? latitude,
     double? longitude,
     String? fullAddress,
@@ -81,6 +84,7 @@ class AuthRepositoryImpl implements AuthRepository {
       password: password,
       role: role,
       referralCode: referralCode,
+      ambassadorCode: ambassadorCode,
       latitude: latitude,
       longitude: longitude,
       fullAddress: fullAddress,
@@ -103,6 +107,7 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     required String role,
     String? referralCode,
+    String? ambassadorCode,
     double? latitude,
     double? longitude,
     String? fullAddress,
@@ -124,6 +129,7 @@ class AuthRepositoryImpl implements AuthRepository {
       'password': password,
       'role': role,
       if (referralCode != null) 'referralCode': referralCode,
+      if (ambassadorCode != null) 'ambassadorCode': ambassadorCode,
       if (fcmToken != null) 'fcmToken': fcmToken,
       if (fcmToken != null) 'deviceType': _deviceType(),
       if (latitude != null) 'latitude': latitude,

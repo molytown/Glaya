@@ -47,6 +47,7 @@ import '../../features/profile/presentation/user_public_profile_screen.dart';
 import '../../features/profile/presentation/cms_page_screen.dart';
 import '../../features/chat/presentation/chat_list_screen.dart';
 import '../../features/loyalty/presentation/loyalty_screen.dart';
+import '../../features/ambassador/presentation/ambassador_screen.dart';
 import '../../features/premium/presentation/premium_screen.dart';
 import '../widgets/desktop_shell.dart';
 import '../../features/search/presentation/search_screen.dart';
@@ -102,12 +103,20 @@ final routerProvider = Provider<GoRouter>((ref) {
     // Removed refreshListenable to prevent router re-evaluation on auth state changes
     // Login screen will handle its own navigation after successful login
     redirect: (context, state) async {
-      final authState = ProviderScope.containerOf(context).read(authNotifierProvider);
+      final authState =
+          ProviderScope.containerOf(context).read(authNotifierProvider);
       final path = state.uri.path;
       print('[ROUTER] Redirect check for path: $path');
 
       // Never redirect auth routes (login, signup, otp, splash) anywhere
-      final authRoutes = ['/login', '/signup-selection', '/signup/customer', '/signup/professional', '/otp-verify', '/splash'];
+      final authRoutes = [
+        '/login',
+        '/signup-selection',
+        '/signup/customer',
+        '/signup/professional',
+        '/otp-verify',
+        '/splash'
+      ];
       if (authRoutes.contains(path)) {
         print('[ROUTER] On auth route, staying put');
         return null;
@@ -208,263 +217,267 @@ final routerProvider = Provider<GoRouter>((ref) {
             builder: (context, state) => const SplashScreen(),
           ),
           GoRoute(path: '/', builder: (context, state) => const HomePage()),
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const PhoneInputScreen(),
-      ),
-      GoRoute(
-        path: '/signup-selection',
-        builder: (context, state) => const SignupSelectionScreen(),
-      ),
-      GoRoute(
-        path: '/signup/customer',
-        builder: (context, state) => const CustomerSignupScreen(),
-      ),
-      GoRoute(
-        path: '/signup/professional',
-        builder: (context, state) => const ProfessionalSignupScreen(),
-      ),
-      GoRoute(
-        path: '/otp-verify',
-        builder: (context, state) {
-          final phone = state.extra as String?;
-          return OtpVerificationScreen(phone: phone ?? '');
-        },
-      ),
-      GoRoute(
-        path: '/professional/dashboard',
-        builder: (context, state) => const ProfessionalDashboardScreen(),
-      ),
-      GoRoute(
-        path: '/professional/:id',
-        builder: (context, state) => ProfessionalProfileScreen(
-          professionalId: state.pathParameters['id']!,
-        ),
-      ),
-      GoRoute(
-        path: '/professional/:id/services',
-        builder: (context, state) =>
-            ProServicesPage(professionalId: state.pathParameters['id']!),
-      ),
-      GoRoute(
-        path: '/book/:professionalId',
-        builder: (context, state) => BookingFlowScreen(
-          professionalId: state.pathParameters['professionalId']!,
-          initialServiceId: state.extra as String?,
-        ),
-      ),
-      GoRoute(
-        path: '/bookings',
-        builder: (context, state) => const BookingsListScreen(),
-      ),
-      GoRoute(
-        path: '/bookings/:id',
-        builder: (context, state) =>
-            BookingDetailScreen(bookingId: state.pathParameters['id']!),
-      ),
-      // /chat/list MUST be before /chat/:bookingId
-      GoRoute(
-        path: '/chat/list',
-        builder: (context, state) => const ChatListScreen(),
-      ),
-      GoRoute(
-        path: '/chat/:bookingId',
-        builder: (context, state) =>
-            ChatScreen(bookingId: state.pathParameters['bookingId']!),
-      ),
-      GoRoute(
-        path: '/onboarding',
-        builder: (context, state) => const OnboardingChatScreen(),
-      ),
-      GoRoute(
-        path: '/call/:bookingId',
-        builder: (context, state) =>
-            CallScreen(bookingId: state.pathParameters['bookingId']!),
-      ),
-      GoRoute(
-        path: '/payment/:bookingId',
-        builder: (context, state) =>
-            PaymentScreen(bookingId: state.pathParameters['bookingId']!),
-      ),
-      GoRoute(
-        path: '/wallet',
-        builder: (context, state) => const WalletScreen(),
-      ),
-      GoRoute(
-        path: '/review/:bookingId',
-        builder: (context, state) =>
-            ReviewScreen(bookingId: state.pathParameters['bookingId']!),
-      ),
-      GoRoute(
-        path: '/reviews',
-        builder: (context, state) =>
-            ReviewsListScreen(professionalId: state.extra as String?),
-      ),
-      GoRoute(
-        path: '/notifications',
-        builder: (context, state) => const NotificationsScreen(),
-      ),
-      GoRoute(
-        path: '/support/chat',
-        builder: (context, state) => const SupportChatScreen(),
-      ),
-      GoRoute(
-        path: '/support/gigi',
-        builder: (context, state) => const GigiChatScreen(),
-      ),
-      GoRoute(
-        path: '/services',
-        builder: (context, state) => const ServiceManagementScreen(),
-      ),
-      GoRoute(
-        path: '/availability',
-        builder: (context, state) => const AvailabilityScreen(),
-      ),
-      GoRoute(
-        path: '/become-professional',
-        builder: (context, state) => const ProfessionalOnboardingScreen(),
-      ),
-      GoRoute(
-        path: '/promotions',
-        builder: (context, state) => const PromotionsScreen(),
-      ),
-      GoRoute(
-        path: '/coupons',
-        builder: (context, state) => const CouponsScreen(),
-      ),
-      GoRoute(
-        path: '/refer',
-        builder: (context, state) => const ReferCustomersScreen(),
-      ),
-      GoRoute(
-        path: '/boost',
-        builder: (context, state) => const BoostProfileScreen(),
-      ),
-      GoRoute(
-        path: '/boost/analytics',
-        builder: (context, state) => const BoostAnalyticsScreen(),
-      ),
-      GoRoute(
-        path: '/portfolio',
-        builder: (context, state) => const PortfolioScreen(),
-      ),
-      GoRoute(
-        path: '/subscription',
-        builder: (context, state) => const SubscriptionScreen(),
-      ),
-      GoRoute(
-        path: '/service-portfolio/:serviceId',
-        builder: (context, state) =>
-            ServicePortfolioPage(serviceId: state.pathParameters['serviceId']!),
-      ),
-      GoRoute(
-        path: '/category/:slug',
-        builder: (context, state) => CategoryProfessionalsPage(
-          slug: state.pathParameters['slug']!,
-          name: state.uri.queryParameters['name'],
-        ),
-      ),
-      GoRoute(
-        path: '/all-galleries',
-        builder: (context, state) => const AllGalleriesPage(),
-      ),
-      GoRoute(
-        path: '/nearby-professionals-map',
-        builder: (context, state) => const NearbyProfessionalsMapPage(),
-      ),
-      GoRoute(
-        path: '/portfolio-viewer',
-        builder: (context, state) =>
-            PortfolioViewer(gallery: state.extra as Map<String, dynamic>),
-      ),
-      GoRoute(
-        path: '/admin',
-        builder: (context, state) => const AdminDashboardScreen(),
-      ),
-      GoRoute(
-        path: '/admin/professionals',
-        builder: (context, state) => const AdminProfessionalsScreen(),
-      ),
-      GoRoute(
-        path: '/profile',
-        redirect: (context, state) {
-          // Professionals should see the new stylist profile page
-          final container = ProviderScope.containerOf(context);
-          final user = container.read(authNotifierProvider).valueOrNull;
-          if (user?.role == 'professional' || user?.role == 'both') {
-            return '/stylist-profile';
-          }
-          return null;
-        },
-        builder: (context, state) => const ProfileScreen(),
-      ),
-      GoRoute(
-        path: '/stylist-profile',
-        builder: (context, state) => const StylistProfilePage(),
-      ),
-      GoRoute(
-        path: '/user/:id',
-        builder: (context, state) => UserPublicProfileScreen(
-          userId: state.pathParameters['id'] ?? '',
-        ),
-      ),
-      GoRoute(
-        path: '/cms/:slug',
-        builder: (context, state) =>
-            CmsPageScreen(slug: state.pathParameters['slug']!),
-      ),
-      GoRoute(
-        path: '/book',
-        builder: (context, state) => BookingFlowScreen(
-          professionalId: state.uri.queryParameters['professionalId'] ?? '',
-        ),
-      ),
-      GoRoute(
-        path: '/loyalty',
-        builder: (context, state) => const LoyaltyScreen(),
-      ),
-      GoRoute(
-        path: '/premium',
-        builder: (context, state) => const PremiumScreen(),
-      ),
-      GoRoute(
-        path: '/search',
-        builder: (context, state) =>
-            SearchScreen(initialQuery: state.uri.queryParameters['q']),
-      ),
-      GoRoute(
-        path: '/services/popular',
-        builder: (context, state) => const PopularServicesPage(),
-      ),
-      GoRoute(
-        path: '/home-service',
-        builder: (context, state) => const HomeServiceScreen(),
-      ),
-      GoRoute(
-        path: '/settings',
-        builder: (context, state) => const SettingsScreen(),
-      ),
-      GoRoute(
-        path: '/theme2/home',
-        builder: (context, state) => const HomeGlaya2(),
-      ),
-      GoRoute(
-        path: '/theme2/discover',
-        builder: (context, state) => const DiscoverGlaya2(),
-      ),
-      GoRoute(
-        path: '/location-picker',
-        builder: (context, state) => const PickMapScreen(
-          fromSignUp: false,
-          fromAddAddress: false,
-          canRoute: false,
-          route: null,
-        ),
-      ),
-      GoRoute(
-        path: '/guest-location',
-        builder: (context, state) => const GuestLocationPickerScreen(),
-      ),
+          GoRoute(
+            path: '/login',
+            builder: (context, state) => const PhoneInputScreen(),
+          ),
+          GoRoute(
+            path: '/signup-selection',
+            builder: (context, state) => const SignupSelectionScreen(),
+          ),
+          GoRoute(
+            path: '/signup/customer',
+            builder: (context, state) => const CustomerSignupScreen(),
+          ),
+          GoRoute(
+            path: '/signup/professional',
+            builder: (context, state) => const ProfessionalSignupScreen(),
+          ),
+          GoRoute(
+            path: '/otp-verify',
+            builder: (context, state) {
+              final phone = state.extra as String?;
+              return OtpVerificationScreen(phone: phone ?? '');
+            },
+          ),
+          GoRoute(
+            path: '/professional/dashboard',
+            builder: (context, state) => const ProfessionalDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/professional/:id',
+            builder: (context, state) => ProfessionalProfileScreen(
+              professionalId: state.pathParameters['id']!,
+            ),
+          ),
+          GoRoute(
+            path: '/professional/:id/services',
+            builder: (context, state) =>
+                ProServicesPage(professionalId: state.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: '/book/:professionalId',
+            builder: (context, state) => BookingFlowScreen(
+              professionalId: state.pathParameters['professionalId']!,
+              initialServiceId: state.extra as String?,
+            ),
+          ),
+          GoRoute(
+            path: '/bookings',
+            builder: (context, state) => const BookingsListScreen(),
+          ),
+          GoRoute(
+            path: '/bookings/:id',
+            builder: (context, state) =>
+                BookingDetailScreen(bookingId: state.pathParameters['id']!),
+          ),
+          // /chat/list MUST be before /chat/:bookingId
+          GoRoute(
+            path: '/chat/list',
+            builder: (context, state) => const ChatListScreen(),
+          ),
+          GoRoute(
+            path: '/chat/:bookingId',
+            builder: (context, state) =>
+                ChatScreen(bookingId: state.pathParameters['bookingId']!),
+          ),
+          GoRoute(
+            path: '/onboarding',
+            builder: (context, state) => const OnboardingChatScreen(),
+          ),
+          GoRoute(
+            path: '/call/:bookingId',
+            builder: (context, state) =>
+                CallScreen(bookingId: state.pathParameters['bookingId']!),
+          ),
+          GoRoute(
+            path: '/payment/:bookingId',
+            builder: (context, state) =>
+                PaymentScreen(bookingId: state.pathParameters['bookingId']!),
+          ),
+          GoRoute(
+            path: '/wallet',
+            builder: (context, state) => const WalletScreen(),
+          ),
+          GoRoute(
+            path: '/review/:bookingId',
+            builder: (context, state) =>
+                ReviewScreen(bookingId: state.pathParameters['bookingId']!),
+          ),
+          GoRoute(
+            path: '/reviews',
+            builder: (context, state) =>
+                ReviewsListScreen(professionalId: state.extra as String?),
+          ),
+          GoRoute(
+            path: '/notifications',
+            builder: (context, state) => const NotificationsScreen(),
+          ),
+          GoRoute(
+            path: '/support/chat',
+            builder: (context, state) => const SupportChatScreen(),
+          ),
+          GoRoute(
+            path: '/support/gigi',
+            builder: (context, state) => const GigiChatScreen(),
+          ),
+          GoRoute(
+            path: '/services',
+            builder: (context, state) => const ServiceManagementScreen(),
+          ),
+          GoRoute(
+            path: '/availability',
+            builder: (context, state) => const AvailabilityScreen(),
+          ),
+          GoRoute(
+            path: '/become-professional',
+            builder: (context, state) => const ProfessionalOnboardingScreen(),
+          ),
+          GoRoute(
+            path: '/promotions',
+            builder: (context, state) => const PromotionsScreen(),
+          ),
+          GoRoute(
+            path: '/coupons',
+            builder: (context, state) => const CouponsScreen(),
+          ),
+          GoRoute(
+            path: '/refer',
+            builder: (context, state) => const ReferCustomersScreen(),
+          ),
+          GoRoute(
+            path: '/boost',
+            builder: (context, state) => const BoostProfileScreen(),
+          ),
+          GoRoute(
+            path: '/boost/analytics',
+            builder: (context, state) => const BoostAnalyticsScreen(),
+          ),
+          GoRoute(
+            path: '/portfolio',
+            builder: (context, state) => const PortfolioScreen(),
+          ),
+          GoRoute(
+            path: '/subscription',
+            builder: (context, state) => const SubscriptionScreen(),
+          ),
+          GoRoute(
+            path: '/service-portfolio/:serviceId',
+            builder: (context, state) => ServicePortfolioPage(
+                serviceId: state.pathParameters['serviceId']!),
+          ),
+          GoRoute(
+            path: '/category/:slug',
+            builder: (context, state) => CategoryProfessionalsPage(
+              slug: state.pathParameters['slug']!,
+              name: state.uri.queryParameters['name'],
+            ),
+          ),
+          GoRoute(
+            path: '/all-galleries',
+            builder: (context, state) => const AllGalleriesPage(),
+          ),
+          GoRoute(
+            path: '/nearby-professionals-map',
+            builder: (context, state) => const NearbyProfessionalsMapPage(),
+          ),
+          GoRoute(
+            path: '/portfolio-viewer',
+            builder: (context, state) =>
+                PortfolioViewer(gallery: state.extra as Map<String, dynamic>),
+          ),
+          GoRoute(
+            path: '/admin',
+            builder: (context, state) => const AdminDashboardScreen(),
+          ),
+          GoRoute(
+            path: '/admin/professionals',
+            builder: (context, state) => const AdminProfessionalsScreen(),
+          ),
+          GoRoute(
+            path: '/profile',
+            redirect: (context, state) {
+              // Professionals should see the new stylist profile page
+              final container = ProviderScope.containerOf(context);
+              final user = container.read(authNotifierProvider).valueOrNull;
+              if (user?.role == 'professional' || user?.role == 'both') {
+                return '/stylist-profile';
+              }
+              return null;
+            },
+            builder: (context, state) => const ProfileScreen(),
+          ),
+          GoRoute(
+            path: '/stylist-profile',
+            builder: (context, state) => const StylistProfilePage(),
+          ),
+          GoRoute(
+            path: '/user/:id',
+            builder: (context, state) => UserPublicProfileScreen(
+              userId: state.pathParameters['id'] ?? '',
+            ),
+          ),
+          GoRoute(
+            path: '/cms/:slug',
+            builder: (context, state) =>
+                CmsPageScreen(slug: state.pathParameters['slug']!),
+          ),
+          GoRoute(
+            path: '/book',
+            builder: (context, state) => BookingFlowScreen(
+              professionalId: state.uri.queryParameters['professionalId'] ?? '',
+            ),
+          ),
+          GoRoute(
+            path: '/loyalty',
+            builder: (context, state) => const LoyaltyScreen(),
+          ),
+          GoRoute(
+            path: '/ambassador',
+            builder: (context, state) => const AmbassadorScreen(),
+          ),
+          GoRoute(
+            path: '/premium',
+            builder: (context, state) => const PremiumScreen(),
+          ),
+          GoRoute(
+            path: '/search',
+            builder: (context, state) =>
+                SearchScreen(initialQuery: state.uri.queryParameters['q']),
+          ),
+          GoRoute(
+            path: '/services/popular',
+            builder: (context, state) => const PopularServicesPage(),
+          ),
+          GoRoute(
+            path: '/home-service',
+            builder: (context, state) => const HomeServiceScreen(),
+          ),
+          GoRoute(
+            path: '/settings',
+            builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: '/theme2/home',
+            builder: (context, state) => const HomeGlaya2(),
+          ),
+          GoRoute(
+            path: '/theme2/discover',
+            builder: (context, state) => const DiscoverGlaya2(),
+          ),
+          GoRoute(
+            path: '/location-picker',
+            builder: (context, state) => const PickMapScreen(
+              fromSignUp: false,
+              fromAddAddress: false,
+              canRoute: false,
+              route: null,
+            ),
+          ),
+          GoRoute(
+            path: '/guest-location',
+            builder: (context, state) => const GuestLocationPickerScreen(),
+          ),
         ],
       ),
     ],

@@ -22,12 +22,12 @@ class UserModel extends User {
       role: (json['role'] ?? 'user').toString(),
       reliabilityScore:
           ((json['reliabilityScore'] ?? json['reliability_score']) as num?)
-              ?.toInt() ??
-          0,
+                  ?.toInt() ??
+              0,
       preferredCurrency:
           (json['preferredCurrency'] ?? json['preferred_currency'])
-              ?.toString() ??
-          'XAF',
+                  ?.toString() ??
+              'XAF',
       professionalId:
           (json['professionalId'] ?? json['professional_id'])?.toString(),
     );

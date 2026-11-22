@@ -773,6 +773,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Map<String, dynamic>? _user;
   Map<String, dynamic>? _wallet;
   Map<String, dynamic>? _loyalty;
+  Map<String, dynamic>? _ambassador;
   Map<String, dynamic>? _upcomingBooking;
   List<Map<String, dynamic>> _pastBookings = [];
   List<Map<String, dynamic>> _favorites = [];
@@ -813,6 +814,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       _loadBookings(),
       _loadWallet(),
       _loadLoyalty(),
+      _loadAmbassador(),
       _loadReviews(),
       _loadFavorites(),
       _loadReels(),
@@ -890,6 +892,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       final r = await ApiService.dio.get('/loyalty/me');
       if (mounted) {
         setState(() => _loyalty = r.data['data'] as Map<String, dynamic>?);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _loadAmbassador() async {
+    try {
+      final r = await ApiService.dio.get('/ambassadors/me');
+      final data = r.data['data'] as Map<String, dynamic>?;
+      if (mounted && data != null && data['isAmbassador'] == true) {
+        setState(() => _ambassador = data);
       }
     } catch (_) {}
   }
@@ -1060,6 +1072,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           : double.tryParse(_user?['glayaScore']?.toString() ?? ''),
       reels: _reels,
       photos: _photos,
+      ambassador: _ambassador,
       logout: _logout,
       refreshUser: () => ref.read(authNotifierProvider.notifier).refreshUser(),
       onEditProfile: _openEditProfile,
@@ -1082,6 +1095,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               _buildUpcomingAppointment(),
               const SizedBox(height: 16),
               _buildWalletSection(),
+              if (_ambassador != null) ...[
+                const SizedBox(height: 16),
+                _buildAmbassadorCard(),
+              ],
               const SizedBox(height: 16),
               _buildBeautyPassport(),
               const SizedBox(height: 16),
@@ -2435,6 +2452,94 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
+  Widget _buildAmbassadorCard() {
+    final profile = _ambassador?['profile'] as Map<String, dynamic>?;
+    final stats = _ambassador?['stats'] as Map<String, dynamic>?;
+    final code = profile?['referralCode'] as String? ?? '';
+    final available = (stats?['available'] as num?) ?? 0;
+    final earned = (stats?['totalEarned'] as num?) ?? 0;
+    final referrals = stats?['referrals'] ?? 0;
+    final currency = profile?['currency'] as String? ?? 'XAF';
+    final label = currency == 'XAF' ? 'FCFA' : currency;
+    return InkWell(
+      onTap: () => context.push('/ambassador'),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFD4AF37), Color(0xFFB8860B)],
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.handshake_outlined,
+                      color: Colors.white, size: 20),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text('Ambassador Program',
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white)),
+                ),
+                const Icon(Icons.chevron_right, color: Colors.white),
+              ],
+            ),
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                _ambassadorStat('$referrals', 'Referrals'),
+                _ambassadorStat(
+                    '${available.toStringAsFixed(0)} $label', 'Available'),
+                _ambassadorStat(
+                    '${earned.toStringAsFixed(0)} $label', 'Earned'),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Text('Your code: $code',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white.withOpacity(0.9))),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _ambassadorStat(String value, String label) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white)),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 10, color: Colors.white.withOpacity(0.75))),
+        ],
+      ),
+    );
+  }
+
   // ── Quick Actions ─────────────────────────────────────────────────────────────
   Widget _buildQuickActions() {
     final actions = [
@@ -2442,6 +2547,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       (Icons.location_on_outlined, 'Addresses', 'addresses'),
       (Icons.credit_card_outlined, 'Payment Methods', '/wallet'),
       (Icons.card_giftcard_outlined, 'Rewards', '/loyalty'),
+      (Icons.handshake_outlined, 'Ambassador', '/ambassador'),
       (Icons.star_outline, 'Reviews', '/reviews'),
       (Icons.photo_library_outlined, 'Inspiration Gallery', '/search'),
       (Icons.calendar_today_outlined, 'Booking History', '/bookings'),
@@ -2883,6 +2989,7 @@ class _CustomerProfileView extends StatefulWidget {
   final double? glayaScore;
   final List<Reel> reels;
   final List<Reel> photos;
+  final Map<String, dynamic>? ambassador;
   final VoidCallback logout;
   final VoidCallback refreshUser;
   final VoidCallback onEditProfile;
@@ -2899,6 +3006,7 @@ class _CustomerProfileView extends StatefulWidget {
     this.glayaScore,
     this.reels = const [],
     this.photos = const [],
+    this.ambassador,
     required this.logout,
     required this.refreshUser,
     required this.onEditProfile,
@@ -3032,6 +3140,10 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                 const SizedBox(height: 12),
               ],
             const SizedBox(height: 8),
+            if (widget.ambassador != null) ...[
+              _ambassadorBanner(),
+              const SizedBox(height: 12),
+            ],
             _settingsCard(),
             const SizedBox(height: 12),
             TextButton(
@@ -3124,7 +3236,8 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                       const SizedBox(height: 4),
                       // Member badge
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: const Color(0xFFFFF8E1),
                           borderRadius: BorderRadius.circular(12),
@@ -3133,7 +3246,8 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            const Icon(Icons.star, size: 14, color: Color(0xFFF59E0B)),
+                            const Icon(Icons.star,
+                                size: 14, color: Color(0xFFF59E0B)),
                             const SizedBox(width: 4),
                             Text(
                               'Member',
@@ -3150,7 +3264,8 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                       // Subtitle
                       Row(
                         children: [
-                          const Icon(Icons.auto_awesome, size: 16, color: accent),
+                          const Icon(Icons.auto_awesome,
+                              size: 16, color: accent),
                           const SizedBox(width: 4),
                           Text(
                             'Beauty Enthusiast',
@@ -3169,8 +3284,10 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              widget.user?['currentLocation'] as String? ?? 'Location not set',
-                              style: const TextStyle(fontSize: 13, color: muted),
+                              widget.user?['currentLocation'] as String? ??
+                                  'Location not set',
+                              style:
+                                  const TextStyle(fontSize: 13, color: muted),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -3708,6 +3825,62 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
         ),
       );
 
+  Widget _ambassadorBanner() {
+    final profile = widget.ambassador?['profile'] as Map<String, dynamic>?;
+    final stats = widget.ambassador?['stats'] as Map<String, dynamic>?;
+    final code = profile?['referralCode'] as String? ?? '';
+    final available = (stats?['available'] as num?) ?? 0;
+    final currency = profile?['currency'] as String? ?? 'XAF';
+    final label = currency == 'XAF' ? 'FCFA' : currency;
+    return InkWell(
+      onTap: () => context.push('/ambassador'),
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFFD4AF37), Color(0xFFB8860B)],
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.handshake_outlined,
+                  color: Colors.white, size: 22),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Ambassador Program',
+                      style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white)),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Code $code · ${available.toStringAsFixed(0)} $label available',
+                    style: TextStyle(
+                        fontSize: 12, color: Colors.white.withOpacity(0.85)),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.white),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _settingsCard() => _card(
         radius: 20,
         child: Column(
@@ -3715,6 +3888,9 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
             _row('Saved addresses', onTap: () => context.push('/addresses')),
             _divider(),
             _row('Payment methods', onTap: () => context.push('/wallet')),
+            _divider(),
+            _row('Ambassador Program',
+                onTap: () => context.push('/ambassador')),
             _divider(),
             _row('Language', trailingText: 'English', onTap: () {}),
             _divider(),

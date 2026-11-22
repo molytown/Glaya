@@ -52,6 +52,8 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
     final phone = '$_countryCode$rawPhone';
     final password = _passwordController.text;
     final referral = _referralController.text.trim();
+    final ambassadorCode =
+        GoRouterState.of(context).uri.queryParameters['ambassador'];
 
     if (name.isEmpty) {
       _snack('Please enter your name');
@@ -74,6 +76,7 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
             password: password,
             role: 'customer',
             referralCode: referral.isEmpty ? null : referral,
+            ambassadorCode: ambassadorCode,
             latitude: _selectedLocation?.latitude,
             longitude: _selectedLocation?.longitude,
             fullAddress: _selectedAddress,

@@ -70,7 +70,12 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
         if (_useOtp) {
           await ref.read(authNotifierProvider.notifier).requestOtp(phone);
           print('[LOGIN] OTP requested, navigating to OTP verify');
-          if (mounted) context.push('/otp-verify', extra: phone);
+          final ambassadorCode =
+              GoRouterState.of(context).uri.queryParameters['ambassador'];
+          final otpPath = ambassadorCode != null
+              ? '/otp-verify?ambassador=$ambassadorCode'
+              : '/otp-verify';
+          if (mounted) context.push(otpPath, extra: phone);
           return;
         }
         await ref.read(authNotifierProvider.notifier).login(
@@ -225,7 +230,8 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(8)),
                               ),
-                              barrierColor: Color(0xFF000000).withValues(alpha: 0.5),
+                              barrierColor:
+                                  Color(0xFF000000).withValues(alpha: 0.5),
                               boxDecoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
@@ -240,10 +246,12 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                               child: TextField(
                                 controller: _phoneController,
                                 keyboardType: TextInputType.phone,
-                                style: const TextStyle(color: Color(0xFF000000)),
+                                style:
+                                    const TextStyle(color: Color(0xFF000000)),
                                 decoration: const InputDecoration(
                                   hintText: '7XX XXX XXX',
-                                  hintStyle: TextStyle(color: Color(0xFF000000)),
+                                  hintStyle:
+                                      TextStyle(color: Color(0xFF000000)),
                                   border: InputBorder.none,
                                   contentPadding:
                                       EdgeInsets.symmetric(horizontal: 12),
@@ -261,7 +269,8 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                           style: const TextStyle(color: Color(0xFF000000)),
                           decoration: InputDecoration(
                             hintText: 'Enter password',
-                            hintStyle: const TextStyle(color: Color(0xFF000000)),
+                            hintStyle:
+                                const TextStyle(color: Color(0xFF000000)),
                             prefixIcon: const Icon(Icons.lock_outline,
                                 color: GlayaColors.berry),
                             suffixIcon: IconButton(

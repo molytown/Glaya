@@ -209,6 +209,8 @@ class _ProfessionalSignupScreenState
             longitude: _selectedLocation?.longitude,
             fullAddress: _selectedAddress,
             photoUrl: photoUrlToUse,
+            ambassadorCode:
+                GoRouterState.of(context).uri.queryParameters['ambassador'],
           );
 
       if (mounted) {
