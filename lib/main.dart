@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:app_links/app_links.dart';
 import 'package:get/get.dart';
 
 import 'shared/router/app_router.dart';
@@ -30,6 +31,7 @@ import 'shared/services/websocket_service.dart';
 import 'shared/services/notification_websocket_service.dart';
 import 'shared/services/notification_sound_service.dart';
 import 'shared/services/storage_service.dart';
+import 'shared/services/ambassador_attribution.dart';
 import 'features/auth/presentation/providers/auth_notifier.dart';
 import 'features/reels/data/models/reel_model.dart';
 import 'features/reels/presentation/reel_screen.dart';
@@ -349,7 +351,21 @@ Future<void> _bootstrap() async {
     } catch (e) {
       print('[BOOTSTRAP] Firebase/FCM init failed: $e');
     }
+    _setupAmbassadorLinks();
   }
+}
+
+/// Listens for ambassador referral deep links (https://glaya.space/?ambassador=CODE
+/// via App Links, or glaya://?ambassador=CODE) and persists the code until
+/// signup — mirrors the React app's ambassadorAttribution util.
+void _setupAmbassadorLinks() {
+  final appLinks = AppLinks();
+  appLinks.getInitialLink().then((uri) {
+    if (uri != null) captureFromUri(uri);
+  }).catchError((_) {});
+  appLinks.uriLinkStream.listen((uri) {
+    captureFromUri(uri);
+  }).onError((_) {});
 }
 
 class GlayaApp extends ConsumerWidget {

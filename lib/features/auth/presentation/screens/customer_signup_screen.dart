@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../../shared/theme/colors.dart';
 import '../../../../../shared/theme/text_styles.dart';
 import '../../../../../shared/utils/responsive_helper.dart';
+import '../../../../../shared/services/ambassador_attribution.dart';
 import '../providers/auth_notifier.dart';
 import '../../../home/presentation/screens/pick_map_screen.dart';
 
@@ -52,8 +53,12 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
     final phone = '$_countryCode$rawPhone';
     final password = _passwordController.text;
     final referral = _referralController.text.trim();
-    final ambassadorCode =
+    var ambassadorCode =
         GoRouterState.of(context).uri.queryParameters['ambassador'];
+    if (ambassadorCode != null) {
+      await captureAmbassadorCode(ambassadorCode);
+    }
+    ambassadorCode ??= await getAmbassadorCode();
 
     if (name.isEmpty) {
       _snack('Please enter your name');
@@ -81,6 +86,7 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
             longitude: _selectedLocation?.longitude,
             fullAddress: _selectedAddress,
           );
+      await clearAmbassadorCode();
       if (mounted) {
         final from = GoRouterState.of(context).uri.queryParameters['from'];
         context.go(from ?? '/');

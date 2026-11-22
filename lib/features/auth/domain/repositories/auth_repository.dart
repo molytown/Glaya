@@ -4,7 +4,7 @@ import 'dart:io';
 abstract class AuthRepository {
   Future<void> requestOtp(String phone);
   Future<User> verifyOtp(String phone, String otp,
-      {bool? rememberMe, String? ambassadorCode});
+      {bool? rememberMe, String? ambassadorCode, String? referralCode});
   Future<void> logout();
   Future<User?> getCurrentUser();
   Future<bool> get isAuthenticated;

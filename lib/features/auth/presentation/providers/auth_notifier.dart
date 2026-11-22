@@ -38,11 +38,13 @@ class AuthNotifier extends StateNotifier<AsyncValue<User?>> {
   }
 
   Future<void> verifyOtp(String phone, String otp,
-      {bool? rememberMe, String? ambassadorCode}) async {
+      {bool? rememberMe, String? ambassadorCode, String? referralCode}) async {
     state = const AsyncValue.loading();
     try {
       final user = await _repository.verifyOtp(phone, otp,
-          rememberMe: rememberMe, ambassadorCode: ambassadorCode);
+          rememberMe: rememberMe,
+          ambassadorCode: ambassadorCode,
+          referralCode: referralCode);
       state = AsyncValue.data(user);
     } catch (e, st) {
       state = AsyncValue.error(e, st);

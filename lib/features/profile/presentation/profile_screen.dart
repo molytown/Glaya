@@ -1073,6 +1073,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       reels: _reels,
       photos: _photos,
       ambassador: _ambassador,
+      loyalty: _loyalty,
       logout: _logout,
       refreshUser: () => ref.read(authNotifierProvider.notifier).refreshUser(),
       onEditProfile: _openEditProfile,
@@ -2990,6 +2991,7 @@ class _CustomerProfileView extends StatefulWidget {
   final List<Reel> reels;
   final List<Reel> photos;
   final Map<String, dynamic>? ambassador;
+  final Map<String, dynamic>? loyalty;
   final VoidCallback logout;
   final VoidCallback refreshUser;
   final VoidCallback onEditProfile;
@@ -3007,6 +3009,7 @@ class _CustomerProfileView extends StatefulWidget {
     this.reels = const [],
     this.photos = const [],
     this.ambassador,
+    this.loyalty,
     required this.logout,
     required this.refreshUser,
     required this.onEditProfile,
@@ -3031,6 +3034,44 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
   static const line = GlayaColors.divider; // #E5E7EB
   static const segment = GlayaColors.pinkBg;
   static const switchOff = Color(0xFF000000); // #9CA3AF
+
+  Map<String, dynamic>? get _loyalty => widget.loyalty;
+  int get _loyaltyPoints => (_loyalty?['points'] as num?)?.toInt() ?? 0;
+  String get _loyaltyTier => (_loyalty?['tier'] as String?) ?? 'bronze';
+
+  // Mirrors React ProfilePage.jsx LOYALTY_TIERS + loyaltyProgress()
+  Map<String, dynamic> get _beautyLevelInfo {
+    const floors = {'bronze': 0, 'silver': 100, 'gold': 500};
+    const labels = {'bronze': 'Bronze', 'silver': 'Silver', 'gold': 'Gold'};
+    const nextTier = {'bronze': 'silver', 'silver': 'gold', 'gold': null};
+    final loaded = _loyalty != null;
+    final points = _loyaltyPoints;
+    final tier = floors.containsKey(_loyaltyTier) ? _loyaltyTier : 'bronze';
+    final next = nextTier[tier];
+    var pct = 0;
+    var progressLabel = 'Loading…';
+    if (loaded) {
+      if (next == null) {
+        pct = 100;
+        progressLabel = 'Top tier reached';
+      } else {
+        final floor = floors[tier]!;
+        final nextFloor = floors[next]!;
+        pct = (((points - floor) / (nextFloor - floor)) * 100).round();
+        if (pct > 100) pct = 100;
+        if (pct < 0) pct = 0;
+        final remaining = nextFloor - points;
+        progressLabel =
+            '${remaining > 0 ? remaining : 0} pts to ${labels[next]}';
+      }
+    }
+    return {
+      'pct': pct,
+      'progressLabel': progressLabel,
+      'tierLabel': loaded ? '${labels[tier] ?? 'Bronze'} Member' : 'Member',
+      'pointsLabel': loaded ? NumberFormat('#,##0').format(points) : '—',
+    };
+  }
 
   List<BookingItem> get _upcomingList {
     if (widget.upcomingBooking == null) return [];
@@ -3346,75 +3387,81 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
             ),
             const SizedBox(height: 20),
             // Beauty Level section - mirrors React gp-beauty-level
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFF8F9FA),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: line),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Beauty Level',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: muted,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '18',
-                          style: TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            color: ink,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        // Progress bar
-                        Container(
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFE5E7EB),
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                          child: FractionallySizedBox(
-                            alignment: Alignment.centerLeft,
-                            widthFactor: 0.65,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: accent,
-                                borderRadius: BorderRadius.circular(3),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '750 pts to next level',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: muted,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  // Medal emoji
-                  const Text('🏅', style: TextStyle(fontSize: 48)),
-                ],
-              ),
-            ),
+            _beautyLevelSection(),
           ],
         ),
       );
+
+  // ── Beauty Level card - mirrors React gp-beauty-level ─────────────────────
+  Widget _beautyLevelSection() {
+    final info = _beautyLevelInfo;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF8F9FA),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: line),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  info['tierLabel'] as String,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: muted,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  info['pointsLabel'] as String,
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: ink,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                // Progress bar
+                Container(
+                  height: 6,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE5E7EB),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: FractionallySizedBox(
+                    alignment: Alignment.centerLeft,
+                    widthFactor: (info['pct'] as int) / 100.0,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: accent,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  info['progressLabel'] as String,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: muted,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          // Medal emoji
+          const Text('🏅', style: TextStyle(fontSize: 48)),
+        ],
+      ),
+    );
+  }
 
   // ── Reels / Photos grids (3-column) ──────────────────────────────────────
   Widget _reelsGridSection() {

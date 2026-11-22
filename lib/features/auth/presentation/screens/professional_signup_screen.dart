@@ -11,6 +11,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../../shared/data/location_data.dart';
 import '../../../../shared/services/api_service.dart';
 import '../../../../shared/utils/responsive_helper.dart';
+import '../../../../shared/services/ambassador_attribution.dart';
 import '../../../home/presentation/screens/pick_map_screen.dart';
 import '../providers/auth_notifier.dart';
 
@@ -176,6 +177,13 @@ class _ProfessionalSignupScreenState
 
     setState(() => _isLoading = true);
     try {
+      var ambassadorCode =
+          GoRouterState.of(context).uri.queryParameters['ambassador'];
+      if (ambassadorCode != null) {
+        await captureAmbassadorCode(ambassadorCode);
+      }
+      ambassadorCode ??= await getAmbassadorCode();
+
       final countryName = countries
               .where((c) => c.iso == _locationCountryIso)
               .firstOrNull
@@ -209,9 +217,9 @@ class _ProfessionalSignupScreenState
             longitude: _selectedLocation?.longitude,
             fullAddress: _selectedAddress,
             photoUrl: photoUrlToUse,
-            ambassadorCode:
-                GoRouterState.of(context).uri.queryParameters['ambassador'],
+            ambassadorCode: ambassadorCode,
           );
+      await clearAmbassadorCode();
 
       if (mounted) {
         // Refresh user data to ensure photo is loaded

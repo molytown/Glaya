@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../../shared/theme/colors.dart';
 import '../../../../../shared/theme/text_styles.dart';
+import '../../../../../shared/services/ambassador_attribution.dart';
 import '../providers/auth_notifier.dart';
 
 class OtpVerificationScreen extends ConsumerStatefulWidget {
@@ -19,14 +20,24 @@ class OtpVerificationScreen extends ConsumerStatefulWidget {
 
 class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   final _otpController = TextEditingController();
+  final _referralController = TextEditingController();
   int _secondsRemaining = 300;
   Timer? _timer;
   bool _isLoading = false;
+  String? _ambassadorCode;
 
   @override
   void initState() {
     super.initState();
     _startTimer();
+    _loadAmbassadorCode();
+  }
+
+  Future<void> _loadAmbassadorCode() async {
+    final fromUri = GoRouterState.of(context).uri.queryParameters['ambassador'];
+    if (fromUri != null) await captureAmbassadorCode(fromUri);
+    final stored = await getAmbassadorCode();
+    if (mounted) setState(() => _ambassadorCode = stored);
   }
 
   void _startTimer() {
@@ -43,6 +54,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   void dispose() {
     _timer?.cancel();
     _otpController.dispose();
+    _referralController.dispose();
     super.dispose();
   }
 
@@ -55,15 +67,22 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       return;
     }
 
+    final uriAmbassador =
+        GoRouterState.of(context).uri.queryParameters['ambassador'];
     setState(() => _isLoading = true);
     try {
       final prefs = await SharedPreferences.getInstance();
       // Checkbox is hidden in OTP mode — keep persistent session (null = default)
       final rememberMe = prefs.getBool('stay_signed_in');
-      final ambassadorCode =
-          GoRouterState.of(context).uri.queryParameters['ambassador'];
+      var ambassadorCode = _ambassadorCode ?? uriAmbassador;
+      if (ambassadorCode != null) await captureAmbassadorCode(ambassadorCode);
+      ambassadorCode ??= await getAmbassadorCode();
+      final referralCode = _referralController.text.trim();
       await ref.read(authNotifierProvider.notifier).verifyOtp(widget.phone, otp,
-          rememberMe: rememberMe, ambassadorCode: ambassadorCode);
+          rememberMe: rememberMe,
+          ambassadorCode: ambassadorCode,
+          referralCode: referralCode.isEmpty ? null : referralCode);
+      await clearAmbassadorCode();
       if (mounted) {
         context.go('/');
       }
@@ -123,6 +142,23 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
                 decoration: const InputDecoration(
                   hintText: '000000',
                   counterText: '',
+                ),
+              ),
+              const SizedBox(height: 16),
+              if (_ambassadorCode != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Text(
+                    'Ambassador invite applied — code $_ambassadorCode',
+                    style: GlayaTextStyles.bodySmall(color: GlayaColors.berry),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              TextField(
+                controller: _referralController,
+                textCapitalization: TextCapitalization.characters,
+                decoration: const InputDecoration(
+                  hintText: 'Referral / Ambassador code (optional)',
                 ),
               ),
               const SizedBox(height: 16),

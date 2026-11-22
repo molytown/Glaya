@@ -35,12 +35,13 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<User> verifyOtp(String phone, String otp,
-      {bool? rememberMe, String? ambassadorCode}) async {
+      {bool? rememberMe, String? ambassadorCode, String? referralCode}) async {
     final fcmToken = await _getFcmToken();
     final response = await _dio.post('/auth/verify-otp', data: {
       'phone': phone,
       'otp': otp,
       if (ambassadorCode != null) 'ambassadorCode': ambassadorCode,
+      if (referralCode != null) 'referralCode': referralCode,
       if (fcmToken != null) 'fcmToken': fcmToken,
       if (fcmToken != null) 'deviceType': _deviceType(),
       if (rememberMe != null) 'rememberMe': rememberMe,

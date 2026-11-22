@@ -1,5 +1,5 @@
 name: glaya
-version: 1.0.0+4
+version: 1.0.0+6
 publish_to: 'none'
 description: Glaya - A two-sided beauty marketplace for Android and iOS.
 
@@ -50,6 +50,7 @@ dependencies:
   carousel_slider: ^5.1.2
   webview_flutter: ^4.4.2
   share_plus: ^10.1.4
+  app_links: ^6.4.0
 
   # The following adds the HTTP capability for testing
   http_mock_adapter: ^0.4.4
