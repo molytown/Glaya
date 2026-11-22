@@ -89,7 +89,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   Future<void> _confirmCancel() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Cancel Appointment',
             style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
@@ -98,13 +98,13 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             style: TextStyle(fontSize: 14, color: Color(0xFF555555))),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Keep Appointment',
                 style: TextStyle(
                     color: Color(0xFF555555), fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: GlayaColors.error,
               foregroundColor: Colors.white,
@@ -253,7 +253,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   Future<void> _deleteBooking() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Delete Booking',
             style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
@@ -262,13 +262,13 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             style: TextStyle(fontSize: 14, color: Color(0xFF555555))),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancel',
                 style: TextStyle(
                     color: Color(0xFF555555), fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: GlayaColors.error,
               foregroundColor: Colors.white,

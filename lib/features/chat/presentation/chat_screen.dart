@@ -717,7 +717,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   Future<void> _confirmDecline() async {
     final confirm = await showDialog<bool>(
       context: context,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: const Text('Decline Booking',
             style: TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
@@ -726,13 +726,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             style: TextStyle(fontSize: 14, color: Color(0xFF555555))),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Keep',
                 style: TextStyle(
                     color: Color(0xFF555555), fontWeight: FontWeight.w600)),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             style: ElevatedButton.styleFrom(
               backgroundColor: GlayaColors.error,
               foregroundColor: Colors.white,
