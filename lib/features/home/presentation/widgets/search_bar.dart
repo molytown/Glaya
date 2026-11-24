@@ -144,7 +144,7 @@ class _HomeSearchBarState extends State<HomeSearchBar> {
                     focusNode: _focusNode,
                     textInputAction: TextInputAction.search,
                     style:
-                        const TextStyle(fontSize: 14, color: Color(0xFF1A1A1A)),
+                        const TextStyle(fontSize: 14, color: Color(0xFF000000)),
                     onSubmitted: (_) => _handleSearch(),
                     onChanged: _onQueryChanged,
                     decoration: const InputDecoration(

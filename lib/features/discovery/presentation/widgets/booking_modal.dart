@@ -171,10 +171,11 @@ class _BookingModalState extends ConsumerState<BookingModal> {
             Expanded(
               child: OutlinedButton(
                 onPressed: () {
-                  widget.onClose();
+                  // Navigate first, then close dialog to avoid context unmount
                   if (_bookingId != null) {
                     Navigator.of(context).pushNamed('/bookings/$_bookingId');
                   }
+                  widget.onClose();
                 },
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),

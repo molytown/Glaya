@@ -52,17 +52,17 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         title: TextField(
           controller: _controller,
           autofocus: _query.isEmpty,
-          style: const TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
+          style: const TextStyle(color: Color(0xFF000000)),
+          cursorColor: GlayaColors.berry,
           textInputAction: TextInputAction.search,
           onSubmitted: (q) => setState(() => _query = q.trim()),
           decoration: InputDecoration(
             hintText: 'Search professionals, services...',
-            hintStyle: const TextStyle(color: Colors.white60),
+            hintStyle: const TextStyle(color: Color(0xFF000000)),
             border: InputBorder.none,
             suffixIcon: _controller.text.isNotEmpty
                 ? IconButton(
-                    icon: const Icon(Icons.clear, color: Colors.white70),
+                    icon: const Icon(Icons.clear, color: GlayaColors.berry),
                     onPressed: () {
                       _controller.clear();
                       setState(() => _query = '');

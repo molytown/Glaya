@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../shared/services/api_service.dart';
+import '../../../../shared/services/websocket_service.dart';
 import '../../../../shared/theme/colors.dart';
 import '../../../../shared/providers/location_provider.dart';
 import '../../auth/presentation/providers/auth_notifier.dart';
@@ -27,6 +29,8 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   Map<String, dynamic>? _booking;
   bool _isLoading = true;
   bool _actionLoading = false;
+  StreamSubscription? _bookingSubscription;
+  final WebSocketService _webSocketService = WebSocketService();
 
   num _parsePrice(dynamic value) {
     if (value == null) return 0;
@@ -41,6 +45,28 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
   void initState() {
     super.initState();
     _loadBooking();
+    _setupWebSocketSubscription();
+  }
+
+  @override
+  void dispose() {
+    _bookingSubscription?.cancel();
+    _webSocketService.leaveRoom(widget.bookingId);
+    super.dispose();
+  }
+
+  void _setupWebSocketSubscription() {
+    // Subscribe to booking updates via WebSocket for real-time sync
+    _webSocketService.connect();
+    _webSocketService.joinRoom(widget.bookingId);
+
+    _bookingSubscription = _webSocketService.bookingControlStream.listen((data) {
+      final bookingId = data['bookingId'] as String?;
+      if (bookingId == widget.bookingId) {
+        // Reload booking when we receive updates for this booking
+        _loadBooking();
+      }
+    });
   }
 
   /// Opens booking chat. When embedded in the desktop/tablet slide-out,
@@ -549,43 +575,52 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
             _infoRow(Icons.content_cut_outlined, serviceName,
                 sub: _priceLabel(rawPrice, convertedAsync, currencyAsync)),
             const Divider(height: 24),
-            _sectionTitle('Stylist'),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: GlayaColors.berry.withValues(alpha: 0.15),
-                  child: Text(proInitial,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w700,
-                          color: GlayaColors.berry)),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(proName,
-                          style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w700,
-                              color: Color(0xFF1A1A1A))),
-                      if (proCategory.isNotEmpty)
-                        Text(proCategory,
+            // Show Professional for customer, Customer for professional
+            if (!isPro) ...[
+              _sectionTitle('Professional'),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 20,
+                    backgroundColor: GlayaColors.berry.withValues(alpha: 0.15),
+                    child: Text(proInitial,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: GlayaColors.berry)),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(proName,
                             style: const TextStyle(
-                                fontSize: 12, color: Color(0xFF000000))),
-                    ],
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF1A1A1A))),
+                        if (proCategory.isNotEmpty)
+                          Text(proCategory,
+                              style: const TextStyle(
+                                  fontSize: 12, color: Color(0xFF000000))),
+                      ],
+                    ),
                   ),
-                ),
-                if (proId.isNotEmpty)
-                  TextButton.icon(
-                    onPressed: () => context.push('/professional/$proId'),
-                    icon: const Icon(Icons.person_outline, size: 16),
-                    label: const Text('View Profile'),
-                  ),
-              ],
-            ),
+                  if (proId.isNotEmpty)
+                    TextButton.icon(
+                      onPressed: () => context.push('/professional/$proId'),
+                      icon: const Icon(Icons.person_outline, size: 16),
+                      label: const Text('View Profile'),
+                    ),
+                ],
+              ),
+            ] else ...[
+              _sectionTitle('Customer'),
+              const SizedBox(height: 12),
+              _infoRow(Icons.person_outline, 
+                b['customer']?['name'] as String? ?? 'Customer',
+                sub: b['customer']?['email'] as String? ?? ''),
+            ],
             const Divider(height: 24),
             _sectionTitle('Location'),
             const SizedBox(height: 12),
@@ -900,7 +935,6 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       AsyncValue<double>? depositConverted,
       String? currency) {
     final remaining = total - deposit;
-    final status = _booking?['status'] as String? ?? '';
     final payments = _booking?['payments'] as List?;
     
     // Check if deposit is paid
