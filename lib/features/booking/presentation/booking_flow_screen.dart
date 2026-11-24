@@ -260,7 +260,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -290,7 +290,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => Navigator.pop(dialogContext),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF555555),
                       side: const BorderSide(color: Color(0xFFEEEEEE)),
@@ -306,7 +306,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      Navigator.pop(dialogContext);
                       context.push('/auth/login');
                     },
                     style: ElevatedButton.styleFrom(
@@ -333,7 +333,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
@@ -363,10 +363,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: () => Navigator.pop(dialogContext),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: const Color(0xFF555555),
                       side: const BorderSide(color: Color(0xFFEEEEEE)),
@@ -382,8 +379,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
+                      Navigator.pop(dialogContext);
                       context.push('/bookings/$bookingId');
                     },
                     style: ElevatedButton.styleFrom(

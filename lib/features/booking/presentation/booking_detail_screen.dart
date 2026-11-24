@@ -900,19 +900,38 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       AsyncValue<double>? depositConverted,
       String? currency) {
     final remaining = total - deposit;
+    final status = _booking?['status'] as String? ?? '';
+    final payments = _booking?['payments'] as List?;
+    
+    // Check if deposit is paid
+    bool depositPaid = false;
+    bool balancePaid = false;
+    if (payments != null) {
+      for (var p in payments) {
+        final pType = (p['type'] as String? ?? '').toLowerCase();
+        final pStatus = (p['status'] as String? ?? '').toLowerCase();
+        if (pType == 'deposit' && pStatus == 'completed') {
+          depositPaid = true;
+        }
+        if (pType == 'remaining' && pStatus == 'completed') {
+          balancePaid = true;
+        }
+      }
+    }
+    
     final rows = <Widget>[
       _paymentRow('Total', total, totalConverted, currency),
-      _paymentRow('Deposit Amount', deposit, depositConverted, currency),
+      _paymentRow('Deposit Amount', deposit, depositConverted, currency, paid: depositPaid),
     ];
     if (remaining > 0) {
-      rows.add(_paymentRow('Remaining', remaining, null, currency));
+      rows.add(_paymentRow('Balance', remaining, null, currency, paid: balancePaid));
     }
     return Column(children: rows);
   }
 
   Widget _paymentRow(
       String label, num amount, AsyncValue<double>? converted, String? currency,
-      {bool positive = false}) {
+      {bool positive = false, bool paid = false}) {
     final symbol = _currencySymbol(currency);
     final convertedVal = converted?.valueOrNull;
     final display = convertedVal != null && convertedVal != amount.toDouble()
@@ -923,8 +942,16 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
+          Row(
+            children: [
+              Text(label,
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade700)),
+              if (paid) ...[
+                const SizedBox(width: 6),
+                const Icon(Icons.check_circle, color: Color(0xFF10B981), size: 16),
+              ],
+            ],
+          ),
           Text(display,
               style: TextStyle(
                   fontSize: 13,

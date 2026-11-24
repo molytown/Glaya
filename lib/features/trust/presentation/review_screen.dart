@@ -120,9 +120,11 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
             const SizedBox(height: 24),
             TextField(
               controller: _commentController,
+              style: const TextStyle(color: Colors.black),
               decoration: const InputDecoration(
                 labelText: 'Comment',
                 hintText: 'Share your experience...',
+                hintStyle: TextStyle(color: Colors.grey),
               ),
               maxLines: 4,
             ),

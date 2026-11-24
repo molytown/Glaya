@@ -134,7 +134,7 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
       final data = res.data['data'] as Map<String, dynamic>? ?? {};
 
       if (_method == 'wallet' || data['gateway'] == 'wallet') {
-        if (mounted) Navigator.of(context).pop(true);
+        if (mounted) Navigator.pop(context, true);
         return;
       }
 
@@ -151,7 +151,7 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
             bookingId: widget.bookingId,
           ),
         );
-        if (paid == true && mounted) Navigator.of(context).pop(true);
+        if (paid == true && mounted) Navigator.pop(context, true);
       } else {
         throw Exception('No checkout URL returned');
       }
@@ -296,7 +296,7 @@ class _PaymentDepositDialogState extends State<PaymentDepositDialog> {
                           icon: const Icon(Icons.close),
                           onPressed: _paying
                               ? null
-                              : () => Navigator.of(context).pop(false),
+                              : () => Navigator.pop(context, false),
                         ),
                       ],
                     ),

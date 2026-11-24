@@ -132,7 +132,7 @@ class _CodCodeDisplayDialogState extends State<CodCodeDisplayDialog> {
                 ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => Navigator.pop(context),
           child: const Text('Close',
               style: TextStyle(color: Color(0xFF555555), fontWeight: FontWeight.w600)),
         ),
@@ -193,7 +193,7 @@ class _CodCodeEntryDialogState extends State<CodCodeEntryDialog> {
     try {
       await ApiService.dio
           .post('/bookings/${widget.bookingId}/cod/verify', data: {'code': code});
-      if (mounted) Navigator.of(context).pop(true);
+      if (mounted) Navigator.pop(context, true);
     } on DioException catch (e) {
       final msg = e.response?.data is Map
           ? (e.response!.data['error'] ?? e.response!.data['message'])

@@ -376,7 +376,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
                                     _servicePrice > _depositAmount) ...[
                                   const SizedBox(height: 6),
                                   Text(
-                                    'Remaining ${_formatAmount(_servicePrice - _depositAmount)} due at your appointment',
+                                    'Balance ${_formatAmount(_servicePrice - _depositAmount)} due at your appointment',
                                     style: const TextStyle(
                                         fontSize: 12, color: Color(0xFF000000)),
                                   ),
@@ -495,7 +495,7 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
             status == 'completed' ||
             status == 'success') {
           _finished = true;
-          if (mounted) Navigator.of(context).pop(true);
+          if (mounted) Navigator.pop(context, true);
           return;
         }
       }
@@ -510,7 +510,7 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
           false;
       if (hasCompleted) {
         _finished = true;
-        if (mounted) Navigator.of(context).pop(true);
+        if (mounted) Navigator.pop(context, true);
         return;
       }
       if (mounted) {
@@ -565,7 +565,7 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
                     icon: const Icon(Icons.close, size: 20),
                     onPressed: _verifying
                         ? null
-                        : () => Navigator.of(context).pop(false),
+                        : () => Navigator.pop(context, false),
                   ),
                 ],
               ),
@@ -598,7 +598,7 @@ class NotchPayCheckoutDialogState extends State<NotchPayCheckoutDialog> {
                     child: OutlinedButton(
                       onPressed: _verifying
                           ? null
-                          : () => Navigator.of(context).pop(false),
+                          : () => Navigator.pop(context, false),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: const Color(0xFF555555),
                         side: const BorderSide(color: Color(0xFFDDDDDD)),
@@ -705,7 +705,7 @@ class _BookingConfirmedDialog extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.pop(context),
               style: ElevatedButton.styleFrom(
                 backgroundColor: GlayaColors.berry,
                 foregroundColor: Colors.white,
