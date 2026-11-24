@@ -20,6 +20,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   final _commentController = TextEditingController();
   String? _revieweeId;
   bool _isLoading = false;
+  String? _bookingStatus;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
       final proUser = data['professional']?['user'] as Map<String, dynamic>?;
       setState(() {
         _revieweeId = (proUser?['id'] ?? data['professionalId']) as String?;
+        _bookingStatus = data['status'] as String?;
       });
     } catch (e) {
       if (mounted) {
@@ -53,6 +55,19 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
 
   Future<void> _submitReview() async {
     if (_revieweeId == null) return;
+
+    // Check if booking is completed
+    if (_bookingStatus != 'completed') {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Reviews can only be submitted after the service is completed'),
+            backgroundColor: GlayaColors.error,
+          ),
+        );
+      }
+      return;
+    }
 
     setState(() => _isLoading = true);
     try {
