@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -372,13 +373,17 @@ class _SectionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              color: _textDark,
-              letterSpacing: -0.1,
+          Flexible(
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: _textDark,
+                letterSpacing: -0.1,
+              ),
             ),
           ),
           if (route != null)
@@ -708,12 +713,16 @@ class _ProListRow extends StatelessWidget {
                             color: Color(0xFFF59E0B),
                           ),
                         ),
-                        Text(
-                          '${rating.toStringAsFixed(1)} (${pro.totalReviews})',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFFF59E0B),
+                        Flexible(
+                          child: Text(
+                            '${rating.toStringAsFixed(1)} (${pro.totalReviews})',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFF59E0B),
+                            ),
                           ),
                         ),
                         if (location != null) ...[
@@ -1174,8 +1183,12 @@ class _ReviewsSectionState extends ConsumerState<_ReviewsSection> {
             ? (rev['rating'] as num).toInt()
             : int.tryParse('${rev['rating']}') ?? 5;
         final comment = (rev['comment'] ?? rev['review'] ?? '').toString();
-        final createdAt =
+        final createdAtRaw =
             (rev['createdAt'] ?? rev['created_at'] ?? '').toString();
+        final createdAtParsed = DateTime.tryParse(createdAtRaw);
+        final createdAt = createdAtParsed != null
+            ? DateFormat('MMM d').format(createdAtParsed)
+            : createdAtRaw;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
