@@ -8,8 +8,10 @@ import '../../../../shared/theme/text_styles.dart';
 
 class ReviewScreen extends ConsumerStatefulWidget {
   final String bookingId;
+  final Map<String, dynamic>? existingReview;
 
-  const ReviewScreen({super.key, required this.bookingId});
+  const ReviewScreen(
+      {super.key, required this.bookingId, this.existingReview});
 
   @override
   ConsumerState<ReviewScreen> createState() => _ReviewScreenState();
@@ -21,12 +23,22 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   final _commentController = TextEditingController();
   bool _isLoading = false;
   bool _isLoadingBooking = true;
+  bool _isEditing = false;
   String? _bookingStatus;
   String? _errorMessage;
 
   @override
   void initState() {
     super.initState();
+    final r = widget.existingReview;
+    if (r != null) {
+      _isEditing = true;
+      _rating = (r['rating'] as num?)?.toInt() ?? 5;
+      _punctualityScore = (r['punctualityScore'] as num?)?.toInt() ??
+          (r['punctuality_score'] as num?)?.toInt() ??
+          _rating;
+      _commentController.text = (r['comment'] ?? '').toString();
+    }
     _loadBooking();
   }
 
@@ -75,14 +87,23 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
     setState(() => _isLoading = true);
     try {
       print('[REVIEW] Submitting review...');
-      print('[REVIEW] Payload: bookingId=${widget.bookingId}, rating=$_rating, punctualityScore=$_punctualityScore');
-      final response = await ApiService.dio.post('/reviews', data: {
-        'bookingId': widget.bookingId,
+      print('[REVIEW] Payload: bookingId=${widget.bookingId}, rating=$_rating, punctualityScore=$_punctualityScore, editing=$_isEditing');
+      final payload = {
         'rating': _rating,
         'comment': _commentController.text,
         'punctualityScore': _punctualityScore,
-      });
-      print('[REVIEW] Review submitted successfully: $response');
+      };
+      if (_isEditing) {
+        await ApiService.dio.put(
+            '/reviews/${widget.existingReview!['id']}',
+            data: payload);
+      } else {
+        await ApiService.dio.post('/reviews', data: {
+          'bookingId': widget.bookingId,
+          ...payload,
+        });
+      }
+      print('[REVIEW] Review ${_isEditing ? 'updated' : 'submitted'} successfully');
       if (mounted) {
         context.pop();
       }
@@ -123,7 +144,8 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Leave a Review')),
+      appBar: AppBar(
+          title: Text(_isEditing ? 'Edit Review' : 'Leave a Review')),
       body: _isLoadingBooking
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
@@ -170,7 +192,9 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                             Expanded(
                               child: Text(
                                 _bookingStatus == 'completed'
-                                    ? 'Booking completed - you can leave a review'
+                                    ? (_isEditing
+                                        ? 'Booking completed - you can edit your review'
+                                        : 'Booking completed - you can leave a review')
                                     : 'Booking status: ${_bookingStatus ?? 'unknown'} - reviews can only be submitted after service completion',
                                 style: TextStyle(
                                   color: _bookingStatus == 'completed'
@@ -239,7 +263,7 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
                                 child: CircularProgressIndicator(
                                     strokeWidth: 2, color: Colors.white),
                               )
-                            : const Text('Submit Review'),
+                            : Text(_isEditing ? 'Update Review' : 'Submit Review'),
                       ),
                     ],
                   ),

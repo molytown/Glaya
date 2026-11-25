@@ -211,7 +211,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
     }
   }
 
-  Future<void> _showGlayaScore() async {
+  Future<void> _showGlayaScore([Map<String, dynamic>? existingReview]) async {
     final customerId = _booking?['customerId'] ?? _booking?['customer_id'];
     if (customerId == null) return;
     final submitted = await showDialog<bool>(
@@ -219,10 +219,16 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       builder: (_) => _GlayaScoreDialog(
         bookingId: widget.bookingId,
         customerId: customerId.toString(),
+        existingReview: existingReview,
       ),
     );
     if (submitted == true) {
-      if (mounted) _snack('Glaya Score submitted — thank you');
+      if (mounted) {
+        _snack(existingReview != null
+            ? 'Glaya Score updated — thank you'
+            : 'Glaya Score submitted — thank you');
+        _loadBooking();
+      }
     }
   }
 
@@ -639,7 +645,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           const SizedBox(height: 20),
 
           // ── Primary actions ──────────────────────────────────────────
-          _buildPrimaryActions(status, isPro),
+          _buildPrimaryActions(status, isPro, user?.id),
 
           // ── Secondary actions (Edit, Postpone, Delete) — customer only ──
           if (!isPro && (_canEdit || _canPostpone || _canDelete)) ...[
@@ -703,7 +709,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
     );
   }
 
-  Widget _buildPrimaryActions(String status, bool isPro) {
+  Widget _buildPrimaryActions(String status, bool isPro, String? userId) {
     switch (status) {
       case 'requested':
         if (isPro) {
@@ -787,27 +793,62 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
               outlined: true, onTap: () => _openChat()),
         ]);
       case 'completed':
+        // Reviews this user already submitted for this booking (if any).
+        // Customer → professional = 'service' review; professional →
+        // customer = 'glaya_score' rating.
+        final myReviews = userId == null
+            ? const <Map<String, dynamic>>[]
+            : ((_booking?['reviews'] as List? ?? const [])
+                .whereType<Map>()
+                .map((r) => Map<String, dynamic>.from(r))
+                .where((r) =>
+                    (r['reviewerId'] ?? r['reviewer_id'])?.toString() ==
+                    userId)
+                .toList());
         if (isPro) {
           // Professionals rate the customer (Glaya Score); they don't review
           // their own service.
+          final scoreReviews = myReviews
+              .where((r) =>
+                  (r['reviewType'] ?? r['review_type']) == 'glaya_score')
+              .toList();
+          final myScore = scoreReviews.isEmpty ? null : scoreReviews.first;
           return Column(children: [
-            _actionBtn('Rate Customer', Icons.star_outline,
-                onTap: _showGlayaScore),
+            _actionBtn(
+              myScore != null ? 'Edit Rating' : 'Rate Customer',
+              Icons.star_outline,
+              grey: myScore != null,
+              onTap: () => _showGlayaScore(myScore),
+            ),
             const SizedBox(height: 8),
             _actionBtn('Chat', Icons.chat_bubble_outline,
                 outlined: true, onTap: () => _openChat()),
           ]);
         }
-        return _actionBtn('Leave a Review', Icons.star_outline,
-            onTap: () {
-              // Use Navigator.push with MaterialPageRoute for direct navigation
-              // This avoids go_router rebuild issues when embedded in slide-outs
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ReviewScreen(bookingId: widget.bookingId),
+        final serviceReviews = myReviews
+            .where((r) =>
+                (r['reviewType'] ?? r['review_type']) != 'glaya_score')
+            .toList();
+        final myReview =
+            serviceReviews.isEmpty ? null : serviceReviews.first;
+        return _actionBtn(
+          myReview != null ? 'Edit Review' : 'Leave a Review',
+          myReview != null ? Icons.edit_outlined : Icons.star_outline,
+          grey: myReview != null,
+          onTap: () async {
+            // Use Navigator.push with MaterialPageRoute for direct navigation
+            // This avoids go_router rebuild issues when embedded in slide-outs
+            await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => ReviewScreen(
+                  bookingId: widget.bookingId,
+                  existingReview: myReview,
                 ),
-              );
-            });
+              ),
+            );
+            _loadBooking();
+          },
+        );
       default:
         return const SizedBox.shrink();
     }
@@ -859,7 +900,7 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
       );
 
   Widget _actionBtn(String label, IconData icon,
-      {VoidCallback? onTap, bool outlined = false}) {
+      {VoidCallback? onTap, bool outlined = false, bool grey = false}) {
     if (outlined) {
       return SizedBox(
         height: 46,
@@ -890,8 +931,9 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         label: Text(label,
             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
         style: ElevatedButton.styleFrom(
-          backgroundColor: GlayaColors.berry,
-          foregroundColor: Colors.white,
+          backgroundColor:
+              grey ? const Color(0xFFE0E0E0) : GlayaColors.berry,
+          foregroundColor: grey ? Colors.black : Colors.white,
           elevation: 0,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -1163,8 +1205,12 @@ class _EditBookingDialogState extends State<_EditBookingDialog> {
 class _GlayaScoreDialog extends StatefulWidget {
   final String bookingId;
   final String customerId;
+  final Map<String, dynamic>? existingReview;
 
-  const _GlayaScoreDialog({required this.bookingId, required this.customerId});
+  const _GlayaScoreDialog(
+      {required this.bookingId,
+      required this.customerId,
+      this.existingReview});
 
   @override
   State<_GlayaScoreDialog> createState() => _GlayaScoreDialogState();
@@ -1175,6 +1221,18 @@ class _GlayaScoreDialogState extends State<_GlayaScoreDialog> {
   bool _submitting = false;
   final _commentController = TextEditingController();
 
+  bool get _isEditing => widget.existingReview != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final r = widget.existingReview;
+    if (r != null) {
+      _rating = (r['rating'] as num?)?.toInt() ?? 5;
+      _commentController.text = (r['comment'] ?? '').toString();
+    }
+  }
+
   @override
   void dispose() {
     _commentController.dispose();
@@ -1183,14 +1241,23 @@ class _GlayaScoreDialogState extends State<_GlayaScoreDialog> {
 
   Future<void> _submit() async {
     setState(() => _submitting = true);
+    final payload = {
+      'rating': _rating,
+      'comment': _commentController.text.trim(),
+      'punctualityScore': _rating,
+    };
     try {
-      await ApiService.dio.post('/reviews', data: {
-        'bookingId': widget.bookingId,
-        'revieweeId': widget.customerId,
-        'rating': _rating,
-        'comment': _commentController.text.trim(),
-        'punctualityScore': _rating,
-      });
+      final existing = widget.existingReview;
+      if (existing != null) {
+        await ApiService.dio
+            .put('/reviews/${existing['id']}', data: payload);
+      } else {
+        await ApiService.dio.post('/reviews', data: {
+          'bookingId': widget.bookingId,
+          'revieweeId': widget.customerId,
+          ...payload,
+        });
+      }
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
       if (mounted) {
@@ -1264,7 +1331,7 @@ class _GlayaScoreDialogState extends State<_GlayaScoreDialog> {
                   child: CircularProgressIndicator(
                       strokeWidth: 2, color: Colors.white),
                 )
-              : const Text('Submit',
+              : Text(_isEditing ? 'Update' : 'Submit',
                   style: TextStyle(fontWeight: FontWeight.w700)),
         ),
       ],
