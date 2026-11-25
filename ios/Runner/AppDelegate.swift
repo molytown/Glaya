@@ -10,8 +10,8 @@ import FirebaseMessaging
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    // Initialize Firebase
-    FirebaseApp.configure()
+    // Firebase is automatically configured by FlutterFire plugin
+    // Do NOT call FirebaseApp.configure() here - it causes "Default app has already been configured" error
 
     // Initialize Google Maps
     GMSServices.provideAPIKey("AIzaSyAvKD0yvAYvbTgWGlkmVeAk0DdWmi5L-nc")
