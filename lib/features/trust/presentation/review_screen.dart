@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:dio/dio.dart';
 import '../../../../shared/services/api_service.dart';
 import '../../../../shared/theme/colors.dart';
 import '../../../../shared/theme/text_styles.dart';
@@ -79,20 +80,46 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
 
     setState(() => _isLoading = true);
     try {
-      await ApiService.dio.post('/reviews', data: {
+      print('[REVIEW] Submitting review...');
+      print('[REVIEW] Payload: bookingId=${widget.bookingId}, revieweeId=$_revieweeId, rating=$_rating, punctualityScore=$_punctualityScore');
+      final response = await ApiService.dio.post('/reviews', data: {
         'bookingId': widget.bookingId,
         'revieweeId': _revieweeId,
         'rating': _rating,
         'comment': _commentController.text,
         'punctualityScore': _punctualityScore,
       });
+      print('[REVIEW] Review submitted successfully: $response');
       if (mounted) {
         context.pop();
       }
     } catch (e) {
+      print('[REVIEW] Review submission failed: $e');
+      if (e is DioException) {
+        print('[REVIEW] Dio error type: ${e.type}');
+        print('[REVIEW] Dio response: ${e.response}');
+        print('[REVIEW] Dio response data: ${e.response?.data}');
+        print('[REVIEW] Dio status code: ${e.response?.statusCode}');
+      }
       if (mounted) {
+        String errorMessage = 'Review failed';
+        if (e is DioException) {
+          final responseData = e.response?.data;
+          if (responseData is Map && responseData['message'] != null) {
+            errorMessage = responseData['message'];
+          } else if (responseData is Map && responseData['error'] != null) {
+            errorMessage = responseData['error'];
+          } else {
+            errorMessage = 'Review failed: ${e.response?.statusCode ?? e.type}';
+          }
+        } else {
+          errorMessage = 'Review failed: ${e.toString()}';
+        }
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Review failed: ${e.toString()}')),
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: GlayaColors.error,
+          ),
         );
       }
     } finally {
