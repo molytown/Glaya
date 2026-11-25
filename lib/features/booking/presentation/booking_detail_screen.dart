@@ -798,7 +798,15 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
           ]);
         }
         return _actionBtn('Leave a Review', Icons.star_outline,
-            onTap: () => context.push('/review/${widget.bookingId}'));
+            onTap: () {
+              // Use root navigator to ensure navigation works even when embedded
+              final navContext = rootNavigatorKey.currentContext;
+              if (navContext != null) {
+                navContext.push('/review/${widget.bookingId}');
+              } else {
+                context.push('/review/${widget.bookingId}');
+              }
+            });
       default:
         return const SizedBox.shrink();
     }
