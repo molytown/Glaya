@@ -19,7 +19,6 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   int _rating = 5;
   int _punctualityScore = 5;
   final _commentController = TextEditingController();
-  String? _revieweeId;
   bool _isLoading = false;
   bool _isLoadingBooking = true;
   String? _bookingStatus;
@@ -43,14 +42,11 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
       final response = await ApiService.dio.get('/bookings/${widget.bookingId}');
       final data = response.data['data'] as Map<String, dynamic>;
       print('[REVIEW] Booking data: $data');
-      // reviewee is the professional's USER id (not the professional entity id)
-      final proUser = data['professional']?['user'] as Map<String, dynamic>?;
       setState(() {
-        _revieweeId = (proUser?['id'] ?? data['professionalId']) as String?;
         _bookingStatus = data['status'] as String?;
         _isLoadingBooking = false;
       });
-      print('[REVIEW] Booking status: $_bookingStatus, revieweeId: $_revieweeId');
+      print('[REVIEW] Booking status: $_bookingStatus');
     } catch (e) {
       print('[REVIEW] Failed to load booking: $e');
       if (mounted) {
@@ -63,8 +59,6 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
   }
 
   Future<void> _submitReview() async {
-    if (_revieweeId == null) return;
-
     // Check if booking is completed
     if (_bookingStatus != 'completed') {
       if (mounted) {
@@ -81,10 +75,9 @@ class _ReviewScreenState extends ConsumerState<ReviewScreen> {
     setState(() => _isLoading = true);
     try {
       print('[REVIEW] Submitting review...');
-      print('[REVIEW] Payload: bookingId=${widget.bookingId}, revieweeId=$_revieweeId, rating=$_rating, punctualityScore=$_punctualityScore');
+      print('[REVIEW] Payload: bookingId=${widget.bookingId}, rating=$_rating, punctualityScore=$_punctualityScore');
       final response = await ApiService.dio.post('/reviews', data: {
         'bookingId': widget.bookingId,
-        'revieweeId': _revieweeId,
         'rating': _rating,
         'comment': _commentController.text,
         'punctualityScore': _punctualityScore,
