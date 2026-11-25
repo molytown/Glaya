@@ -13,6 +13,7 @@ import '../../../../shared/router/app_router.dart';
 import '../../../../shared/utils/responsive_helper.dart';
 import '../../payments/presentation/widgets/payment_deposit_dialog.dart';
 import '../../payments/presentation/widgets/cod_payment_dialog.dart';
+import '../../trust/presentation/review_screen.dart';
 
 class BookingDetailScreen extends ConsumerStatefulWidget {
   final String bookingId;
@@ -799,13 +800,13 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         }
         return _actionBtn('Leave a Review', Icons.star_outline,
             onTap: () {
-              // Use root navigator to ensure navigation works even when embedded
-              final navContext = rootNavigatorKey.currentContext;
-              if (navContext != null) {
-                navContext.push('/review/${widget.bookingId}');
-              } else {
-                context.push('/review/${widget.bookingId}');
-              }
+              // Use Navigator.push with MaterialPageRoute for direct navigation
+              // This avoids go_router rebuild issues when embedded in slide-outs
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => ReviewScreen(bookingId: widget.bookingId),
+                ),
+              );
             });
       default:
         return const SizedBox.shrink();
