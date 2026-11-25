@@ -177,9 +177,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     });
   }
 
+  bool get _chatClosed => ['completed', 'cancelled']
+      .contains(_bookingDetails?['status'] as String? ?? '');
+
   Future<void> _sendMessage() async {
     final content = _messageController.text.trim();
-    if (content.isEmpty || _userId == null) return;
+    if (content.isEmpty || _userId == null || _chatClosed) return;
 
     _webSocketService.sendTypingStop(widget.bookingId, _userId!);
     _webSocketService.sendMessage(widget.bookingId, _userId!, content, 'text');
@@ -187,7 +190,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _sendQuickReply(String message) {
-    if (_userId == null) return;
+    if (_userId == null || _chatClosed) return;
     _webSocketService.sendMessage(
         widget.bookingId, _userId!, message, 'quick_reply');
   }
@@ -275,7 +278,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             (_outstandingBalance > 0 || _codRequested))
           _buildBalanceControls(),
         // Quick replies
-        SingleChildScrollView(
+        if (!_chatClosed)
+          SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Row(
@@ -294,7 +298,28 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                 .toList(),
           ),
         ),
-        Padding(
+        if (_chatClosed)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            color: const Color(0xFFF3F4F6),
+            child: const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_outline, size: 14, color: Color(0xFF6B7280)),
+                SizedBox(width: 6),
+                Text(
+                  'This chat is closed — the booking is completed or cancelled.',
+                  style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF6B7280)),
+                ),
+              ],
+            ),
+          )
+        else
+          Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [

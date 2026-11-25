@@ -151,14 +151,14 @@ class _ProfessionalProfileScreenState
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 1200),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.zero,
               child: CustomScrollView(
               slivers: [
                 // Header - matches React profile-header
                 SliverToBoxAdapter(
                   child: Container(
                     color: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
                     child: Row(
                       children: [
                         InkWell(
@@ -206,7 +206,7 @@ class _ProfessionalProfileScreenState
             // Services & Reviews 2-column grid
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: ServicesReviewsGrid(professional: professional),
               ),
             ),
@@ -219,7 +219,7 @@ class _ProfessionalProfileScreenState
             // Location Map
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: LocationMapCard(professional: professional),
               ),
             ),
@@ -227,7 +227,7 @@ class _ProfessionalProfileScreenState
             // Policies
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 child: PoliciesSection(professional: professional),
               ),
             ),
@@ -277,7 +277,11 @@ class _ProfessionalProfileScreenState
         ? configService.replaceLocalhost(professional.photoUrl!)
         : null;
     final firstName = professional.name.split(' ').first;
-    final rating = professional.trustScore > 0 ? (professional.trustScore / 20).toStringAsFixed(1) : '0.0';
+    final avg = professional.avgRating;
+    final displayRating = (avg != null && avg > 0)
+        ? avg
+        : (professional.trustScore > 0 ? professional.trustScore / 20 : 0.0);
+    final rating = displayRating > 0 ? displayRating.toStringAsFixed(1) : '0.0';
     final reviewCount = professional.totalReviews;
     final category = professional.categories.isNotEmpty
         ? professional.categories.join(', ')
@@ -502,7 +506,11 @@ class _ProfessionalProfileScreenState
   }
 
   Widget _buildTrustScoreCard(ProfessionalModel professional) {
-    final rating = professional.trustScore > 0 ? (professional.trustScore / 20).toStringAsFixed(1) : '0.0';
+    final avg = professional.avgRating;
+    final displayRating = (avg != null && avg > 0)
+        ? avg
+        : (professional.trustScore > 0 ? professional.trustScore / 20 : 0.0);
+    final rating = displayRating > 0 ? displayRating.toStringAsFixed(1) : '0.0';
     final totalReviews = professional.totalReviews;
     final trustScore = professional.trustScore;
     final totalBookings = professional.totalBookings;
@@ -582,10 +590,9 @@ class _ProfessionalProfileScreenState
     final yearsActive = professional.createdAt != null
         ? DateTime.now().year - professional.createdAt!.year
         : 0;
-    final rating = professional.trustScore > 0 ? (professional.trustScore / 20).toStringAsFixed(1) : '0.0';
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -617,9 +624,10 @@ class _ProfessionalProfileScreenState
           // Stats grid
           Row(
             children: [
+              _buildAboutStat('${professional.trustScore}', 'Trust Score'),
               _buildAboutStat('${professional.totalBookings}', 'Bookings'),
-              _buildAboutStat('$yearsActive', 'Years Active'),
-              _buildAboutStat(rating, 'Rating'),
+              _buildAboutStat('${professional.totalReviews}', 'Reviews'),
+              _buildAboutStat('$yearsActive', 'Years'),
             ],
           ),
         ],
@@ -655,7 +663,7 @@ class _ProfessionalProfileScreenState
 
     if (isDesktop) {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -670,7 +678,7 @@ class _ProfessionalProfileScreenState
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: Column(
         children: [
           widgets[0],
@@ -714,7 +722,7 @@ class _ProfessionalProfileScreenState
     final hasPortfolio = professional.portfolioUrls != null && professional.portfolioUrls!.isNotEmpty;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 12),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,

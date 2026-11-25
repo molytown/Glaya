@@ -627,7 +627,7 @@ class _ProListRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pro = professional;
-    final rating = pro.avgRating ?? professionalRating(pro.trustScore);
+    final rating = professionalDisplayRating(pro);
     final photoSize = large ? 84.0 : 56.0;
     final category = pro.categories.isNotEmpty
         ? pro.categories.take(2).join(' • ')

@@ -565,8 +565,10 @@ class NearbyProfessionalsList extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: professionals.take(3).map((pro) {
-          final rating = professionalRating(pro.trustScore);
-          final reviews = pro.reviews?.length ?? 0;
+          final rating = professionalDisplayRating(pro);
+          final reviews = pro.totalReviews > 0
+              ? pro.totalReviews
+              : (pro.reviews?.length ?? 0);
           return GestureDetector(
             onTap: () => context.push('/professional/${pro.id}'),
             child: Container(

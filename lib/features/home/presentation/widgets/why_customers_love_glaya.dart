@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../../../../shared/services/api_service.dart';
 import '../../../../shared/theme/colors.dart';
 
 class WhyCustomersLoveGlayaSection extends StatefulWidget {
@@ -19,7 +21,43 @@ class _WhyCustomersLoveGlayaSectionState
   void initState() {
     super.initState();
     _reviews = _getFallbackReviews();
+    _loadReviews();
     _startAutoRotate();
+  }
+
+  Future<void> _loadReviews() async {
+    try {
+      final response = await ApiService.dio.get(
+        '/engagement/reviews',
+        queryParameters: {'limit': 10},
+      );
+      final data = response.data?['data'] as List?;
+      if (data == null || data.isEmpty) return;
+      final reviews = data
+          .whereType<Map<String, dynamic>>()
+          .map((json) => CustomerReview(
+                reviewerName:
+                    (json['reviewerName'] ?? 'Glaya customer').toString(),
+                rating: (json['rating'] as num?)?.toInt() ?? 5,
+                comment: (json['comment'] ?? '').toString(),
+                createdAt: _formatReviewDate(json['createdAt']),
+              ))
+          .where((r) => r.comment.isNotEmpty)
+          .toList();
+      if (reviews.isEmpty || !mounted) return;
+      setState(() {
+        _reviews = reviews;
+        _reviewIndex = 0;
+      });
+    } catch (_) {
+      // Keep fallback reviews on error
+    }
+  }
+
+  String _formatReviewDate(dynamic value) {
+    final parsed = DateTime.tryParse(value?.toString() ?? '');
+    if (parsed == null) return '';
+    return DateFormat('MMM d, y').format(parsed);
   }
 
   void _startAutoRotate() {

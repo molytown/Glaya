@@ -225,7 +225,7 @@ class ProfessionalCardRow extends StatelessWidget {
           if (pro == null) return _placeholderCard();
           return ProfessionalCard(
             professional: pro,
-            rating: professionalRating(pro.trustScore),
+            rating: professionalDisplayRating(pro),
             priceLabel: professionalPriceLabel(pro),
           );
         },
@@ -397,7 +397,7 @@ class _TopRatedProfessionalsCarouselState
                     width: cardWidth,
                     child: _TopRatedFullImageCard(
                       professional: pro,
-                      rating: professionalRating(pro.trustScore),
+                      rating: professionalDisplayRating(pro),
                       aspectRatio: widget.cardAspectRatio ?? (9 / 16),
                     ),
                   ),
@@ -434,7 +434,7 @@ class _TopRatedProfessionalsCarouselState
                   width: cardWidth,
                   child: _TopRatedFullImageCard(
                     professional: pro,
-                    rating: professionalRating(pro.trustScore),
+                    rating: professionalDisplayRating(pro),
                     aspectRatio: isMobile ? 1 : 1 / 1.4,
                   ),
                 ),
@@ -710,7 +710,7 @@ class RecommendedProfessionalRow extends StatelessWidget {
             );
           }
 
-          final rating = professionalRating(pro.trustScore);
+          final rating = professionalDisplayRating(pro);
           return GestureDetector(
             onTap: () {
               HapticFeedback.light();

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../discovery/data/professional_model.dart';
+import '../../../discovery/domain/professional.dart';
 
 Color colorFromHex(String hex) {
   final buffer = StringBuffer();
@@ -10,6 +11,15 @@ Color colorFromHex(String hex) {
 
 double professionalRating(int trustScore) =>
     (trustScore / 20.0).clamp(3.0, 5.0);
+
+double professionalDisplayRating(Professional professional) {
+  final avg = professional.avgRating;
+  if (avg != null && avg > 0) return avg;
+  if (professional.trustScore > 0) {
+    return (professional.trustScore / 20.0).clamp(0.0, 5.0);
+  }
+  return 0.0;
+}
 
 String professionalPriceLabel(ProfessionalModel professional) {
   // Get currency symbol from professional's currency

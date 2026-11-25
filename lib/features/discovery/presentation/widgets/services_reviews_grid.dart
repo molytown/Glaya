@@ -20,6 +20,8 @@ class ServicesReviewsGrid extends ConsumerStatefulWidget {
 }
 
 class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
+  bool _showAllReviews = false;
+
   void _showBookingModal(ServiceItem? service) {
     showDialog(
       context: context,
@@ -259,6 +261,12 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
   }
 
   Widget _buildReviewsColumn(List<ReviewItem> reviews) {
+    final sorted = [...reviews]
+      ..sort((a, b) => (DateTime.tryParse(b.createdAt ?? '') ??
+              DateTime.fromMillisecondsSinceEpoch(0))
+          .compareTo(DateTime.tryParse(a.createdAt ?? '') ??
+              DateTime.fromMillisecondsSinceEpoch(0)));
+    final visible = _showAllReviews ? sorted : sorted.take(4).toList();
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -279,8 +287,26 @@ class _ServicesReviewsGridState extends ConsumerState<ServicesReviewsGrid> {
           const SizedBox(height: 16),
           if (reviews.isEmpty)
             _buildEmptyState(Icons.star_outline, 'No reviews yet')
-          else
-            ...reviews.map((review) => _buildReviewCard(review)),
+          else ...[
+            ...visible.map((review) => _buildReviewCard(review)),
+            if (reviews.length > 4)
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton(
+                  onPressed: () =>
+                      setState(() => _showAllReviews = !_showAllReviews),
+                  child: Text(
+                    _showAllReviews
+                        ? 'Show less'
+                        : 'See all ${reviews.length} reviews',
+                    style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: GlayaColors.berry),
+                  ),
+                ),
+              ),
+          ],
         ],
       ),
     );

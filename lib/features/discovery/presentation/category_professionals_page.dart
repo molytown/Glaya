@@ -73,7 +73,7 @@ class _ProfessionalTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final rating = professionalRating(professional.trustScore);
+    final rating = professionalDisplayRating(professional);
     final priceLabel = professionalPriceLabel(professional);
     return GestureDetector(
       onTap: () {
