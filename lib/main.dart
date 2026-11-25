@@ -50,13 +50,22 @@ String _deviceType() {
 
 final fcmTokenProvider = StateProvider<String?>((_) => null);
 
+// Handles FCM messages while the app is in background/terminated.
+// Notification+data messages are already displayed by the OS without this
+// handler, but registering it ensures data-only messages are still delivered
+// to the Dart isolate instead of being dropped.
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+}
+
 // Cached FCM token + pending deep-link from a notification tap
 String? _cachedFcmToken;
 String? pendingNotificationRoute;
 String? pendingNotificationBookingId;
 String? pendingNotificationBookingDetailId;
 
-Future<void> _registerFcmToken(String? token) async {
+Future<void> _registerFcmToken(String? token, {int attempt = 0}) async {
   if (token == null || token.isEmpty) return;
   _cachedFcmToken = token;
   try {
@@ -64,7 +73,14 @@ Future<void> _registerFcmToken(String? token) async {
       '/notifications/fcm-token',
       data: {'token': token, 'deviceType': _deviceType()},
     );
-  } catch (_) {}
+  } catch (_) {
+    // Retry with backoff — covers cold start before auth or transient
+    // network failures so push registration isn't silently lost.
+    if (attempt < 3) {
+      await Future.delayed(Duration(seconds: 5 * (attempt + 1)));
+      await _registerFcmToken(token, attempt: attempt + 1);
+    }
+  }
 }
 
 // Re-register the cached FCM token — call after login so push works for fresh sessions
@@ -76,6 +92,7 @@ Future<void> _setupFCM() async {
   if (kIsWeb) return;
 
   final messaging = FirebaseMessaging.instance;
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   final androidChannel = AndroidNotificationChannel(
     'glaya_channel',
     'Glaya Notifications',
@@ -163,8 +180,12 @@ Future<void> _setupFCM() async {
       } catch (_) {}
     }
 
-    // Show system notification
-    if (!alreadySeen && notification != null) {
+    // Show system notification. On iOS the native willPresent delegate
+    // already displays a banner+sound for foreground pushes, so posting a
+    // local notification too would duplicate the alert — Android only here.
+    if (!alreadySeen &&
+        notification != null &&
+        defaultTargetPlatform == TargetPlatform.android) {
       flutterLocalNotifications.show(
         notification.hashCode,
         notification.title,

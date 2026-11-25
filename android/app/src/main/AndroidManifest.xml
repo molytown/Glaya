@@ -51,6 +51,11 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Route FCM notification messages to the glaya_channel created by
+             flutter_local_notifications so they get the custom sound/vibration -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="glaya_channel" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAvKD0yvAYvbTgWGlkmVeAk0DdWmi5L-nc" />
