@@ -72,6 +72,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
   bool _loadingServices = true;
   bool _loadingSlots = false;
   bool _submitting = false;
+  String? _submittedBookingId;
 
   // ── Steps meta ───────────────────────────────────────────────────────────────
   static const _stepTitles = [
@@ -163,6 +164,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
 
   // ── Booking submission ───────────────────────────────────────────────────────
   Future<void> _submit() async {
+    if (_submittedBookingId != null) return;
     setState(() => _submitting = true);
     try {
       final userId = await StorageService.getUserId();
@@ -191,6 +193,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
 
       if (mounted) {
         HapticFeedback.success();
+        setState(() => _submittedBookingId = bookingId);
         _showSuccessDialog(bookingId);
       }
     } catch (e) {
@@ -414,11 +417,13 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
         backgroundColor: const Color(0xFFFCE4EC),
         elevation: 0,
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new,
-              size: 18, color: Color(0xFF1A1A1A)),
-          onPressed: _back,
-        ),
+        leading: _submittedBookingId != null
+            ? const SizedBox.shrink()
+            : IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new,
+                    size: 18, color: Color(0xFF1A1A1A)),
+                onPressed: _back,
+              ),
         title: Column(
           children: [
             Text('Book with $proName',
@@ -1134,6 +1139,7 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
   // ── Bottom bar ───────────────────────────────────────────────────────────────
   Widget _buildBottomBar() {
     final isLastStep = _step == 3;
+    final submitted = _submittedBookingId != null;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
       decoration: BoxDecoration(
@@ -1148,10 +1154,12 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
       child: SizedBox(
         height: 52,
         child: ElevatedButton(
-          onPressed: _submitting ? null : _next,
+          onPressed: submitted
+              ? () => context.push('/bookings/$_submittedBookingId')
+              : (_submitting ? null : _next),
           style: ElevatedButton.styleFrom(
-            backgroundColor: GlayaColors.berry,
-            foregroundColor: Colors.white,
+            backgroundColor: submitted ? const Color(0xFF9CA3AF) : GlayaColors.berry,
+            foregroundColor: submitted ? Colors.black : Colors.white,
             elevation: 0,
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -1166,12 +1174,19 @@ class _BookingFlowScreenState extends ConsumerState<BookingFlowScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      isLastStep ? 'Send Booking Request' : 'Continue',
+                      submitted
+                          ? 'View Booking'
+                          : (isLastStep ? 'Send Booking Request' : 'Continue'),
                       style: const TextStyle(
                           fontSize: 16, fontWeight: FontWeight.w700),
                     ),
                     const SizedBox(width: 8),
-                    Icon(isLastStep ? Icons.send : Icons.arrow_forward_rounded,
+                    Icon(
+                        submitted
+                            ? Icons.receipt_long_outlined
+                            : (isLastStep
+                                ? Icons.send
+                                : Icons.arrow_forward_rounded),
                         size: 20),
                   ],
                 ),
