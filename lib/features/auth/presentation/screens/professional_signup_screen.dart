@@ -398,20 +398,49 @@ class _ProfessionalSignupScreenState
                             children: [
                               SizedBox(
                                 width: 110,
-                                child: _buildDropdown<String>(
-                                  value: _phoneCountryIso,
-                                  hint: 'Code',
-                                  icon: Icons.phone_outlined,
-                                  items: countries
-                                      .map((c) => DropdownMenuItem(
-                                            value: c.iso,
-                                            child: Text('${c.flag} ${c.code}',
+                                child: Builder(
+                                  builder: (context) {
+                                    final selected = countries
+                                        .where((c) =>
+                                            c.iso == _phoneCountryIso)
+                                        .firstOrNull;
+                                    return GestureDetector(
+                                      onTap: _openPhoneCountrySheet,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color(0xFFF9F9F9),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              color: const Color(0xFFE0E0E0)),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 4),
+                                        child: Row(
+                                          children: [
+                                            const Icon(Icons.phone_outlined,
+                                                size: 20,
+                                                color: Color(0xFF757575)),
+                                            const SizedBox(width: 4),
+                                            Expanded(
+                                              child: Text(
+                                                selected == null
+                                                    ? 'Code'
+                                                    : '${selected.flag} ${selected.code}',
                                                 style: const TextStyle(
-                                                    fontSize: 13)),
-                                          ))
-                                      .toList(),
-                                  onChanged: (v) =>
-                                      setState(() => _phoneCountryIso = v),
+                                                    fontSize: 13,
+                                                    color: Color(0xFF1A1A2E)),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ),
+                                            const Icon(
+                                                Icons.keyboard_arrow_down,
+                                                size: 20),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -649,6 +678,24 @@ class _ProfessionalSignupScreenState
   }
 
   // ── DROPDOWN ───────────────────────────────────────────────────────────────
+  void _openPhoneCountrySheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) => _PhoneCountryCodeSheet(
+        selectedIso: _phoneCountryIso,
+        onSelected: (iso) {
+          setState(() => _phoneCountryIso = iso);
+          Navigator.pop(sheetContext);
+        },
+      ),
+    );
+  }
+
   Widget _buildDropdown<T>({
     required T? value,
     required String hint,
@@ -665,6 +712,7 @@ class _ProfessionalSignupScreenState
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: DropdownButtonFormField<T>(
         initialValue: value,
+        style: const TextStyle(fontSize: 14, color: Color(0xFF1A1A2E)),
         hint: Text(hint,
             style: const TextStyle(fontSize: 14, color: Color(0xFF000000))),
         icon: const Icon(Icons.keyboard_arrow_down, size: 20),
@@ -674,7 +722,16 @@ class _ProfessionalSignupScreenState
           contentPadding: const EdgeInsets.symmetric(vertical: 12),
         ),
         isExpanded: true,
-        items: items,
+        items: items
+            .map((item) => DropdownMenuItem<T>(
+                  value: item.value,
+                  child: DefaultTextStyle.merge(
+                    style: const TextStyle(
+                        fontSize: 14, color: Color(0xFF1A1A2E)),
+                    child: item.child,
+                  ),
+                ))
+            .toList(),
         onChanged: onChanged,
       ),
     );
@@ -906,6 +963,133 @@ class _ProfessionalSignupScreenState
                     fontSize: 15,
                     fontWeight: FontWeight.w700),
               ),
+      ),
+    );
+  }
+}
+
+class _PhoneCountryCodeSheet extends StatefulWidget {
+  final String? selectedIso;
+  final ValueChanged<String> onSelected;
+
+  const _PhoneCountryCodeSheet({
+    required this.selectedIso,
+    required this.onSelected,
+  });
+
+  @override
+  State<_PhoneCountryCodeSheet> createState() =>
+      _PhoneCountryCodeSheetState();
+}
+
+class _PhoneCountryCodeSheetState extends State<_PhoneCountryCodeSheet> {
+  final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = _searchController.text.trim().toLowerCase();
+    final filtered = query.isEmpty
+        ? countries
+        : countries
+            .where((c) =>
+                c.name.toLowerCase().contains(query) ||
+                c.code.toLowerCase().contains(query) ||
+                c.iso.toLowerCase().contains(query))
+            .toList();
+
+    final viewInsets = MediaQuery.of(context).viewInsets.bottom;
+    final height = (MediaQuery.of(context).size.height * 0.7 -
+            viewInsets)
+        .clamp(200.0, MediaQuery.of(context).size.height * 0.7)
+        .toDouble();
+    return Padding(
+      padding: EdgeInsets.only(bottom: viewInsets),
+      child: SizedBox(
+        height: height,
+        child: Column(
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade300,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('Select Country Code',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF1A1A2E))),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: _searchController,
+                autofocus: true,
+                onChanged: (_) => setState(() {}),
+                style: const TextStyle(color: Color(0xFF000000)),
+                decoration: InputDecoration(
+                  hintText: 'Search country or code...',
+                  hintStyle: const TextStyle(
+                      color: Color(0xFF9E9E9E), fontSize: 14),
+                  prefixIcon: const Icon(Icons.search,
+                      color: Color(0xFF757575)),
+                  filled: true,
+                  fillColor: const Color(0xFFF5F5F5),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.separated(
+                itemCount: filtered.length,
+                separatorBuilder: (_, __) =>
+                    Divider(height: 1, color: Colors.grey.shade200),
+                itemBuilder: (context, index) {
+                  final c = filtered[index];
+                  final isSelected = c.iso == widget.selectedIso;
+                  return ListTile(
+                    leading: Text(c.flag,
+                        style: const TextStyle(fontSize: 22)),
+                    title: Text(c.name,
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF1A1A2E))),
+                    trailing: Text(c.code,
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
+                            color: isSelected
+                                ? const Color(0xFF1A1A2E)
+                                : const Color(0xFF757575))),
+                    selected: isSelected,
+                    selectedTileColor: const Color(0xFFF5F5F5),
+                    onTap: () => widget.onSelected(c.iso),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

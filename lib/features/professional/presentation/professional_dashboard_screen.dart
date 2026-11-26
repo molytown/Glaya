@@ -310,7 +310,7 @@ class _ProfessionalDashboardScreenState
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1200),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 4),
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
@@ -319,7 +319,7 @@ class _ProfessionalDashboardScreenState
                   child: _buildHeader(greeting, businessName, avgRating, user),
                 ),
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
+                  padding: const EdgeInsets.fromLTRB(4, 0, 4, 100),
                   sliver: SliverList(
                     delegate: SliverChildListDelegate([
                       const SizedBox(height: 16),
@@ -395,7 +395,7 @@ class _ProfessionalDashboardScreenState
     dynamic user,
   ) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 52, 20, 24),
+      padding: const EdgeInsets.fromLTRB(4, 52, 4, 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           colors: [_pink, _purple],
@@ -1187,11 +1187,11 @@ class _ProfessionalDashboardScreenState
       title: 'Quick Actions',
       icon: Icons.bolt_outlined,
       child: SizedBox(
-        height: 160,
+        height: 200,
         child: GridView.count(
-          crossAxisCount: 4,
+          crossAxisCount: 3,
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           mainAxisSpacing: 12,
           crossAxisSpacing: 8,
           childAspectRatio: 0.85,
@@ -1401,7 +1401,7 @@ class _ProfessionalDashboardScreenState
           );
         },
         child: const Text(
-          'Edit',
+          'Settings',
           style: TextStyle(
             fontSize: 12,
             color: _pink,
@@ -1424,9 +1424,12 @@ class _ProfessionalDashboardScreenState
               children: [
                 const Icon(Icons.map_outlined, size: 16, color: _text2),
                 const SizedBox(width: 6),
-                Text(
-                  'Lat: ${location['lat']?.toStringAsFixed(4)}, Lng: ${location['lng']?.toStringAsFixed(4)}',
-                  style: const TextStyle(fontSize: 12, color: _text2),
+                Flexible(
+                  child: Text(
+                    'Lat: ${location['lat']?.toStringAsFixed(4)}, Lng: ${location['lng']?.toStringAsFixed(4)}',
+                    style: const TextStyle(fontSize: 12, color: _text2),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
@@ -1598,7 +1601,7 @@ class _ProfessionalDashboardScreenState
   // ── Portfolio ─────────────────────────────────────────────────────────────────
   Widget _buildPortfolio(List<dynamic> galleries) {
     // portfolioUrls are plain URL strings; legacy portfolioGalleries are maps
-    final displayUrls = galleries.take(8).map((item) {
+    final displayUrls = galleries.map((item) {
       if (item is String) return item;
       if (item is Map<String, dynamic>) {
         final coverMedia = item['coverMedia'] as Map<String, dynamic>?;
@@ -1610,9 +1613,10 @@ class _ProfessionalDashboardScreenState
       return '';
     }).toList();
 
-    // Pad with empty strings to show 8 grid items
-    while (displayUrls.length < 8) {
-      displayUrls.add('');
+    // Show 6 items in 3 columns, horizontally scrollable for more
+    final visibleUrls = displayUrls.take(6).toList();
+    while (visibleUrls.length < 6) {
+      visibleUrls.add('');
     }
 
     return _card(
@@ -1629,46 +1633,49 @@ class _ProfessionalDashboardScreenState
           ),
         ),
       ),
-      child: GridView.count(
-        crossAxisCount: 4,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.0, // 1:1 aspect ratio
-        children: displayUrls.take(8).map((url) {
-          if (url.isEmpty) {
-            return GestureDetector(
-              onTap: () => context.push('/portfolio'),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: _bg,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: _pink.withValues(alpha: 0.2),
-                    style: BorderStyle.solid,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.add_photo_alternate_outlined,
-                  color: _pink,
-                  size: 26,
-                ),
-              ),
+      child: SizedBox(
+        height: 120,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: displayUrls.length,
+          itemBuilder: (context, index) {
+            final url = displayUrls[index];
+            return Container(
+              width: 120,
+              margin: EdgeInsets.only(right: index < displayUrls.length - 1 ? 12 : 0),
+              child: url.isEmpty
+                  ? GestureDetector(
+                      onTap: () => context.push('/portfolio'),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: _bg,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: _pink.withValues(alpha: 0.2),
+                            style: BorderStyle.solid,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.add_photo_alternate_outlined,
+                          color: _pink,
+                          size: 26,
+                        ),
+                      ),
+                    )
+                  : ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        ConfigService().replaceLocalhost(url),
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: _pink.withValues(alpha: 0.08),
+                          child: const Icon(Icons.image_outlined, color: _pink),
+                        ),
+                      ),
+                    ),
             );
-          }
-          return ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              ConfigService().replaceLocalhost(url),
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: _pink.withValues(alpha: 0.08),
-                child: const Icon(Icons.image_outlined, color: _pink),
-              ),
-            ),
-          );
-        }).toList(),
+          },
+        ),
       ),
     );
   }
@@ -1904,22 +1911,26 @@ class _ProfessionalDashboardScreenState
   }
 
   Widget _walletStat(String label, String value, Color color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontSize: 11, color: _text2)),
-          const SizedBox(height: 3),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: color,
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: const TextStyle(fontSize: 11, color: _text2)),
+            const SizedBox(height: 3),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: color,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -2018,12 +2029,15 @@ class _ProfessionalDashboardScreenState
             children: [
               Icon(icon, size: 16, color: _pink),
               const SizedBox(width: 6),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: _text1,
+              Flexible(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: _text1,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const Spacer(),

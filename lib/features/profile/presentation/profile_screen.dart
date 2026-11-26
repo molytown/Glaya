@@ -19,6 +19,7 @@ import '../../../../shared/widgets/glaya_gradient_button.dart';
 import '../../auth/presentation/providers/auth_notifier.dart';
 import '../../home/presentation/screens/pick_map_screen.dart';
 import '../../shared/presentation/widgets/address_editor.dart';
+import '../../../shared/data/location_data.dart';
 import '../../reels/data/repositories/reel_repository.dart';
 import '../../reels/data/models/reel_model.dart';
 import '../../reels/presentation/widgets/reels_widget.dart';
@@ -714,6 +715,887 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
   }
 }
 
+// ── Professional Edit Profile bottom sheet ────────────────────────────────────
+class _ProfessionalEditSheet extends StatefulWidget {
+  final Map<String, dynamic> user;
+  final Map<String, dynamic> professional;
+  final VoidCallback onSaved;
+  const _ProfessionalEditSheet({
+    required this.user,
+    required this.professional,
+    required this.onSaved,
+  });
+
+  @override
+  State<_ProfessionalEditSheet> createState() =>
+      _ProfessionalEditSheetState();
+}
+
+class _ProfessionalEditSheetState extends State<_ProfessionalEditSheet> {
+  late final TextEditingController _nameCtrl;
+  late final TextEditingController _phoneCtrl;
+  late final TextEditingController _passwordCtrl;
+  late final TextEditingController _businessNameCtrl;
+  late final TextEditingController _addressCtrl;
+  late final TextEditingController _neighborhoodCtrl;
+  bool _saving = false;
+  String? _error;
+  String? _selectedImagePath;
+  bool _showPassword = false;
+
+  // Location data
+  String? _selectedCountry;
+  String? _selectedState;
+  String? _selectedCity;
+  String? _selectedNeighborhood;
+  LatLng? _selectedLocation;
+
+  // Categories
+  List<Map<String, dynamic>> _categories = [];
+  final Set<String> _selectedCategoryIds = {};
+
+  final ImagePicker _imagePicker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    final user = widget.user;
+    final pro = widget.professional;
+
+    _nameCtrl = TextEditingController(text: user['name'] as String? ?? '');
+    _phoneCtrl = TextEditingController(text: user['phone'] as String? ?? '');
+    _passwordCtrl = TextEditingController();
+    _businessNameCtrl = TextEditingController(
+      text: pro['businessName'] as String? ?? '',
+    );
+    _addressCtrl = TextEditingController(
+      text: pro['businessAddress'] as String? ??
+          pro['fullAddress'] as String? ??
+          pro['full_address'] as String? ??
+          '',
+    );
+    _neighborhoodCtrl = TextEditingController(
+      text: pro['neighborhood'] as String? ?? '',
+    );
+
+    _selectedCountry = pro['country'] as String?;
+    _selectedState = pro['state'] as String? ?? pro['regionState'] as String?;
+    _selectedCity = pro['city'] as String?;
+    _selectedNeighborhood = pro['neighborhood'] as String?;
+
+    // Location is stored as JSON {lat, lng} on the professional record
+    final loc = pro['location'];
+    if (loc is Map) {
+      final lat = _toDouble(loc['lat']);
+      final lng = _toDouble(loc['lng']);
+      if (lat != null && lng != null) {
+        _selectedLocation = LatLng(lat, lng);
+      }
+    }
+
+    _loadCategories();
+    _loadExistingCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      final res = await ApiService.dio.get('/categories');
+      final data = res.data['data'] as List<dynamic>? ?? [];
+      setState(() {
+        _categories = data
+            .map((c) => c as Map<String, dynamic>)
+            .toList();
+      });
+    } catch (e) {
+      print('[DEBUG] Failed to load categories: $e');
+    }
+  }
+
+  void _loadExistingCategories() {
+    final pro = widget.professional;
+    // serviceCategories holds the full list of selected category IDs (strings)
+    final serviceCats = pro['serviceCategories'] as List<dynamic>? ?? [];
+    for (final id in serviceCats) {
+      if (id != null) _selectedCategoryIds.add(id.toString());
+    }
+    // categoryId holds the primary category
+    final primaryId = pro['categoryId'];
+    if (primaryId != null) {
+      _selectedCategoryIds.add(primaryId.toString());
+    }
+    // categories relation (objects with id) as fallback
+    final cats = pro['categories'] as List<dynamic>? ?? [];
+    for (final c in cats) {
+      if (c is Map && c['id'] != null) {
+        _selectedCategoryIds.add(c['id'].toString());
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _phoneCtrl.dispose();
+    _passwordCtrl.dispose();
+    _businessNameCtrl.dispose();
+    _addressCtrl.dispose();
+    _neighborhoodCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickImage() async {
+    try {
+      final XFile? image = await _imagePicker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 1024,
+        maxHeight: 1024,
+        imageQuality: 85,
+      );
+      if (image != null && mounted) {
+        setState(() => _selectedImagePath = image.path);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _error = 'Failed to pick image: $e');
+      }
+    }
+  }
+
+  Future<void> _uploadPhoto() async {
+    if (_selectedImagePath == null) return;
+    setState(() => _saving = true);
+    try {
+      final formData = FormData.fromMap({
+        'photo': await MultipartFile.fromFile(_selectedImagePath!),
+      });
+      await ApiService.dio.post('/users/me/photo', data: formData);
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _selectedImagePath = null;
+          _error = null;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Photo uploaded successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        widget.onSaved();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _error = 'Failed to upload photo: $e';
+        });
+      }
+    }
+  }
+
+  Future<void> _save() async {
+    final name = _nameCtrl.text.trim();
+    final phone = _phoneCtrl.text.trim();
+    final password = _passwordCtrl.text;
+
+    if (name.isEmpty) {
+      setState(() => _error = 'Name cannot be empty');
+      return;
+    }
+    if (phone.isNotEmpty && phone.length < 5) {
+      setState(() => _error = 'Enter a valid phone number');
+      return;
+    }
+    if (password.isNotEmpty && password.length < 6) {
+      setState(() => _error = 'Password must be at least 6 characters');
+      return;
+    }
+
+    setState(() {
+      _saving = true;
+      _error = null;
+    });
+
+    try {
+      // Update user fields (name, phone, password)
+      final userData = <String, dynamic>{};
+      if (_nameCtrl.text.trim().isNotEmpty) {
+        userData['name'] = _nameCtrl.text.trim();
+      }
+      if (_phoneCtrl.text.trim().isNotEmpty) {
+        userData['phone'] = _phoneCtrl.text.trim();
+      }
+      if (_passwordCtrl.text.isNotEmpty) {
+        userData['password'] = _passwordCtrl.text;
+      }
+
+      if (userData.isNotEmpty) {
+        await ApiService.dio.put('/users/me', data: userData);
+      }
+
+      // Update professional fields (schema: state, location{lat,lng},
+      // categoryIds as strings — see updateProfessionalSchema)
+      final proData = <String, dynamic>{};
+      if (_businessNameCtrl.text.trim().isNotEmpty) {
+        proData['businessName'] = _businessNameCtrl.text.trim();
+      }
+      if (_selectedCategoryIds.isNotEmpty) {
+        proData['categoryIds'] = _selectedCategoryIds.toList();
+      }
+      if (_selectedCountry != null) {
+        proData['country'] = _selectedCountry;
+      }
+      if (_selectedState != null) {
+        proData['state'] = _selectedState;
+      }
+      if (_selectedCity != null) {
+        proData['city'] = _selectedCity;
+      }
+      if (_selectedNeighborhood != null ||
+          _neighborhoodCtrl.text.trim().isNotEmpty) {
+        proData['neighborhood'] =
+            _selectedNeighborhood ?? _neighborhoodCtrl.text.trim();
+      }
+      if (_addressCtrl.text.trim().isNotEmpty) {
+        proData['businessAddress'] = _addressCtrl.text.trim();
+      }
+      if (_selectedLocation != null) {
+        proData['location'] = {
+          'lat': _selectedLocation!.latitude,
+          'lng': _selectedLocation!.longitude,
+        };
+      }
+
+      if (proData.isNotEmpty) {
+        await ApiService.dio.put('/professionals/me', data: proData);
+      }
+
+      if (mounted) {
+        setState(() => _saving = false);
+        Navigator.pop(context);
+        widget.onSaved();
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _saving = false;
+          _error = 'Failed to save: $e';
+        });
+      }
+    }
+  }
+
+  Future<void> _openLocationPicker() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const PickMapScreen(
+          fromSignUp: true,
+          fromAddAddress: false,
+          canRoute: false,
+          route: null,
+        ),
+      ),
+    );
+    if (result != null && mounted) {
+      setState(() {
+        _selectedLocation = result['position'] as LatLng?;
+        if (_selectedLocation != null &&
+            _addressCtrl.text.trim().isEmpty) {
+          _addressCtrl.text = result['address'] as String? ?? '';
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.85,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        children: [
+          // Drag handle
+          Container(
+            margin: const EdgeInsets.only(top: 12),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Edit Professional Profile',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF1A1A1A),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          if (_error != null) ...[
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF0F3),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                    color: GlayaColors.berry.withValues(alpha: 0.3)),
+              ),
+              child: Text(
+                _error!,
+                style: const TextStyle(fontSize: 13, color: GlayaColors.berry),
+              ),
+            ),
+            const SizedBox(height: 14),
+          ],
+
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Photo section
+                  _buildPhotoSection(),
+                  const SizedBox(height: 20),
+
+                  // Name
+                  _field('Full Name', _nameCtrl, Icons.person_outline,
+                      TextInputType.name),
+                  const SizedBox(height: 14),
+
+                  // Phone
+                  _field('Phone Number', _phoneCtrl, Icons.phone_outlined,
+                      TextInputType.phone),
+                  const SizedBox(height: 14),
+
+                  // Password
+                  _passwordField(),
+                  const SizedBox(height: 14),
+
+                  // Business Name
+                  _field('Business Name', _businessNameCtrl,
+                      Icons.business_outlined, TextInputType.text),
+                  const SizedBox(height: 14),
+
+                  // Category multi-select
+                  _buildCategorySelector(),
+                  const SizedBox(height: 14),
+
+                  // Country
+                  _buildDropdown(
+                    'Country',
+                    _selectedCountry,
+                    Icons.public,
+                    countries.map((c) => c.name).toList(),
+                    (v) => setState(() {
+                      _selectedCountry = v;
+                      _selectedState = null;
+                      _selectedCity = null;
+                    }),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // State
+                  _buildDropdown(
+                    'State / Region',
+                    _selectedState,
+                    Icons.location_city,
+                    getStatesForCountry(_selectedCountryIso).toList(),
+                    (v) => setState(() {
+                      _selectedState = v;
+                      _selectedCity = null;
+                    }),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // City
+                  _buildDropdown(
+                    'City',
+                    _selectedCity,
+                    Icons.location_on,
+                    getCitiesForState(_selectedCountryIso, _selectedState)
+                        .toList(),
+                    (v) => setState(() => _selectedCity = v),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Neighborhood
+                  if (_selectedCountryIso == 'CM' && _selectedCity != null)
+                    _buildDropdown(
+                      'Neighborhood',
+                      _selectedNeighborhood,
+                      Icons.map_outlined,
+                      getNeighborhoodsForCity(_selectedCity).toList(),
+                      (v) => setState(() {
+                        _selectedNeighborhood = v;
+                        _neighborhoodCtrl.text = v ?? '';
+                      }),
+                    )
+                  else
+                    _field('Neighborhood', _neighborhoodCtrl,
+                        Icons.map_outlined, TextInputType.text),
+                  const SizedBox(height: 14),
+
+                  // Address
+                  _field('Business Address', _addressCtrl,
+                      Icons.home_outlined, TextInputType.streetAddress),
+                  const SizedBox(height: 14),
+
+                  // Location picker
+                  _buildLocationPicker(),
+                  const SizedBox(height: 24),
+
+                  // Save button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _saving ? null : _save,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: GlayaColors.berry,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: _saving
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Save Changes',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String? get _selectedCountryIso {
+    if (_selectedCountry == null) return null;
+    return countries
+        .where((c) => c.name == _selectedCountry)
+        .firstOrNull
+        ?.iso;
+  }
+
+  Widget _buildPhotoSection() {
+    final photoUrl = (widget.user['photoUrl'] ?? widget.user['photo_url'])
+        as String?;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Profile Photo',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF000000),
+          ),
+        ),
+        const SizedBox(height: 6),
+        GestureDetector(
+          onTap: _pickImage,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFAFAFA),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: const Color(0xFFE0E0E0)),
+            ),
+            child: Column(
+              children: [
+                if (_selectedImagePath != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.file(
+                      File(_selectedImagePath!),
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                      cacheWidth: 200,
+                    ),
+                  )
+                else if (photoUrl != null)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      ConfigService().replaceLocalhost(photoUrl),
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => _photoPlaceholder(),
+                    ),
+                  )
+                else
+                  _photoPlaceholder(),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.camera_alt,
+                        color: GlayaColors.berry, size: 20),
+                    const SizedBox(width: 8),
+                    Text(
+                      _selectedImagePath != null
+                          ? 'Change Photo'
+                          : 'Upload Photo',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: GlayaColors.berry,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_selectedImagePath != null) ...[
+          const SizedBox(height: 12),
+          ElevatedButton(
+            onPressed: _saving ? null : _uploadPhoto,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: GlayaColors.berry,
+              foregroundColor: Colors.white,
+              elevation: 0,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: _saving
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Text(
+                    'Upload Photo',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildCategorySelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Categories',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF000000),
+          ),
+        ),
+        const SizedBox(height: 6),
+        if (_categories.isEmpty)
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: CircularProgressIndicator(color: GlayaColors.berry),
+            ),
+          )
+        else
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _categories.map((cat) {
+              final id = cat['id']?.toString();
+              final name = cat['name'] as String? ?? 'Unknown';
+              final isSelected =
+                  id != null && _selectedCategoryIds.contains(id);
+              return GestureDetector(
+                onTap: () {
+                  if (id == null) return;
+                  setState(() {
+                    if (isSelected) {
+                      _selectedCategoryIds.remove(id);
+                    } else {
+                      _selectedCategoryIds.add(id);
+                    }
+                  });
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? GlayaColors.berry
+                        : const Color(0xFFFAFAFA),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected
+                          ? GlayaColors.berry
+                          : const Color(0xFFE0E0E0),
+                    ),
+                  ),
+                  child: Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? Colors.white : const Color(0xFF1A1A1A),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDropdown(
+    String label,
+    String? value,
+    IconData icon,
+    List<String> items,
+    Function(String?) onChanged,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF000000),
+          ),
+        ),
+        const SizedBox(height: 6),
+        DropdownButtonFormField<String>(
+          value: value,
+          hint: Text('Select $label'),
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, color: GlayaColors.berry),
+            filled: true,
+            fillColor: const Color(0xFFFAFAFA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: GlayaColors.berry),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12, vertical: 14),
+          ),
+          items: items.map((item) {
+            return DropdownMenuItem(
+              value: item,
+              child: DefaultTextStyle.merge(
+                style: const TextStyle(color: Color(0xFF1A1A2E)),
+                child: Text(item),
+              ),
+            );
+          }).toList(),
+          onChanged: onChanged,
+          style: const TextStyle(color: Color(0xFF1A1A2E)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationPicker() {
+    return GestureDetector(
+      onTap: _openLocationPicker,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          color: _selectedLocation != null
+              ? GlayaColors.berry.withValues(alpha: 0.1)
+              : const Color(0xFFFAFAFA),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: _selectedLocation != null
+                ? GlayaColors.berry
+                : const Color(0xFFE0E0E0),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.location_on_outlined,
+              size: 18,
+              color: GlayaColors.berry,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                _selectedLocation != null
+                    ? 'Location set (${_selectedLocation!.latitude.toStringAsFixed(4)}, ${_selectedLocation!.longitude.toStringAsFixed(4)})'
+                    : 'Pick location on map',
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Color(0xFF1A1A1A),
+                ),
+              ),
+            ),
+            if (_selectedLocation != null)
+              const Icon(Icons.check_circle,
+                  size: 18, color: GlayaColors.berry)
+            else
+              Icon(Icons.arrow_forward_ios,
+                  size: 14, color: Colors.grey.shade600),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _field(
+    String label,
+    TextEditingController ctrl,
+    IconData icon,
+    TextInputType type,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF000000),
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: ctrl,
+          keyboardType: type,
+          style: const TextStyle(color: Color(0xFF1A1A1A)),
+          decoration: InputDecoration(
+            prefixIcon: Icon(icon, color: GlayaColors.berry),
+            filled: true,
+            fillColor: const Color(0xFFFAFAFA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: GlayaColors.berry),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12, vertical: 14),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _passwordField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'New Password (leave blank to keep current)',
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF000000),
+          ),
+        ),
+        const SizedBox(height: 6),
+        TextField(
+          controller: _passwordCtrl,
+          obscureText: !_showPassword,
+          style: const TextStyle(color: Color(0xFF1A1A1A)),
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.lock_outline, color: GlayaColors.berry),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _showPassword ? Icons.visibility_off : Icons.visibility,
+                color: Colors.grey,
+              ),
+              onPressed: () => setState(() => _showPassword = !_showPassword),
+            ),
+            filled: true,
+            fillColor: const Color(0xFFFAFAFA),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: const BorderSide(color: GlayaColors.berry),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12, vertical: 14),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _photoPlaceholder() {
+    return Container(
+      height: 100,
+      width: 100,
+      decoration: BoxDecoration(
+        color: GlayaColors.berry.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: GlayaColors.berry.withValues(alpha: 0.3)),
+      ),
+      child: const Icon(Icons.person, size: 40, color: GlayaColors.berry),
+    );
+  }
+}
+
 // ── Currency helper ──────────────────────────────────────────────────────────
 String _getCurrencySymbol() {
   // Resolve from user locale; default to ₦ (NGN) as base
@@ -776,6 +1658,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Map<String, dynamic>? _wallet;
   Map<String, dynamic>? _loyalty;
   Map<String, dynamic>? _ambassador;
+  Map<String, dynamic>? _professional;
   Map<String, dynamic>? _upcomingBooking;
   List<Map<String, dynamic>> _pastBookings = [];
   List<Map<String, dynamic>> _favorites = [];
@@ -817,6 +1700,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       _loadWallet(),
       _loadLoyalty(),
       _loadAmbassador(),
+      _loadProfessional(),
       _loadReviews(),
       _loadFavorites(),
       _loadReels(),
@@ -904,6 +1788,16 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       final data = r.data['data'] as Map<String, dynamic>?;
       if (mounted && data != null && data['isAmbassador'] == true) {
         setState(() => _ambassador = data);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _loadProfessional() async {
+    try {
+      final r = await ApiService.dio.get('/professionals/me');
+      final data = r.data['data'] as Map<String, dynamic>?;
+      if (mounted && data != null) {
+        setState(() => _professional = data);
       }
     } catch (_) {}
   }
@@ -1153,8 +2047,11 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     }();
 
     final isAmbassador = _ambassador != null;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final scale = (screenWidth / 375).clamp(0.8, 1.1).toDouble();
+    final expandedHeight = (280 * scale).clamp(200.0, 320.0);
     return SliverAppBar(
-      expandedHeight: 280,
+      expandedHeight: expandedHeight,
       pinned: true,
       backgroundColor:
           isAmbassador ? const Color(0xFFB8860B) : GlayaColors.berry,
@@ -1270,6 +2167,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                       Row(
                         children: [
                           Expanded(
+                            flex: 3,
                             child: ElevatedButton.icon(
                               onPressed: () => _openEditProfile(),
                               icon: const Icon(Icons.edit, size: 16),
@@ -1285,7 +2183,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                 foregroundColor: GlayaColors.berry,
                                 elevation: 0,
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
+                                  horizontal: 6,
                                   vertical: 10,
                                 ),
                                 shape: RoundedRectangleBorder(
@@ -1296,6 +2194,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                           ),
                           const SizedBox(width: 10),
                           Expanded(
+                            flex: 2,
                             child: ElevatedButton.icon(
                               onPressed: () => WalletDialog.show(context),
                               icon: const Icon(
@@ -1474,33 +2373,45 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  void _openEditProfile() {
+  Future<void> _openEditProfile() async {
     print('[DEBUG] _openEditProfile called');
     print('[DEBUG] User data: $_user');
+    final isProfessional = _role != 'customer';
+    // Ensure professional data is loaded before choosing the sheet
+    if (isProfessional && _professional == null) {
+      await _loadProfessional();
+    }
+    if (!mounted) return;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) {
         print('[DEBUG] EditProfileSheet builder called');
-        return _EditProfileSheet(
-          user: _user!,
-          onSaved: () async {
-            print('[DEBUG] Profile onSaved callback called');
-            await _loadUserProfile();
-            // Refresh auth state to update photo URL in home screen header
-            await ref.read(authNotifierProvider.notifier).refreshUser();
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Profile updated successfully'),
-                  backgroundColor: GlayaColors.berry,
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            }
-          },
-        );
+        final onSaved = () async {
+          print('[DEBUG] Profile onSaved callback called');
+          await _loadUserProfile();
+          await _loadProfessional();
+          // Refresh auth state to update photo URL in home screen header
+          await ref.read(authNotifierProvider.notifier).refreshUser();
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Profile updated successfully'),
+                backgroundColor: GlayaColors.berry,
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        };
+        if (isProfessional && _professional != null) {
+          return _ProfessionalEditSheet(
+            user: _user!,
+            professional: _professional!,
+            onSaved: onSaved,
+          );
+        }
+        return _EditProfileSheet(user: _user!, onSaved: onSaved);
       },
     ).then((_) {
       print('[DEBUG] Bottom sheet closed');

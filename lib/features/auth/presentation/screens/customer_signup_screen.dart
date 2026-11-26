@@ -279,6 +279,7 @@ class _CustomerSignupScreenState extends ConsumerState<CustomerSignupScreen> {
                                             borderRadius:
                                                 BorderRadius.circular(8)),
                                       ),
+                                      searchStyle: const TextStyle(color: Color(0xFF000000)),
                                       barrierColor: Color(0xFF000000)
                                           .withValues(alpha: 0.5),
                                       boxDecoration: BoxDecoration(

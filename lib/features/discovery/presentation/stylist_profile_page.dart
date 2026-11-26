@@ -506,25 +506,27 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
         ? _resolveMediaUrl(photoUrl)
         : 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=85';
 
-    return Container(
-      margin: const EdgeInsets.only(top: 0),
-      width: 105,
-      height: 105,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 5),
-        image: DecorationImage(
-          image: NetworkImage(imageUrl),
-          fit: BoxFit.cover,
+    return Transform.translate(
+      offset: const Offset(0, -52),
+      child: Container(
+        width: 105,
+        height: 105,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 5),
+          image: DecorationImage(
+            image: NetworkImage(imageUrl),
+            fit: BoxFit.cover,
+          ),
+          boxShadow: [
+            BoxShadow(
+                color: Color(0xFF000000).withValues(alpha: .15), blurRadius: 10),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-              color: Color(0xFF000000).withValues(alpha: .15), blurRadius: 10),
-        ],
-      ),
-      child: Align(
-        alignment: Alignment.bottomRight,
-        child: _verifiedBadge(size: 26),
+        child: Align(
+          alignment: Alignment.bottomRight,
+          child: _verifiedBadge(size: 26),
+        ),
       ),
     );
   }
@@ -1018,12 +1020,17 @@ class _StylistProfilePageState extends ConsumerState<StylistProfilePage> {
               ),
             ),
           ),
-          Text(
-            hours,
-            style: TextStyle(
-              color: closed ? secondaryText : textColor,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              hours,
+              style: TextStyle(
+                color: closed ? secondaryText : textColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.right,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
