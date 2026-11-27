@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show Platform;
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -145,6 +147,39 @@ class ApiService {
   static bool _isRefreshing = false;
   static bool _interceptorsSetup = false;
 
+  static const _sessionIdKey = 'analytics_session_id';
+  static String? _cachedSessionId;
+
+  /// Stable anonymous session id for guest activity analytics.
+  static Future<String> _sessionId() async {
+    if (_cachedSessionId != null) return _cachedSessionId!;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      var sid = prefs.getString(_sessionIdKey);
+      if (sid == null || sid.isEmpty) {
+        final rand = Random.secure();
+        final bytes = List<int>.generate(16, (_) => rand.nextInt(256));
+        sid = 'sid-${DateTime.now().microsecondsSinceEpoch.toRadixString(36)}-'
+            '${bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join()}';
+        await prefs.setString(_sessionIdKey, sid);
+      }
+      _cachedSessionId = sid;
+      return sid;
+    } catch (_) {
+      // Fallback: ephemeral id if storage is unavailable
+      final sid = 'sid-${DateTime.now().microsecondsSinceEpoch}-'
+          '${Random().nextInt(1 << 32)}';
+      _cachedSessionId = sid;
+      return sid;
+    }
+  }
+
+  static String _deviceType() {
+    if (Platform.isAndroid) return 'android';
+    if (Platform.isIOS) return 'ios';
+    return 'web';
+  }
+
   static void setupInterceptors() {
     if (_interceptorsSetup) return;
     _interceptorsSetup = true;
@@ -154,6 +189,9 @@ class ApiService {
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
+        // Anonymous session id + device type for guest activity analytics
+        options.headers['X-Session-Id'] = await _sessionId();
+        options.headers['X-Device-Type'] = _deviceType();
         // Stale-while-revalidate: serve cached zone content instantly (even if
         // stale), then silently refresh it in the background so the next read
         // gets fresh data. UI updates when providers are re-invalidated.
