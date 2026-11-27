@@ -65,6 +65,7 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
   final ImagePicker _picker = ImagePicker();
   final String _mediaType = 'photo';
   String? _selectedAlbumId;
+  String? _targetAlbumId;
   XFile? _pickedFile;
   Uint8List? _pickedFileBytes;
   VideoPlayerController? _videoController;
@@ -74,6 +75,8 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
   void initState() {
     super.initState();
     print('DEBUG: PortfolioScreen initState called');
+    _targetAlbumId =
+        GoRouterState.of(context).uri.queryParameters['albumId'];
     _loadAlbums();
   }
 
@@ -93,6 +96,7 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
       final albums = (data ?? []).map((json) => Album.fromJson(json)).toList();
       print('DEBUG: Parsed albums: $albums');
       setState(() => _albums = albums);
+      _maybeOpenTargetAlbum();
     } catch (e) {
       print('DEBUG: Error loading albums: $e');
       if (mounted) {
@@ -552,6 +556,21 @@ class _PortfolioScreenState extends ConsumerState<PortfolioScreen> {
       context,
       MaterialPageRoute(builder: (context) => AlbumDetailScreen(album: album)),
     );
+  }
+
+  // Auto-open the album referenced by ?albumId= (e.g. from a notification tap)
+  void _maybeOpenTargetAlbum() {
+    final id = _targetAlbumId;
+    if (id == null || id.isEmpty) return;
+    _targetAlbumId = null;
+    for (final album in _albums) {
+      if (album.id == id) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _viewAlbum(album);
+        });
+        return;
+      }
+    }
   }
 
   Future<void> _showUploadDialog() async {

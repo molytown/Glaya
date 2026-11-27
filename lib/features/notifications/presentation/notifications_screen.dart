@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../shared/services/api_service.dart';
 import '../../../../shared/providers/notification_provider.dart';
@@ -114,9 +115,12 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       final payload =
                           notification['payload'] as Map<String, dynamic>?;
                       final reelId = payload?['reelId'] as String?;
+                      final albumId = payload?['albumId']?.toString();
                       final bookingId = payload?['bookingId'] as String?;
                       if (reelId != null) {
                         _openReelFromNotification(reelId);
+                      } else if (albumId != null && albumId.isNotEmpty) {
+                        context.push('/portfolio?albumId=$albumId');
                       } else if (bookingId != null) {
                         showBookingDetailSlideOut(context, bookingId);
                       }
