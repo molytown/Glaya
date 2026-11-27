@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:math';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/api_constants.dart';
@@ -180,6 +181,30 @@ class ApiService {
     return 'web';
   }
 
+  static String _os() {
+    if (Platform.isAndroid) return 'android';
+    if (Platform.isIOS) return 'ios';
+    if (Platform.isWindows) return 'windows';
+    if (Platform.isMacOS) return 'macos';
+    if (Platform.isLinux) return 'linux';
+    return 'web';
+  }
+
+  static String _deviceKind() {
+    if (Platform.isAndroid || Platform.isIOS) {
+      try {
+        final views = ui.PlatformDispatcher.instance.views;
+        if (views.isNotEmpty) {
+          final view = views.first;
+          final logical = view.physicalSize / view.devicePixelRatio;
+          if (logical.shortestSide >= 600) return 'tablet';
+        }
+      } catch (_) {}
+      return 'mobile';
+    }
+    return 'desktop';
+  }
+
   static void setupInterceptors() {
     if (_interceptorsSetup) return;
     _interceptorsSetup = true;
@@ -189,9 +214,11 @@ class ApiService {
         if (token != null) {
           options.headers['Authorization'] = 'Bearer $token';
         }
-        // Anonymous session id + device type for guest activity analytics
+        // Anonymous session id + device info for activity analytics
         options.headers['X-Session-Id'] = await _sessionId();
         options.headers['X-Device-Type'] = _deviceType();
+        options.headers['X-OS'] = _os();
+        options.headers['X-Device-Kind'] = _deviceKind();
         // Stale-while-revalidate: serve cached zone content instantly (even if
         // stale), then silently refresh it in the background so the next read
         // gets fresh data. UI updates when providers are re-invalidated.
@@ -289,6 +316,15 @@ class ApiService {
         return handler.next(error);
       },
     ));
+
+    // Presence heartbeat — keeps "online now" accurate while the app process
+    // is alive (OS suspends timers in background, which correctly reads as
+    // offline). Fire-and-forget; failures are ignored.
+    Timer.periodic(const Duration(minutes: 5), (_) async {
+      try {
+        await dio.post('/analytics/ping');
+      } catch (_) {}
+    });
   }
 
   // Onboarding API methods
