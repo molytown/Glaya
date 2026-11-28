@@ -219,6 +219,7 @@ class ApiService {
         options.headers['X-Device-Type'] = _deviceType();
         options.headers['X-OS'] = _os();
         options.headers['X-Device-Kind'] = _deviceKind();
+        options.headers['X-Traffic-Source'] = 'mobile_app';
         // Stale-while-revalidate: serve cached zone content instantly (even if
         // stale), then silently refresh it in the background so the next read
         // gets fresh data. UI updates when providers are re-invalidated.
