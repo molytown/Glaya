@@ -417,7 +417,14 @@ class _BookingDetailScreenState extends ConsumerState<BookingDetailScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new,
               size: 18, color: Color(0xFF1A1A1A)),
-          onPressed: () => context.pop(),
+          onPressed: () {
+            // If there's a previous route, pop it; otherwise go to bookings list
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/bookings');
+            }
+          },
         ),
       ),
       body: _isLoading
