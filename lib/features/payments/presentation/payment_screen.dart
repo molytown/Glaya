@@ -98,11 +98,13 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   Future<void> _pay() async {
     setState(() => _isLoading = true);
     try {
+      print('[Payment] Initiating payment for booking ${widget.bookingId}, type: $_payType, method: $_method');
       final res = await ApiService.dio.post('/payments/initiate', data: {
         'bookingId': widget.bookingId,
         'type': _payType,
         'method': _method == 'wallet' ? 'wallet' : 'notchpay',
       });
+      print('[Payment] Response: ${res.data}');
       final data = res.data['data'] as Map<String, dynamic>? ?? {};
 
       if (_method == 'wallet' || data['gateway'] == 'wallet') {
@@ -133,6 +135,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         throw Exception('No checkout URL returned');
       }
     } on DioException catch (e) {
+      print('[Payment] DioException: ${e.message}, response: ${e.response?.data}');
       final serverMsg = e.response?.data is Map
           ? (e.response!.data['error'] ?? e.response!.data['message'])
               ?.toString()
@@ -145,6 +148,7 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
         );
       }
     } catch (e) {
+      print('[Payment] Exception: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Payment failed: $e')),
