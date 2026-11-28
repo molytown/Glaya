@@ -84,10 +84,10 @@ class _BookingsListScreenState extends ConsumerState<BookingsListScreen>
       final response = await ApiService.dio.get('/bookings');
       print('[Bookings] Response data: ${response.data}');
       final all = (response.data['data'] as List).cast<Map<String, dynamic>>();
-      print('[Bookings] Filtered count: ${all.where((b) => statuses.contains(b['status'] as String? ?? '')).length}');
-      setState(() => _bookings = all
-          .where((b) => statuses.contains(b['status'] as String? ?? ''))
-          .toList());
+      print('[Bookings] All bookings statuses: ${all.map((b) => b['status']).toList()}');
+      final filtered = all.where((b) => statuses.contains(b['status'] as String? ?? '')).toList();
+      print('[Bookings] Filtered count: ${filtered.length} for statuses: $statuses');
+      setState(() => _bookings = filtered);
     } catch (e) {
       print('[Bookings] Error: $e');
       if (mounted) {
