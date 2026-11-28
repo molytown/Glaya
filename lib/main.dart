@@ -31,6 +31,7 @@ import 'shared/services/websocket_service.dart';
 import 'shared/services/notification_websocket_service.dart';
 import 'shared/services/notification_sound_service.dart';
 import 'shared/services/storage_service.dart';
+import 'shared/services/app_version_service.dart';
 import 'shared/services/ambassador_attribution.dart';
 import 'features/auth/presentation/providers/auth_notifier.dart';
 import 'features/reels/data/models/reel_model.dart';
@@ -225,6 +226,8 @@ Future<void> _setupFCM() async {
       'body': notification?.body ?? '',
       'payload': {
         'bookingId': data['bookingId'] ?? data['booking_id'],
+        'albumId': data['albumId'] ?? data['album_id'],
+        'reelId': data['reelId'] ?? data['reel_id'],
       },
       'createdAt': DateTime.now().toIso8601String(),
     });
@@ -264,6 +267,16 @@ Map<String, dynamic>? _parseNotificationData(Map<String, dynamic> data) {
   final explicit = data['route'] as String?;
   if (explicit != null && explicit.isNotEmpty) {
     return {'route': explicit, 'bookingId': null, 'isChat': false};
+  }
+
+  final albumId =
+      data['albumId']?.toString() ?? data['album_id']?.toString();
+  if (albumId != null && albumId.isNotEmpty) {
+    return {
+      'route': '/portfolio?albumId=$albumId',
+      'bookingId': null,
+      'isChat': false,
+    };
   }
 
   final bookingId =
@@ -433,6 +446,22 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
   void initState() {
     super.initState();
     _initializeWebSocket();
+    _checkAppVersion();
+  }
+
+  // Prompt to update when Remote Config reports a newer min/latest version.
+  // Firebase initializes in _bootstrap() — poll briefly until it's ready.
+  Future<void> _checkAppVersion() async {
+    for (var i = 0; i < 30 && Firebase.apps.isEmpty; i++) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    if (!mounted) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final ctx = rootNavigatorKey.currentContext;
+      if (ctx != null && ctx.mounted) {
+        AppVersionService.checkAndPrompt(ctx);
+      }
+    });
   }
 
   @override
@@ -533,6 +562,8 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
     final payloadMap = payload is Map ? payload : const {};
     final bookingId =
         payloadMap['bookingId']?.toString() ?? data['bookingId']?.toString();
+    final albumId =
+        payloadMap['albumId']?.toString() ?? data['albumId']?.toString();
     final reelId = payloadMap['reelId']?.toString();
     final notificationId = (data['id'] ?? data['_id'])?.toString() ?? '';
 
@@ -615,6 +646,26 @@ class _AppWithBubbleState extends ConsumerState<_AppWithBubble> {
                           ReelScreen(reels: [reel], initialIndex: 0),
                     ));
                   }
+                } catch (_) {}
+              },
+              child: const Text('View'),
+            )
+          else if (albumId != null && albumId.isNotEmpty)
+            TextButton(
+              onPressed: () async {
+                Navigator.of(dialogContext).pop();
+                if (notificationId.isNotEmpty) {
+                  try {
+                    await ApiService.dio
+                        .put('/notifications/$notificationId/read');
+                  } catch (_) {}
+                }
+                if (!mounted || !navContext.mounted) return;
+                ref.read(notificationCountProvider.notifier).refresh();
+                try {
+                  ref
+                      .read(routerProvider)
+                      .push('/portfolio?albumId=$albumId');
                 } catch (_) {}
               },
               child: const Text('View'),

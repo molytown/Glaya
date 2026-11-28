@@ -2164,64 +2164,77 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                     ],
                     const SizedBox(height: 14),
                     if (_user != null) ...[
-                      Row(
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: ElevatedButton.icon(
-                              onPressed: () => _openEditProfile(),
-                              icon: const Icon(Icons.edit, size: 16),
-                              label: const Text(
-                                'Edit Profile',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
+                      LayoutBuilder(
+                        builder: (context, bc) {
+                          const gap = 10.0;
+                          // Edit Profile gets +20px taken from Wallet's share
+                          final walletW =
+                              ((bc.maxWidth - gap) * 2 / 5) - 20;
+                          final editW = bc.maxWidth - gap - walletW;
+                          return Row(
+                            children: [
+                              SizedBox(
+                                width: editW,
+                                child: ElevatedButton.icon(
+                                  onPressed: () => _openEditProfile(),
+                                  icon: const Icon(Icons.edit, size: 16),
+                                  label: const Text(
+                                    'Edit Profile',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: GlayaColors.berry,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 10,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: GlayaColors.berry,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 10,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            flex: 2,
-                            child: ElevatedButton.icon(
-                              onPressed: () => WalletDialog.show(context),
-                              icon: const Icon(
-                                  Icons.account_balance_wallet_outlined,
-                                  size: 16),
-                              label: const Text(
-                                'Wallet',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: GlayaColors.berry,
-                                elevation: 0,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 10,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
+                              const SizedBox(width: gap),
+                              SizedBox(
+                                width: walletW,
+                                child: ElevatedButton.icon(
+                                  onPressed: () => WalletDialog.show(context),
+                                  icon: const Icon(
+                                      Icons.account_balance_wallet_outlined,
+                                      size: 16),
+                                  label: const Text(
+                                    'Wallet',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.white,
+                                    foregroundColor: GlayaColors.berry,
+                                    elevation: 0,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 10,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        ],
+                            ],
+                          );
+                        },
                       ),
                       const SizedBox(height: 10),
                     ],
@@ -4309,31 +4322,45 @@ class _CustomerProfileViewState extends State<_CustomerProfileView> {
             ),
             const SizedBox(height: 20),
             // Action buttons - mirrors React gp-hero-actions
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _openEditProfile,
-                    icon: const Icon(Icons.edit, size: 18),
-                    label: const Text('Edit Profile'),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size.fromHeight(44),
-                      foregroundColor: accent,
-                      side: BorderSide(color: accent, width: 1.5),
-                      shape: const StadiumBorder(),
+            LayoutBuilder(
+              builder: (context, bc) {
+                const gap = 10.0;
+                // Edit Profile gets +20px taken from Wallet's share
+                final walletW = ((bc.maxWidth - gap) * 0.5) - 20;
+                final editW = bc.maxWidth - gap - walletW;
+                return Row(
+                  children: [
+                    SizedBox(
+                      width: editW,
+                      child: OutlinedButton.icon(
+                        onPressed: _openEditProfile,
+                        icon: const Icon(Icons.edit, size: 18),
+                        label: const Text(
+                          'Edit Profile',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(44),
+                          foregroundColor: accent,
+                          side: BorderSide(color: accent, width: 1.5),
+                          shape: const StadiumBorder(),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: GlayaGradientButton(
-                    label: 'Wallet',
-                    icon: Icons.account_balance_wallet_outlined,
-                    small: true,
-                    onPressed: () => WalletDialog.show(context),
-                  ),
-                ),
-              ],
+                    const SizedBox(width: gap),
+                    SizedBox(
+                      width: walletW,
+                      child: GlayaGradientButton(
+                        label: 'Wallet',
+                        icon: Icons.account_balance_wallet_outlined,
+                        small: true,
+                        onPressed: () => WalletDialog.show(context),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 10),
             // Share button
