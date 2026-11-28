@@ -45,7 +45,9 @@ class _BookingsListScreenState extends ConsumerState<BookingsListScreen>
   static String _statusLabel(String s) {
     const m = {
       'requested': 'Pending',
+      'pending': 'Pending',
       'accepted': 'Accepted',
+      'deposit_required': 'Deposit Required',
       'confirmed': 'Confirmed',
       'in_progress': 'In Progress',
       'completed': 'Completed',
@@ -57,7 +59,9 @@ class _BookingsListScreenState extends ConsumerState<BookingsListScreen>
   static Color _statusColor(String s) {
     const m = {
       'requested': Color(0xFFF59E0B),
+      'pending': Color(0xFFF59E0B),
       'accepted': Color(0xFF3B82F6),
+      'deposit_required': Color(0xFF8B5CF6),
       'confirmed': Color(0xFF10B981),
       'in_progress': Color(0xFF8B5CF6),
       'completed': Color(0xFF059669),
@@ -78,7 +82,7 @@ class _BookingsListScreenState extends ConsumerState<BookingsListScreen>
           statuses = ['cancelled'];
           break;
         default: // Upcoming: all active statuses
-          statuses = ['requested', 'accepted', 'confirmed', 'in_progress'];
+          statuses = ['requested', 'pending', 'accepted', 'deposit_required', 'confirmed', 'in_progress'];
       }
       print('[Bookings] Loading bookings for tab index: ${_tabController.index}, statuses: $statuses');
       final response = await ApiService.dio.get('/bookings');
