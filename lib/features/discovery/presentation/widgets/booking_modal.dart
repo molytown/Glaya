@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../shared/services/api_service.dart';
 import '../../../../shared/services/storage_service.dart';
@@ -173,7 +174,7 @@ class _BookingModalState extends ConsumerState<BookingModal> {
                 onPressed: () {
                   // Navigate using GoRouter (app uses go_router)
                   if (_bookingId != null) {
-                    context.go('/bookings/$_bookingId');
+                    GoRouter.of(context).go('/bookings/$_bookingId');
                   }
                   widget.onClose();
                 },
