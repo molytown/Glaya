@@ -250,10 +250,10 @@ class _BookingModalState extends ConsumerState<BookingModal> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
           items: [
-            const DropdownMenuItem(value: '', child: Text('Select a service')),
+            const DropdownMenuItem(value: '', child: Text('Select a service', style: TextStyle(color: Color(0xFF000000)))),
             ...services.map((s) => DropdownMenuItem(
                   value: s.id,
-                  child: Text(s.name),
+                  child: Text(s.name, style: const TextStyle(color: Color(0xFF000000))),
                 )),
           ],
           onChanged: (v) {
@@ -332,9 +332,9 @@ class _BookingModalState extends ConsumerState<BookingModal> {
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
           ),
           items: [
-            const DropdownMenuItem(value: 'salon', child: Text('Book Appointment')),
+            const DropdownMenuItem(value: 'salon', child: Text('Book Appointment', style: TextStyle(color: Color(0xFF000000)))),
             if (widget.professional.homeService)
-              const DropdownMenuItem(value: 'home', child: Text('Home Service')),
+              const DropdownMenuItem(value: 'home', child: Text('Home Service', style: TextStyle(color: Color(0xFF000000)))),
           ],
           onChanged: (v) => setState(() => _serviceType = v ?? 'salon'),
         ),
