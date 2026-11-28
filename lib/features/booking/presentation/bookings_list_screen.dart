@@ -80,12 +80,16 @@ class _BookingsListScreenState extends ConsumerState<BookingsListScreen>
         default: // Upcoming: all active statuses
           statuses = ['requested', 'accepted', 'confirmed', 'in_progress'];
       }
+      print('[Bookings] Loading bookings for tab index: ${_tabController.index}, statuses: $statuses');
       final response = await ApiService.dio.get('/bookings');
+      print('[Bookings] Response data: ${response.data}');
       final all = (response.data['data'] as List).cast<Map<String, dynamic>>();
+      print('[Bookings] Filtered count: ${all.where((b) => statuses.contains(b['status'] as String? ?? '')).length}');
       setState(() => _bookings = all
           .where((b) => statuses.contains(b['status'] as String? ?? ''))
           .toList());
     } catch (e) {
+      print('[Bookings] Error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to load bookings: ${e.toString()}')),
